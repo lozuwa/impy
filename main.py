@@ -1,5 +1,6 @@
 """
-Name: Images2Dataset
+package: Images2Dataset
+class: Images2Dataset (main)
 Author: Rodrigo Loza
 Description: This library is intended to convert an image raw dataset to a vectorial structured dataset.
 The library assumes:
@@ -14,6 +15,7 @@ The library assumes:
 # General purpose 
 import os
 import sys
+from tqdm import tqdm
 # Matrix manipulation
 import numpy as np 
 # Data manipulation
@@ -21,60 +23,13 @@ import pandas as pd
 # Image manipulation
 import cv2
 from PIL import Image
-# Database
-from pymongo import *
 
-class MongoDb:
-    """ 
-    Connects to mongodb. Instantiates a new database. Supports write, read functions. 
-    """
-    def __init__(self, 
-                name = "data", 
-                create = False):
-        """
-        Constructor
-        :param name: string that contains the database's name
-        :param create: boolean that decides whether to create a new db or not
-        """
-        # Connect to the db
-        self.client = MongoClient()
-        #########TO FIX############
-        self.db = client.data
-        ###########################
-        # If create is true, then start a new array
-        if create:
-            self.db.data.insert({"_id": 0, "images": []})
-
-    def writeData(self, uri):
-        """
-        Write field
-        : return: confirmation response  
-        """
-        assert type(uri) == str, "uri must be a string"
-        self.db.data.update({"_id": 0}, {"images": uri}) 
-
-    def readData(self, uri):
-        """
-        NOT IMPLEMENTED YET
-        Find filed
-        : return: uri
-        """
-        assert type(uri) == str, "uri must be a string"
-        return False
-
-    def readAllData(self):
-        """
-        Reads all the database
-        return: A list that contains all the uris
-        """
-        return [each for each in self.db.data.find()]
-
-    def dropDb(self):
-        """
-        Careful!
-        Eliminate database
-        """
-        self.db.data.drop()
+# Database 
+from .mongo import *
+# Utils
+from .utils import *
+# Stats
+from .stats import *
 
 class Images2Dataset:
     def __init__(self, 
@@ -99,7 +54,7 @@ class Images2Dataset:
         # Set images per folder
         self.images = {}
         for subfolder in self.subfolders:
-            self.images[subfolder] = getImages(subfolder)
+            self.images[subfolder] = self.getImages(subfolder)
         # Instantiate db client
         self.db = db
         if db:
@@ -108,21 +63,24 @@ class Images2Dataset:
             pass
         # If imagesSize is constant, then get a sample
         if imagesSize == "constant":
-            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[0]][0])
+            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[1]][0]).shape
+
+    def stats():
+        statistics(self.images)
 
     def getFolders(self, folder):
         """
         :param folder: string that contains the name of the folder that we want to extract subfolders
         : return: list of subfolders in the folder
         """
-        return [os.getcwd()+"/"+folder+"/"+each for each in os.listdir(os.getcwd()+"/"+folder)]
+        return [str(folder+"/"+each) for each in os.listdir(folder)]
 
     def getImages(self, folder):
         """ 
         :param folder: string that contains the name of the folder that we want to extract images
         : return: list of images in the folder
         """
-        return [os.getcwd()+"/"+self.dbFolder+"/"+folder+"/"+each for each in os.listdir(os.getcwd()+"/"+self.dbFolder+"/"+folder+"/")]
+        return [str(folder+"/"+each) for each in os.listdir(folder)]
 
     def uris2MongoDB(self):
         """
@@ -153,7 +111,7 @@ class Images2Dataset:
 
     def images2Tensor(self):
         """
-        Converted the images in each subfolder to a tensor X and a 
+        Convert images in each subfolder to a tensor X and a 
         tensor label Y
         : return: a tensor X of features and a tensor Y of labels
         """
@@ -175,32 +133,44 @@ class Images2Dataset:
         classes = np.eye(numberClasses)
         labels = np.zeros[numberClasses,]
         # Read images in each subfolder
-        for k in range(keys):
+        for k in tqdm(range(len(keys))):
             # Get images of class "key"
             assert keys[k] != None, "There was a problem with key"
             imgs = self.images.get(keys[k])
             # Read image 
-            for img in imgs:
+            for img in tqdm(imgs):
                 features = np.c_[features, cv2.imread(img).reshape(-1, 1)]
                 labels = np.c_[labels, classes[k].reshape(-1, 1)]
         return features, labels
 
-def isFile(file):
-    """
-    :param file: string that contains the name of the file we want to test
-    : return: boolean that asserts if the file exists 
-    """
-    if os.path.isfile(file):
-        return True
-    else:
-        return False
-
-def isFolder(folder):
-    """
-    :param folder: string that contains the name of the folder we want to test
-    : return: boolean that asserts if the folder exists 
-    """
-    if os.path.isfolder(folder):
-        return True
-    else:
-        return False
+    def images2CSV(self):
+        """
+        Conver images in each subfolder to vectors written in a csv file 
+        : return: a tensor X of features and a tensor Y of labels
+        """
+        # Create file
+        file = open("dataset.csv", "w")
+        # Get keys
+        keys = [each for each in self.images.keys()]
+        # Number of classes
+        numberClasses = len(keys)
+        classes = [each for each in range(numberClasses)]
+        # Write columns
+        for each in range(self.height*self.width*self.depth):
+            file.write(str(each)+",")
+        file.write("label"+"\n")
+        # Read images in each subfolder
+        for k in tqdm(range(len(keys))):
+            # Get images of class "key"
+            assert keys[k] != None, "There was a problem with key"
+            imgs = self.images.get(keys[k])
+            # Iterate over images
+            for img in tqdm(imgs):
+                frame = cv2.imread(img).reshape(-1, 1)
+                for i in range(frame.shape[0]):
+                    # Write pixels
+                    file.write(str(frame[i, :]) + ",")
+                # Write labels
+                file.write(str(classes[k])+"\n")
+        # Close file
+        file.close()
