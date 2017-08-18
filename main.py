@@ -28,7 +28,9 @@ class MongoDb:
     """ 
     Connects to mongodb. Instantiates a new database. Supports write, read functions. 
     """
-    def __init__(self, name = "data", create = False):
+    def __init__(self, 
+                name = "data", 
+                create = False):
         """
         Constructor
         :param name: string that contains the database's name
@@ -75,9 +77,17 @@ class MongoDb:
         self.db.data.drop()
 
 class Images2Dataset:
-    def __init__(self, dbFolder = os.getcwd(), create = False):
-        """ 
+    def __init__(self, 
+                dbFolder = os.getcwd(), 
+                create = False, 
+                db = False, 
+                imagesSize = "constant"):
+        """
         :param dbFolder: string that contains the folder where all the raw data lives
+        :param create: bool that decides whether to create a new db or not
+        :param db: bool that decides to use db or not
+        :param imagesSize: string that decides to use constant or multiple sizes for images
+                            Not constant parameter requires padding feature. 
         """ 
         # Set database folder
         assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
@@ -91,27 +101,35 @@ class Images2Dataset:
         for subfolder in self.subfolders:
             self.images[subfolder] = getImages(subfolder)
         # Instantiate db client
-        self.dbClient = MongoDb(name = "data", create = create)
+        self.db = db
+        if db:
+            self.dbClient = MongoDb(name = "data", create = create)
+        else:
+            pass
+        # If imagesSize is constant, then get a sample
+        if imagesSize == "constant":
+            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[0]][0])
 
     def getFolders(self, folder):
         """
         :param folder: string that contains the name of the folder that we want to extract subfolders
         : return: list of subfolders in the folder
         """
-        return os.listdir(os.getcwd()+"/"+folder)
+        return [os.getcwd()+"/"+folder+"/"+each for each in os.listdir(os.getcwd()+"/"+folder)]
 
     def getImages(self, folder):
         """ 
         :param folder: string that contains the name of the folder that we want to extract images
         : return: list of images in the folder
         """
-        return os.listdir(os.getcwd()+"/"+self.dbFolder+"/"+folder+"/")
+        return [os.getcwd()+"/"+self.dbFolder+"/"+folder+"/"+each for each in os.listdir(os.getcwd()+"/"+self.dbFolder+"/"+folder+"/")]
 
     def uris2MongoDB(self):
         """
         Images stored on hard disk, links available in mongoDB database
         : return: boolean that indicates success 
         """ 
+        assert self.db == True, "mongodb can't be used unless db parameter is set to true"
         # Get keys 
         keys = [each for each in self.images.keys()]
         # Save vectors inside keys to db
@@ -133,17 +151,42 @@ class Images2Dataset:
         df = pd.DataFrame(self.images)
         return df
 
-    def ToTensor(self):
+    def images2Tensor(self):
         """
-        NOT IMPLEMENTED
+        Converted the images in each subfolder to a tensor X and a 
+        tensor label Y
+        : return: a tensor X of features and a tensor Y of labels
         """
-        # Variables 
-        features = np.zeros([1,1])
-        labels = np.zeros([1,1]) 
-        
+        # Assert memory constraints
+        assert (self.height < 50) and (self.width < 50), "Image is too big, try a smaller size"
+        # Previous calculations
+        rows = self.height*self.width*self.depth
+        # Get keys
+        keys = [each for each in self.images.keys()]
+        columns = []
+        for key in keys:
+            columns.append(len(self.images.get(key)))
+        # Number of classes
+        numberClasses = len(self.subfolders)
+        # Data (rows are the number of features or pixels) 
+        # (columns are the number of examples)
+        features = np.zeros([rows,])
+        # Labels
+        classes = np.eye(numberClasses)
+        labels = np.zeros[numberClasses,]
+        # Read images in each subfolder
+        for k in range(keys):
+            # Get images of class "key"
+            assert keys[k] != None, "There was a problem with key"
+            imgs = self.images.get(keys[k])
+            # Read image 
+            for img in imgs:
+                features = np.c_[features, cv2.imread(img).reshape(-1, 1)]
+                labels = np.c_[labels, classes[k].reshape(-1, 1)]
+        return features, labels
 
 def isFile(file):
-    """ 
+    """
     :param file: string that contains the name of the file we want to test
     : return: boolean that asserts if the file exists 
     """
@@ -153,7 +196,7 @@ def isFile(file):
         return False
 
 def isFolder(folder):
-    """ 
+    """
     :param folder: string that contains the name of the folder we want to test
     : return: boolean that asserts if the folder exists 
     """
