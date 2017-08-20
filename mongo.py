@@ -45,6 +45,7 @@ class MongoDb:
         Find filed
         : return: uri
         """
+        assert True == True, "function not implemented"
         assert type(uri) == str, "uri must be a string"
         return False
 

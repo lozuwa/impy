@@ -10,17 +10,17 @@ import sys
 # Image manipulation
 import cv2
 # Utils
-from .utils import *
+from utils import *
 # Visualization
 import matplotlib.pyplot as plt
 from matplotlib import style
 style.use("ggplot")
 
-class EDA():
+class EDA:
 	def __init__(self, data = {}):
 		""" 
-	    Exploratory data analysis class
-	    """
+		Exploratory data analysis class
+		"""
 		self.data = data
 
 	def classesBalance(self, visualize = False):
@@ -55,8 +55,24 @@ class EDA():
 		plt.ylabel(ylabel)
 		plt.show()
 
-	def descriptiveStats(self):
+	def getMean(self, totalPixels = 1):
 		"""
-		Calculates the mean and standard deviation of the image dataset
+		Calculates the mean of the image dataset
+		using the .jpg/.png/.jpeg files. 
 		"""
-		pass
+		# Get keys
+		keys = getDictKeys(self.data)
+		# Read images in each subfolder
+		for k in tqdm(range(len(keys))):
+			# Get images of class "key"
+			assert keys[k] != None, "There was a problem with key"
+			imgs = self.images.get(keys[k])
+			# Read image
+			for img in tqdm(imgs):
+				# Read image and scale to 0-1
+				numerator += np.sum(cv2.imread(img).reshape(-1, 1) / 255)
+
+		# Calculate mean and standard deviation
+		mean = numerator / (totalPixels)
+
+		return mean

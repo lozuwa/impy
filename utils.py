@@ -8,6 +8,23 @@ Description: Utils methods
 import os
 import sys
 
+# Global variables 
+SCALE_DATASET = "Your images are too big, try to scale your data"
+
+def getFolders(folder):
+    """
+    :param folder: string that contains the name of the folder that we want to extract subfolders
+    : return: list of subfolders in the folder
+    """
+    return [str(folder+"/"+each) for each in os.listdir(folder)]
+
+def getImages(folder):
+    """ 
+    :param folder: string that contains the name of the folder that we want to extract images
+    : return: list of images in the folder
+    """
+    return [str(folder+"/"+each) for each in os.listdir(folder)]
+
 def isFile(file):
     """
     :param file: string that contains the name of the file we want to test
@@ -28,20 +45,20 @@ def isFolder(folder):
     else:
         return False
 
-def getDictKeys(dict):
+def getDictKeys(dict_):
     """
-    :param dict: dictionary that contains the classes and the images
+    :param dict_: dictionary that contains the classes and the images
     : return: dictionary's keys
     """
-    keys = dict.keys()
+    keys = dict_.keys()
     return keys
 
-def getDictValues(dict, key):
+def getDictValues(dict_, key):
     """
     :param dict: dictionary that contains the classes and the images
     :param key: string value that selects a specific class in dict
     : return: values for dict[key]
     """
-    values = dict.get(key, None)
+    values = dict_.get(key, None)
     assert values == list, "Values is not a list"
     return values

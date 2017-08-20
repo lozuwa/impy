@@ -25,11 +25,13 @@ import cv2
 from PIL import Image
 
 # Database 
-from .mongo import *
+from mongo import *
 # Utils
-from .utils import *
+from utils import *
 # Stats
-from .stats import *
+from stats import *
+
+### "C:/Users/HP/Dropbox/pfm/Databases/TEST/"
 
 class Images2Dataset:
     def __init__(self, 
@@ -38,7 +40,7 @@ class Images2Dataset:
                 db = False, 
                 imagesSize = "constant"):
         """
-        :param dbFolder: string that contains the folder where all the raw data lives
+        :param dbFolder: string that contains the folder where all the images live
         :param create: bool that decides whether to create a new db or not
         :param db: bool that decides to use db or not
         :param imagesSize: string that decides to use constant or multiple sizes for images
@@ -50,11 +52,11 @@ class Images2Dataset:
         assert isFolder(dbFolder) == True, "folder does not exist"
         self.dbFolder = dbFolder
         # Set subfolders
-        self.subfolders = self.getFolders(self.dbFolder)
+        self.subfolders = getFolders(self.dbFolder)
         # Set images per folder
         self.images = {}
         for subfolder in self.subfolders:
-            self.images[subfolder] = self.getImages(subfolder)
+            self.images[subfolder] = getImages(subfolder)
         # Instantiate db client
         self.db = db
         if db:
@@ -63,24 +65,13 @@ class Images2Dataset:
             pass
         # If imagesSize is constant, then get a sample
         if imagesSize == "constant":
-            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[1]][0]).shape
+            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[0]][0]).shape
+        # Empty dataframe
+        self.df = None
 
     def stats():
-        statistics(self.images)
-
-    def getFolders(self, folder):
-        """
-        :param folder: string that contains the name of the folder that we want to extract subfolders
-        : return: list of subfolders in the folder
-        """
-        return [str(folder+"/"+each) for each in os.listdir(folder)]
-
-    def getImages(self, folder):
-        """ 
-        :param folder: string that contains the name of the folder that we want to extract images
-        : return: list of images in the folder
-        """
-        return [str(folder+"/"+each) for each in os.listdir(folder)]
+        eda = EDA(self.images)
+        eda.descriptiveStats(totalPixels = self.height*self.width*self.depth)
 
     def uris2MongoDB(self):
         """
@@ -89,7 +80,7 @@ class Images2Dataset:
         """ 
         assert self.db == True, "mongodb can't be used unless db parameter is set to true"
         # Get keys 
-        keys = [each for each in self.images.keys()]
+        keys = getDictKeys(self.images)
         # Save vectors inside keys to db
         for key in keys:
             # Get images of class "key"
@@ -105,10 +96,28 @@ class Images2Dataset:
         : return: pandas dataframe that contains the classes as columns
                   and the uris of each class as rows 
         """ 
+        # Check the classes have the same length 
+        keys = getDictKeys(self.images)
+        size_ = []
+        for key in keys:
+            size_.append(len(self.images.get(key, None)))
+        size_len = len(set(size_))
+        if size_len > 1:
+            print("Classes are not of the same size")
+            # find the maximum
+            max_rows = max(size_)
+            # Fill the rest of the classes
+            for key in keys:
+                # If the class has less examples than the maximum, fill them 
+                size_class = len(self.images.get(key, None))
+                if size_class < max_rows:
+                    for i in range(max_rows - size_class):
+                        self.images[key].append(np.nan)
         # Create dataframe
-        df = pd.DataFrame(self.images)
-        return df
+        self.df = pd.DataFrame(self.images)
+        return self.df
 
+    ##################################TO FIX#############################################
     def images2Tensor(self):
         """
         Convert images in each subfolder to a tensor X and a 
@@ -116,7 +125,7 @@ class Images2Dataset:
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
-        assert (self.height < 50) and (self.width < 50), "Image is too big, try a smaller size"
+        assert (self.height < 50) and (self.width < 50), SCALE_DATASET
         # Previous calculations
         rows = self.height*self.width*self.depth
         # Get keys
@@ -148,6 +157,8 @@ class Images2Dataset:
         Conver images in each subfolder to vectors written in a csv file 
         : return: a tensor X of features and a tensor Y of labels
         """
+        # Assert memory constraints
+        assert (self.height < 100) and (self.width < 100), SCALE_DATASET
         # Create file
         file = open("dataset.csv", "w")
         # Get keys
@@ -174,3 +185,4 @@ class Images2Dataset:
                 file.write(str(classes[k])+"\n")
         # Close file
         file.close()
+    ##########################################################################
