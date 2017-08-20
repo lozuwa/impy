@@ -7,9 +7,13 @@ Description: Utils methods
 # General purpose 
 import os
 import sys
+# Tensor manipulation
+import numpy as np
 
 # Global variables 
 SCALE_DATASET = "Your images are too big, try to scale your data"
+DATAFRAME_IS_NONE = "You have to convert your image dataset to a dataframe first"
+VECTORS_MUST_BE_OF_EQUAL_SHAPE = "Both vectors should have the same len"
 
 def getFolders(folder):
     """
@@ -60,5 +64,30 @@ def getDictValues(dict_, key):
     : return: values for dict[key]
     """
     values = dict_.get(key, None)
-    assert values == list, "Values is not a list"
+    #assert type(values) == list, "Values is not a list"
     return values
+
+def fillDictRows(dict_):
+    """
+    Fill missing data points so all the values in the dictionary 
+    have the same length
+    :param dict_: dictionary that has the keys and values to fix
+    : return: return the filled dictionary 
+    """
+    keys = getDictKeys(dict_)
+    size_ = []
+    for key in keys:
+        size_.append(len(dict_.get(key, None)))
+    size_len = len(set(size_))
+    if size_len > 1:
+        print("Classes are not of the same size, fixing ...")
+        # find the maximum
+        max_rows = max(size_)
+        # Fill the rest of the classes
+        for key in keys:
+            # If the class has less examples than the maximum, fill them 
+            size_class = len(dict_.get(key, None))
+            if size_class < max_rows:
+                for i in range(max_rows - size_class):
+                    dict_[key].append(np.nan)
+    return dict_

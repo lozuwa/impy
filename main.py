@@ -69,10 +69,6 @@ class Images2Dataset:
         # Empty dataframe
         self.df = None
 
-    def stats():
-        eda = EDA(self.images)
-        eda.descriptiveStats(totalPixels = self.height*self.width*self.depth)
-
     def uris2MongoDB(self):
         """
         Images stored on hard disk, links available in mongoDB database
@@ -90,33 +86,20 @@ class Images2Dataset:
             for img in imgs:
                 self.dbClient.writeData(img)
 
-    def uris2Dataframe(self):
+    def uris2Dataframe(self, returnTo = False):
         """
+        :param returnTo: bool that controls whether to return the dataframe or not
         Convert image uris to dataframe
-        : return: pandas dataframe that contains the classes as columns
-                  and the uris of each class as rows 
         """ 
         # Check the classes have the same length 
-        keys = getDictKeys(self.images)
-        size_ = []
-        for key in keys:
-            size_.append(len(self.images.get(key, None)))
-        size_len = len(set(size_))
-        if size_len > 1:
-            print("Classes are not of the same size")
-            # find the maximum
-            max_rows = max(size_)
-            # Fill the rest of the classes
-            for key in keys:
-                # If the class has less examples than the maximum, fill them 
-                size_class = len(self.images.get(key, None))
-                if size_class < max_rows:
-                    for i in range(max_rows - size_class):
-                        self.images[key].append(np.nan)
+        self.images = fillDictRows(self.images)
         # Create dataframe
         self.df = pd.DataFrame(self.images)
-        return self.df
-
+        if returnTo:
+            return self.df
+        else:
+            pass
+        
     ##################################TO FIX#############################################
     def images2Tensor(self):
         """
@@ -150,11 +133,11 @@ class Images2Dataset:
             for img in tqdm(imgs):
                 features = np.c_[features, cv2.imread(img).reshape(-1, 1)]
                 labels = np.c_[labels, classes[k].reshape(-1, 1)]
-        return features, labels
+        return features[1:, :], labels[1:, :]
 
     def images2CSV(self):
         """
-        Conver images in each subfolder to vectors written in a csv file 
+        Convert images in each subfolder to vectors written in a csv file 
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
