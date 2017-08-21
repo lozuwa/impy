@@ -86,7 +86,8 @@ class Images2Dataset:
             for img in imgs:
                 self.dbClient.writeData(img)
 
-    def uris2Dataframe(self, returnTo = False):
+    def uris2Dataframe(self, 
+                        returnTo = False):
         """
         :param returnTo: bool that controls whether to return the dataframe or not
         Convert image uris to dataframe
@@ -108,7 +109,7 @@ class Images2Dataset:
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
-        assert (self.height < 50) and (self.width < 50), SCALE_DATASET
+        assert (self.height <= 50) and (self.width <= 50), RESIZE_DATASET
         # Previous calculations
         rows = self.height*self.width*self.depth
         # Get keys
@@ -123,17 +124,20 @@ class Images2Dataset:
         features = np.zeros([rows,])
         # Labels
         classes = np.eye(numberClasses)
-        labels = np.zeros[numberClasses,]
+        labels = np.zeros([numberClasses,])
         # Read images in each subfolder
         for k in tqdm(range(len(keys))):
             # Get images of class "key"
-            assert keys[k] != None, "There was a problem with key"
             imgs = self.images.get(keys[k])
-            # Read image 
-            for img in tqdm(imgs):
-                features = np.c_[features, cv2.imread(img).reshape(-1, 1)]
-                labels = np.c_[labels, classes[k].reshape(-1, 1)]
-        return features[1:, :], labels[1:, :]
+            # Read image
+            for img in imgs:
+                if type(img) == str:
+                    frame  = cv2.imread(img).reshape(-1, 1)
+                    features = np.c_[features, frame]
+                    labels = np.c_[labels, classes[k].reshape(-1, 1)]
+                else:
+                    pass
+        return features[:, 1:], labels[:, 1:]
 
     def images2CSV(self):
         """
@@ -141,9 +145,10 @@ class Images2Dataset:
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
-        assert (self.height < 100) and (self.width < 100), SCALE_DATASET
+        assert (self.height <= 100) and (self.width <= 100), SCALE_DATASET
         # Create file
-        file = open("dataset.csv", "w")
+        NAME_FILE = "dbResized/dataset.csv"
+        file = open(NAME_FILE, "w")
         # Get keys
         keys = [each for each in self.images.keys()]
         # Number of classes
@@ -156,16 +161,18 @@ class Images2Dataset:
         # Read images in each subfolder
         for k in tqdm(range(len(keys))):
             # Get images of class "key"
-            assert keys[k] != None, "There was a problem with key"
             imgs = self.images.get(keys[k])
             # Iterate over images
-            for img in tqdm(imgs):
-                frame = cv2.imread(img).reshape(-1, 1)
-                for i in range(frame.shape[0]):
-                    # Write pixels
-                    file.write(str(frame[i, :]) + ",")
-                # Write labels
-                file.write(str(classes[k])+"\n")
+            for img in imgs:
+                if type(img) == str:
+                    frame = cv2.imread(img).reshape(-1, 1)
+                    for i in range(frame.shape[0]):
+                        # Write pixels
+                        file.write(str(frame[i, :]) + ",")
+                    # Write labels
+                    file.write(str(classes[k])+"\n")
+                else:
+                    pass
         # Close file
         file.close()
     ##########################################################################

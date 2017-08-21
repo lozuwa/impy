@@ -11,9 +11,10 @@ import sys
 import numpy as np
 
 # Global variables 
-SCALE_DATASET = "Your images are too big, try to scale your data"
+RESIZE_DATASET = "Your images are too big, try to scale your data"
 DATAFRAME_IS_NONE = "You have to convert your image dataset to a dataframe first"
 VECTORS_MUST_BE_OF_EQUAL_SHAPE = "Both vectors should have the same len"
+RESIZING_COMPLETE = "Resize operation is complete"
 
 def getFolders(folder):
     """
@@ -57,7 +58,8 @@ def getDictKeys(dict_):
     keys = dict_.keys()
     return keys
 
-def getDictValues(dict_, key):
+def getDictValues(dict_, 
+                    key):
     """
     :param dict: dictionary that contains the classes and the images
     :param key: string value that selects a specific class in dict

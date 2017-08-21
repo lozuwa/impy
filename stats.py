@@ -21,7 +21,7 @@ import numpy as np
 # Utils
 from utils import *
 
-class EDA:
+class stats:
 	def __init__(self, 
 				data = {}):
 		""" 

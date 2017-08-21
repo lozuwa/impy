@@ -1,2 +1,4 @@
 # Images2Dataset
-Library for converting your images to a dataset
+
+A python library to convert your images to a dataset. 
+Still in development ...
