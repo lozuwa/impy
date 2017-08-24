@@ -12,9 +12,11 @@ import numpy as np
 
 # Global variables 
 RESIZE_DATASET = "Your images are too big, try to scale your data"
+PROBLEM_CREATING_FOLDER = "There was a problem creating the file"
 DATAFRAME_IS_NONE = "You have to convert your image dataset to a dataframe first"
 VECTORS_MUST_BE_OF_EQUAL_SHAPE = "Both vectors should have the same len"
 RESIZING_COMPLETE = "Resize operation is complete"
+RBG2GRAY_COMPLETE = "Conversion operation from RGB to GRAY complete"
 
 def getFolders(folder):
     """
@@ -49,6 +51,23 @@ def isFolder(folder):
         return True
     else:
         return False
+
+def createFolder(folder):
+    """
+    :param folder: string that contains the name of the folder to be created.
+                    It is assumed folder contains the complete path
+    : return: boolean that asserts the creation of the folder 
+    """
+    if isFolder(folder):    
+        print("Folder {} already exists".format(folder))
+        return True
+    else:
+        try:
+            os.mkdir(folder)
+        except:
+            raise ValueError("The folder count not be created")
+            return False
+        return True
 
 def getDictKeys(dict_):
     """
