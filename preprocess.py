@@ -12,7 +12,7 @@ import cv2
 import PIL
 from PIL import Image
 # Utils 
-from utils import *
+from .utils import *
 # Tensor manipulation
 import numpy as np
 from numpy import r_, c_

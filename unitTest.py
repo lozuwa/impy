@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 style.use("ggplot")
 # Main
-from main import Images2Dataset as im2da
+from .main import Images2Dataset as im2da
 # Utils 
-from utils import *
+from .utils import *
 # Stats
-from stats import *
+from .stats import *
 # Preprocess
-from preprocess import *
+from .preprocess import *
 
 DB_FOLDER = os.getcwd()+"/tests/db/"
 

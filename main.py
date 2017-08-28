@@ -25,13 +25,13 @@ import cv2
 from PIL import Image
 
 # Database 
-from mongo import *
+from .mongo import *
 # Utils
-from utils import *
+from .utils import *
 # Stats
-from stats import *
+from .stats import *
 # Preprocess
-from preprocess import *
+from .preprocess import *
 
 class Images2Dataset:
     def __init__(self, 

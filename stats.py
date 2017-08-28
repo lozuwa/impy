@@ -19,7 +19,7 @@ from collections import Counter
 # Tensor manipulation
 import numpy as np
 # Utils
-from utils import *
+from .utils import *
 
 class stats:
 	def __init__(self, 
