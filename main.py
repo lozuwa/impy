@@ -25,13 +25,13 @@ import cv2
 from PIL import Image
 
 # Database 
-from .mongo import *
+from mongo import *
 # Utils
-from .utils import *
+from utils import *
 # Stats
-from .stats import *
-
-### "C:/Users/HP/Dropbox/pfm/Databases/TEST/"
+from stats import *
+# Preprocess
+from preprocess import *
 
 class Images2Dataset:
     def __init__(self, 
@@ -40,11 +40,13 @@ class Images2Dataset:
                 db = False, 
                 imagesSize = "constant"):
         """
-        :param dbFolder: string that contains the folder where all the images live
+        :param dbFolder: string that contains the folder where all the 
+                            images live
         :param create: bool that decides whether to create a new db or not
         :param db: bool that decides to use db or not
-        :param imagesSize: string that decides to use constant or multiple sizes for images
-                            Not constant parameter requires padding feature. 
+        :param imagesSize: string that decides to use constant or multiple
+                            sizes for images. Not constant parameter
+                            requires padding feature. 
         """ 
         # Set database folder
         assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
@@ -74,13 +76,15 @@ class Images2Dataset:
         Images stored on hard disk, links available in mongoDB database
         : return: boolean that indicates success 
         """ 
-        assert self.db == True, "mongodb can't be used unless db parameter is set to true"
+        assert self.db == True,\
+                "mongodb can't be used unless db parameter is set to true"
         # Get keys 
         keys = getDictKeys(self.images)
         # Save vectors inside keys to db
         for key in keys:
             # Get images of class "key"
-            assert key != None, "There was a problem with key"
+            assert key != None,\
+                    "There was a problem with key"
             imgs = self.images.get(key)
             # Write uris
             for img in imgs:
@@ -109,7 +113,8 @@ class Images2Dataset:
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
-        assert (self.height <= 50) and (self.width <= 50), RESIZE_DATASET
+        assert (self.height <= 50) and (self.width <= 50),\
+                RESIZE_DATASET
         # Previous calculations
         rows = self.height*self.width*self.depth
         # Get keys
@@ -145,7 +150,8 @@ class Images2Dataset:
         : return: a tensor X of features and a tensor Y of labels
         """
         # Assert memory constraints
-        assert (self.height <= 100) and (self.width <= 100), SCALE_DATASET
+        assert (self.height <= 100) and (self.width <= 100),\
+                SCALE_DATASET
         # Create file
         NAME_FILE = "dbResized/dataset.csv"
         file = open(NAME_FILE, "w")

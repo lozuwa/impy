@@ -52,20 +52,21 @@ def isFolder(folder):
     else:
         return False
 
-def createFolder(folder):
+def createFolder(folder, verbosity = False):
     """
     :param folder: string that contains the name of the folder to be created.
                     It is assumed folder contains the complete path
     : return: boolean that asserts the creation of the folder 
     """
-    if isFolder(folder):    
-        print("Folder {} already exists".format(folder))
+    if isFolder(folder):
+        if verbosity:
+            print("Folder {} already exists".format(folder))
         return True
     else:
         try:
             os.mkdir(folder)
         except:
-            raise ValueError("The folder count not be created")
+            raise ValueError("The folder could not be created")
             return False
         return True
 
@@ -106,7 +107,8 @@ def fillDictRows(dict_):
         max_rows = max(size_)
         # Fill the rest of the classes
         for key in keys:
-            # If the class has less examples than the maximum, fill them 
+            # If the class has less examples than the maximum, 
+            # fill them 
             size_class = len(dict_.get(key, None))
             if size_class < max_rows:
                 for i in range(max_rows - size_class):

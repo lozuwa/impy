@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 style.use("ggplot")
 # Main
-from .main import Images2Dataset as im2da
+from main import Images2Dataset as im2da
 # Utils 
-from .utils import *
+from utils import *
 # Stats
-from .stats import *
+from stats import *
 # Preprocess
-from .preprocess import *
+from preprocess import *
 
 DB_FOLDER = os.getcwd()+"/tests/db/"
 
@@ -49,14 +49,20 @@ def test_resizeImages():
 	df = dataset.uris2Dataframe(returnTo = True)
 	stats_ = stats(df)
 	stats_.tensorSizes()
-	prep = preprocess(df)
+	prep = preprocessImageDataset(df)
 	prep.resizeImages(width = 300, height = 300)
 
 def test_rgb2gray():
 	dataset = im2da(dbFolder = DB_FOLDER)
 	df = dataset.uris2Dataframe(returnTo = True)
-	prep = preprocess(df)
+	prep = preprocessImageDataset(df)
 	prep.rgb2gray()
+
+def test_splitImageDataset():
+	dataset = im2da(dbFolder = DB_FOLDER)
+	df = dataset.uris2Dataframe(returnTo = True)
+	prep = preprocessImageDataset(df)
+	trainImgsPaths, testImgsPaths, trainImgsClass, testImgsClass = prep.splitImageDataset()
 
 ################ PROCESSES #######################
 DBRESIZED_FOLDER = os.getcwd()+"/dbResized/"
@@ -96,6 +102,18 @@ def test_images2CSV():
 	# Get tensored dataset
 	dataset.images2CSV()
 
+def test_saveImageDatasetKeras():
+	dataset = im2da(dbFolder = DB_FOLDER)
+	df = dataset.uris2Dataframe(returnTo = True)
+	prep = preprocessImageDataset(df)
+	trainImgsPaths, trainImgsClass, testImgsPaths, testImgsClass = prep.splitImageDataset()
+	print(len(trainImgsPaths), len(trainImgsClass))
+	print(len(testImgsPaths), len(testImgsClass))
+	prep.saveImageDatasetKeras(trainImgsPaths,
+                          trainImgsClass,
+                          testImgsPaths,
+                          testImgsClass)
+
 if __name__ == "__main__":
 	# Which one would you like to test?
-	test_rgb2gray()
+	test_saveImageDatasetKeras()

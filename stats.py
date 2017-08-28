@@ -19,7 +19,7 @@ from collections import Counter
 # Tensor manipulation
 import numpy as np
 # Utils
-from .utils import *
+from utils import *
 
 class stats:
 	def __init__(self, 
@@ -78,7 +78,8 @@ class stats:
 		x_ = [i for i in range(len(x))]
 		if xticks:
 			my_xticks = x
-			assert len(my_xticks) == len(x_), VECTORS_MUST_BE_OF_EQUAL_SHAPE 
+			assert len(my_xticks) == len(x_),\
+					VECTORS_MUST_BE_OF_EQUAL_SHAPE 
 			plt.xticks(x_, my_xticks)
 		else:
 			pass	
