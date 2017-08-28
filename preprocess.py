@@ -12,15 +12,16 @@ import cv2
 import PIL
 from PIL import Image
 # Utils 
-from utils import *
+from .utils import *
 
 class preprocess:
 	"""Allows operations on images"""
-	def __init__(self, data = []):
+	def __init__(self, 
+				data = []):
 		self.data = data
 
-	def resizeImages(self, 
-					width = 300, 
+	def resizeImages(self,
+					width = 300,
 					height = 300):
 		"""
 		Resizes all the images in the db. The new images are stored

@@ -10,7 +10,7 @@ import sys
 # Tensor manipulation
 import numpy as np
 
-# Global variables 
+# Global variables
 RESIZE_DATASET = "Your images are too big, try to scale your data"
 DATAFRAME_IS_NONE = "You have to convert your image dataset to a dataframe first"
 VECTORS_MUST_BE_OF_EQUAL_SHAPE = "Both vectors should have the same len"

@@ -25,11 +25,11 @@ import cv2
 from PIL import Image
 
 # Database 
-from mongo import *
+from .mongo import *
 # Utils
-from utils import *
+from .utils import *
 # Stats
-from stats import *
+from .stats import *
 
 ### "C:/Users/HP/Dropbox/pfm/Databases/TEST/"
 
