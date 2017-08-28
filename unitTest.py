@@ -52,6 +52,12 @@ def test_resizeImages():
 	prep = preprocess(df)
 	prep.resizeImages(width = 300, height = 300)
 
+def test_rgb2gray():
+	dataset = im2da(dbFolder = DB_FOLDER)
+	df = dataset.uris2Dataframe(returnTo = True)
+	prep = preprocess(df)
+	prep.rgb2gray()
+
 ################ PROCESSES #######################
 DBRESIZED_FOLDER = os.getcwd()+"/dbResized/"
 
@@ -92,4 +98,4 @@ def test_images2CSV():
 
 if __name__ == "__main__":
 	# Which one would you like to test?
-	test_images2CSV()
+	test_rgb2gray()
