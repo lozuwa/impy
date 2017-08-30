@@ -17,6 +17,8 @@ DATAFRAME_IS_NONE = "You have to convert your image dataset to a dataframe first
 VECTORS_MUST_BE_OF_EQUAL_SHAPE = "Both vectors should have the same len"
 RESIZING_COMPLETE = "Resize operation is complete"
 RBG2GRAY_COMPLETE = "Conversion operation from RGB to GRAY complete"
+SLIDE_WINDOW_SIZE_TOO_BIG = "Slide window's size cannot be bigger than image"
+STRIDE_WINDOW_SIZE_TOO_BIG = "Stride window's size cannot be bigger than image"
 
 def getFolders(folder):
     """

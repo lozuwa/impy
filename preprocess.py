@@ -5,9 +5,9 @@ Author: Rodrigo Loza
 Description: Preprocess image dataset or singular images
 """
 # General purpose
-import os 
+import os
 from tqdm import tqdm
-# Image manipulation 
+# Image manipulation
 import cv2
 import PIL
 from PIL import Image
@@ -61,7 +61,8 @@ class preprocessImageDataset:
                     # Open image
                     frame = Image.open(img)
                     # Resize image
-                    frame = frame.resize((width, height), PIL.Image.LANCZOS)
+                    frame = frame.resize((width, height),\
+                                            PIL.Image.LANCZOS)
                     IMAGE_NAME = "/" + img.split("/")[-1]
                     # Save the image 
                     frame.save(DB_PATH + NAME_SUBFOLDER + IMAGE_NAME)
@@ -100,7 +101,9 @@ class preprocessImageDataset:
                     pass
         print(RBG2GRAY_COMPLETE)
 
-    def splitImageDataset(self, trainSize = 0.80, validationSize = 0.20):
+    def splitImageDataset(self,
+                        trainSize = 0.80,
+                        validationSize = 0.20):
         """
         Splits the dataset into a training and a validation set
         :param trainSize: int that represents the size of the training set
@@ -194,11 +197,11 @@ class preprocessImageDataset:
         ######################## OPTIMIZE ########################
         # Save train images
         # Read classes in trainImgsClass
-        for i in range(len(trainImgsClass)):
+        for i in tqdm(range(len(trainImgsClass))):
             imgClass = trainImgsClass[i].split("/")[-1]
             for key in keys:
                 NAME_SUBFOLDER = key.split("/")[-1]
-                print(imgClass, NAME_SUBFOLDER)
+                #print(imgClass, NAME_SUBFOLDER)
                 # If they are the same class, then save the image
                 if imgClass == NAME_SUBFOLDER:
                     NAME_SUBFOLDER += "/"
@@ -211,7 +214,7 @@ class preprocessImageDataset:
                     pass
         # Save test images
         # Read classes in testImgsClass
-        for i in range(len(testImgsClass)):
+        for i in tqdm(range(len(testImgsClass))):
             imgClass = testImgsClass[i].split("/")[-1]
             for key in keys: 
                 NAME_SUBFOLDER = key.split("/")[-1]
@@ -231,20 +234,18 @@ class preprocessImage:
     """
     Allows operations on single images.
     """
-    def __init__(self, 
-                arg):
+    def __init__(self):
         """
         Constructor of preprocessImage class
-        :param arg: arg
         """
-        self.arg = arg
+        pass
         
     def divideIntoPatches(self,
-                            imageWidth, 
-                            imageHeight, 
-                            slideWindowSize, 
-                            strideSize, 
-                            padding):
+                        imageWidth, 
+                        imageHeight, 
+                        slideWindowSize, 
+                        strideSize, 
+                        padding):
         """
         Divides the image into N patches depending on the stride size,
         the sliding window size and the type of padding.
@@ -256,6 +257,9 @@ class preprocessImage:
                         of pixels to move on height and width direction 
         :param padding: string ("VALID", "SAME") that tells the type of 
                         padding
+        : return: a list containing the number of patches that fill the
+                given parameters, int containing the number of row patches,
+                int containing the number of column patches
         """
         # Get sliding window sizes
         slideWindowHeight, slideWindowWidth  = slideWindowSize[0],\
@@ -289,7 +293,7 @@ class preprocessImage:
                     slideWindowWidth += strideWidth
                 # Re-initialize the width parameters 
                 startPixelsWidth = 0
-                slideWindowWidth = slSize[1]
+                slideWindowWidth = slideWindowSize[1]
                 # Update height with height stride size
                 startPixelsHeight += strideHeigth 
                 slideWindowHeight += strideHeigth
@@ -321,8 +325,11 @@ class preprocessImage:
             for i in range(numberPatchesHeight+1):
                 for j in range(numberPatchesWidth+1):
             ########################################################
-                    patchesCoordinates.append( [startPixelsHeight, startPixelsWidth, slideWindowHeight, slideWindowWidth] )
-                    # Update width with strides 
+                    patchesCoordinates.append([startPixelsHeight,\
+                                                startPixelsWidth,\
+                                                slideWindowHeight,\
+                                                slideWindowWidth])
+                    # Update width with strides
                     startPixelsWidth += strideWidth
                     slideWindowWidth += strideWidth
                 # Re-initialize width parameters
@@ -332,7 +339,11 @@ class preprocessImage:
                 startPixelsHeight += strideHeigth
                 slideWindowHeight += strideHeigth
             #######################TOFIX############################
-            return patchesCoordinates, numberPatchesHeight+1, numberPatchesWidth+1, zeros_h, zeros_w 
+            return patchesCoordinates,\
+                    numberPatchesHeight+1,\
+                    numberPatchesWidth+1,\
+                    zeros_h,\
+                    zeros_w 
             ########################################################
         else:
             raise Exception("Type of padding not understood")
@@ -355,6 +366,9 @@ def getValidPadding(slideWindowHeight,
                                 window
     :param strideWidth: int that represents the width of the stride
     :param imageWidth: int that represents the width of the image
+    : return: int that contains the number of patches in the height 
+                dimension. Another int that contains the number of patches
+                in the width dimension.
     """
     numberPatchesHeight_ = 0
     numberPatchesWidth_ = 0
@@ -385,6 +399,10 @@ def getSamePadding(slideWindowHeight,
                                 window
     :param strideWidth: int that represents the width of the stride
     :param imageWidth: int that represents the width of the image
+    : return: int zeros_h that represents the amount of zeros
+                to add in the height dimension. int zeros_w 
+                that represents the amount of zeros to add 
+                in the width dimension. 
     """
     aux_slideWindowHeight = slideWindowHeight
     aux_slideWindowWidth = slideWindowWidth
@@ -403,13 +421,13 @@ def getSamePadding(slideWindowHeight,
     zeros_h = aux_slideWindowHeight - resid_h
     zeros_w = aux_slideWindowWidth - resid_w
     #print(slideWindowHeight, imageHeight, resid_h, zeros_h)
-    # Return amount
+    # Return amount of zeros
     return zeros_h, zeros_w
 
-def lazy_SAMEpad(frame, 
-                zeros_h, 
+def lazy_SAMEpad(frame,
+                zeros_h,
                 zeros_w):
-    """ 
+    """
     Given an image and the number of zeros to be added in height 
     and width dimensions, this function fills the image with the 
     required zeros.
@@ -446,5 +464,33 @@ def lazy_SAMEpad(frame,
         container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
         container[:,zeros_w:container.strideHeigthape[1]-zeros_w:,:] = frame
         frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
+    return frame
 
+def drawGrid(frame,
+            patches):
+    """
+    Draws the given patches on top of the input image 
+    :param frame: opencv input image 
+    :param patches: a list containing the coordinates of the patches
+                    calculated for the image
+    : return: opencv image named frame that contains the same input
+                image but with a grid of patches draw on top. 
+    """
+    # Iterate through patches
+    for i in range(len(patches)):
+        # Get patch
+        patch = patches[i]
+        # "Decode" patch 
+        startHeight, startWidth, endHeight, endWidth = patch[0], patch[1],\
+                                                        patch[2], patch[3]
+        # Draw grids
+        cv2.rectangle(frame, (startWidth, startHeight),\
+                        (endWidth, endHeight), (0, 0, 255), 12)
+        roi = np.zeros([patch[2]-patch[0], patch[3]-patch[1], 3],\
+                        np.uint8)
+        # Paint them red
+        roi[:,:,:] = (0,0,255)
+        cv2.addWeighted(frame[patch[0]:patch[2],patch[1]:patch[3],:],\
+                        0.5, roi, 0.5, 0, roi)
+        frame[patch[0]:patch[2],patch[1]:patch[3],:] = roi
     return frame
