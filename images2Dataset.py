@@ -28,12 +28,8 @@ from PIL import Image
 from .mongo import *
 # Utils
 from .utils import *
-# Stats
-from .stats import *
-# Preprocess
-from .preprocess import *
 
-class Images2Dataset:
+class images2Dataset:
     def __init__(self, 
                 dbFolder = os.getcwd(), 
                 create = False, 

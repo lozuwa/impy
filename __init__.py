@@ -191,3 +191,27 @@ else:
     warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
     warnings.filterwarnings("ignore", message="numpy.ndarray size changed")
 """
+# Import libraries 
+import sys
+
+# Load modules
+try:
+    from .utils import *
+except:
+    raise Exception("utils library could not be loaded")
+try:
+    from .preprocess import *
+except:
+    raise Exception("preprocess libary could not be loaded")
+try:
+    from .stats import *
+except:
+    raise Exception("stats could not be loaded")
+try:
+    from .images2Dataset import *
+except:
+    raise Exception("stats could not be loaded")
+
+# Information
+__author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
+__version__ = "0.1"

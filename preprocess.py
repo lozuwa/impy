@@ -11,13 +11,13 @@ from tqdm import tqdm
 import cv2
 import PIL
 from PIL import Image
-# Utils 
-from .utils import *
 # Tensor manipulation
 import numpy as np
 from numpy import r_, c_
 # Model selection utils from scikit-learn
 from sklearn.model_selection import train_test_split
+# Utils
+from .utils import *
 
 class preprocessImageDataset:
     """
@@ -424,7 +424,7 @@ def getSamePadding(slideWindowHeight,
     # Return amount of zeros
     return zeros_h, zeros_w
 
-def lazy_SAMEpad(frame,
+def lazySAMEpad(frame,
                 zeros_h,
                 zeros_w):
     """

@@ -14,8 +14,8 @@ style.use("ggplot")
 import cv2
 import PIL
 # Main
-from .main import Images2Dataset as im2da
-# Utils 
+from .images2Dataset import images2Dataset as im2da
+# Utils
 from .utils import *
 # Stats
 from .stats import *
