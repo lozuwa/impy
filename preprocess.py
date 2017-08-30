@@ -467,7 +467,8 @@ def lazySAMEpad(frame,
     return frame
 
 def drawGrid(frame,
-            patches):
+            patches,
+            patchesLabels):
     """
     Draws the given patches on top of the input image 
     :param frame: opencv input image 
@@ -488,8 +489,11 @@ def drawGrid(frame,
                         (endWidth, endHeight), (0, 0, 255), 12)
         roi = np.zeros([patch[2]-patch[0], patch[3]-patch[1], 3],\
                         np.uint8)
-        # Paint them red
-        roi[:,:,:] = (0,0,255)
+        # Paint the patch
+        if patchesLabels[i] == 1:
+            roi[:,:,:] = (0,0,255)
+        else:
+            roi[:,:,:] = (0,255,0)
         cv2.addWeighted(frame[patch[0]:patch[2],patch[1]:patch[3],:],\
                         0.5, roi, 0.5, 0, roi)
         frame[patch[0]:patch[2],patch[1]:patch[3],:] = roi
