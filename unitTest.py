@@ -16,11 +16,11 @@ import PIL
 # Main
 #from .images2Dataset import images2Dataset as im2da
 # Utils
-from utils import *
+from .utils import *
 # Stats
-#from .stats import *
+from .stats import *
 # Preprocess
-from preprocess import *
+from .preprocess import *
 
 DB_FOLDER = os.getcwd()+"/tests/db/"
 

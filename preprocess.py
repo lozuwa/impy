@@ -17,7 +17,7 @@ from numpy import r_, c_
 # Model selection utils from scikit-learn
 from sklearn.model_selection import train_test_split
 # Utils
-from utils import *
+from .utils import *
 
 class preprocessImageDataset:
     """
