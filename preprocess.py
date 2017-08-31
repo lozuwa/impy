@@ -495,6 +495,6 @@ def drawGrid(frame,
         else:
             roi[:,:,:] = (0,255,0)
         cv2.addWeighted(frame[patch[0]:patch[2],patch[1]:patch[3],:],\
-                        0.5, roi, 0.5, 0, roi)
+                        0.8, roi, 0.2, 0, roi)
         frame[patch[0]:patch[2],patch[1]:patch[3],:] = roi
     return frame
