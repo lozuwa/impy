@@ -17,7 +17,7 @@ from numpy import r_, c_
 # Model selection utils from scikit-learn
 from sklearn.model_selection import train_test_split
 # Utils
-from .utils import *
+from utils import *
 
 class preprocessImageDataset:
     """
@@ -314,7 +314,7 @@ class preprocessImage:
                                                 imageWidth)
             imageWidth += zeros_w
             imageHeight += zeros_h
-            # Valid padding strideHeigthould fit exactly
+            # Valid padding stride should fit exactly
             numberPatchesHeight, numberPatchesWidth = getValidPadding(slideWindowHeight,\
                                                                     strideHeigth,\
                                                                     imageHeight,\
@@ -334,7 +334,7 @@ class preprocessImage:
                     slideWindowWidth += strideWidth
                 # Re-initialize width parameters
                 startPixelsWidth = 0
-                slideWindowWidth = slSize[1]
+                slideWindowWidth = slideWindowSize[1]
                 # Update height with strides 
                 startPixelsHeight += strideHeigth
                 slideWindowHeight += strideHeigth
@@ -456,13 +456,13 @@ def lazySAMEpad(frame,
         zeros_w = int(zeros_w/2)
         # Container 
         container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-        container[:,zeros_w:container.strideHeigthape[1]-zeros_w:,:] = frame
+        container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
         frame = container #c_[np.zeros((rows, zeros_w)), frame, np.zeros((rows, zeros_w))]
     else:
         zeros_w += 1
         zeros_w = int(zeros_w/2)
         container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-        container[:,zeros_w:container.strideHeigthape[1]-zeros_w:,:] = frame
+        container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
         frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
     return frame
 

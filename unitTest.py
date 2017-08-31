@@ -14,13 +14,13 @@ style.use("ggplot")
 import cv2
 import PIL
 # Main
-from .images2Dataset import images2Dataset as im2da
+#from .images2Dataset import images2Dataset as im2da
 # Utils
-from .utils import *
+from utils import *
 # Stats
-from .stats import *
+#from .stats import *
 # Preprocess
-from .preprocess import *
+from preprocess import *
 
 DB_FOLDER = os.getcwd()+"/tests/db/"
 
@@ -81,7 +81,36 @@ def test_divideIntoPatches():
                                                         slideWindowSize,
                                                         strideSize,
                                                         padding)
-    frame = drawGrid(frame.copy(), patchesCoordinates)
+    frame = drawGrid(frame.copy(),\
+                    patchesCoordinates,\
+                    [1 for each in patchesCoordinates])
+    cv2.namedWindow("adf", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("adf", 640, 530)
+    cv2.imshow("adf", frame)
+    cv2.waitKey(0)
+
+def test_divideIntoPatchesSAMEPADDING():
+    WINDOW_SIZE = 700
+    NAME_IMG = os.getcwd()+"/tests/img.jpg"
+    frame = cv2.imread(NAME_IMG)
+    imageHeight, imageWidth, depth = frame.shape
+    slideWindowSize = (WINDOW_SIZE, WINDOW_SIZE)
+    strideSize = (WINDOW_SIZE, WINDOW_SIZE)
+    padding = "SAME"
+    prep = preprocessImage()
+    patchesCoordinates, numberPatchesHeight,\
+    numberPatchesWidth, zeros_h,\
+    zeros_w = prep.divideIntoPatches(imageWidth,
+                                    imageHeight,
+                                    slideWindowSize,
+                                    strideSize,
+                                    padding)
+    frame = lazySAMEpad(frame.copy(),
+                        zeros_h,
+                        zeros_w)
+    frame = drawGrid(frame.copy(),\
+                    patchesCoordinates,\
+                    [1 for each in patchesCoordinates])
     cv2.namedWindow("adf", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("adf", 640, 530)
     cv2.imshow("adf", frame)
@@ -139,4 +168,4 @@ def test_saveImageDatasetKeras():
 
 if __name__ == "__main__":
     # Which one would you like to test?
-    test_divideIntoPatches()
+    test_divideIntoPatchesSAMEPADDING()
