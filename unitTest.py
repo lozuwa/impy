@@ -14,7 +14,7 @@ style.use("ggplot")
 import cv2
 import PIL
 # Main
-#from .images2Dataset import images2Dataset as im2da
+from .images2Dataset import images2Dataset as im2da
 # Utils
 from .utils import *
 # Stats
@@ -168,4 +168,4 @@ def test_saveImageDatasetKeras():
 
 if __name__ == "__main__":
     # Which one would you like to test?
-    test_divideIntoPatchesSAMEPADDING()
+    test_uris2Dataframe()
