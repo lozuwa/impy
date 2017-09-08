@@ -55,8 +55,12 @@ class images2Dataset:
         self.subfolders = getFolders(self.dbFolder)
         # Set images per folder
         self.images = {}
-        for subfolder in self.subfolders:
-            self.images[subfolder] = getImages(subfolder)
+        # Check for single folder
+        if len(self.subfolders) == 0:
+            self.images = getImages(dbFolder)
+        else:
+            for subfolder in self.subfolders:
+                self.images[subfolder] = getImages(subfolder)
         # Dummy
         self.height = 100
         self.width = 100
