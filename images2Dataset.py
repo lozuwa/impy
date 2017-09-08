@@ -115,7 +115,7 @@ class images2Dataset:
         folderPath = os.path.join(os.getcwd(), "annotations")
         createFolder(folderPath)
         # Iterate over classes and images
-        for i in range(len(df.shape[0])):
+        for i in range(df.shape[0]):
             # Get image path
             img = df.iloc[i]
             # Check it is not null 
