@@ -132,6 +132,7 @@ class images2Dataset:
                     img = cv2.imread(imgPath)
                     # Get image info
                     height, width, depth = img.shape
+                    print(height, width, depth)
                     VOCFormat(folderPath = folderPath,
                                 folder = imgPath.split("//")[:-1], 
                                 filename = imgPath.split("//")[-1],
