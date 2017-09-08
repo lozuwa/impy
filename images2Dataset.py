@@ -104,7 +104,9 @@ class images2Dataset:
         else:
             pass
 
-    def uris2xmlAnnotations(self, df, VOCFormat = True):
+    def uris2xmlAnnotations(self, 
+                            df, 
+                            VOCFormat = True):
         """
         WARNING:
             * Supports a single folder with images inside
@@ -117,32 +119,34 @@ class images2Dataset:
         # Create folder named annotations
         folderPath = os.path.join(os.getcwd(), "annotations")
         createFolder(folderPath)
+        # Get keys
+        keys = [each for each in df.keys()]
         # Iterate over classes and images
-        for i in range(df.shape[0]):
-            # Get image path
-            img = df.iloc[i]
-            # Check it is not null 
-            if type(img) == str:
-                # Read image 
-                img = cv2.imread(img)
-                # Get image info
-                height, width, depth = img.shape
-                VOCFormat(folderPath = folderPath,
-                            folder = img.split("//")[:-1], 
-                            filename = img.split("//")[-1],
-                            path = img,
-                            database = "ascaris",
-                            width = width,
-                            height = height,
-                            depth = depth,
-                            name = "ascaris",
-                            xmin = 10,
-                            xmax = width - 10,
-                            ymin = 10,
-                            ymax = height - 10)
-            else:
-                pass
-
+        for key in keys:
+            # Get images
+            imgs = df.get(key, None)
+            for img in tqdm(imgs):
+                # Check img is not null
+                if type(img) == str:
+                    # Read image 
+                    img = cv2.imread(img)
+                    # Get image info
+                    height, width, depth = img.shape
+                    VOCFormat(folderPath = folderPath,
+                                folder = img.split("//")[:-1], 
+                                filename = img.split("//")[-1],
+                                path = img,
+                                database = "ascaris",
+                                width = width,
+                                height = height,
+                                depth = depth,
+                                name = "ascaris",
+                                xmin = 10,
+                                xmax = width - 10,
+                                ymin = 10,
+                                ymax = height - 10)
+                else:
+                    pass
 
     ##################################TO FIX#############################################
     def images2Tensor(self):
