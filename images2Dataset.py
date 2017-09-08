@@ -127,7 +127,7 @@ class images2Dataset:
             imgs = df.get(key, None)
             for imgPath in tqdm(imgs):
                 # Check img is not null
-                if type(Pathimg) == str:
+                if type(imgPath) == str:
                     # Read image 
                     img = cv2.imread(imgPath)
                     # Get image info
