@@ -32,7 +32,10 @@ from .mongo import *
 from .utils import *
 
 class images2Dataset:
-    def __init__(self, 
+    def __init__(self):
+        pass
+
+    def addData(self, 
                 dbFolder = os.getcwd(), 
                 create = False, 
                 db = False, 
