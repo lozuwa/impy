@@ -143,9 +143,9 @@ class images2Dataset:
                                 depth = depth,
                                 name = "ascaris",
                                 xmin = 10,
-                                xmax = width - 10,
+                                xmax = int(width) - 10,
                                 ymin = 10,
-                                ymax = height - 10)
+                                ymax = int(height) - 10)
                 else:
                     pass
 
