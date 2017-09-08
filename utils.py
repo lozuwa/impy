@@ -25,7 +25,7 @@ def getFolders(folder):
     :param folder: string that contains the name of the folder that we want to extract subfolders
     : return: list of subfolders in the folder
     """
-    return [os.path.join(folder, each) for each in os.listdir(folder)]
+    return [os.path.join(folder, each) for each in os.listdir(folder) if os.path.isdir(each)]
 
 def getImages(folder):
     """ 
