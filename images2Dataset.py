@@ -125,17 +125,17 @@ class images2Dataset:
         for key in keys:
             # Get images
             imgs = df.get(key, None)
-            for img in tqdm(imgs):
+            for imgPath in tqdm(imgs):
                 # Check img is not null
                 if type(img) == str:
                     # Read image 
-                    img = cv2.imread(img)
+                    img = cv2.imread(imgPath)
                     # Get image info
                     height, width, depth = img.shape
                     VOCFormat(folderPath = folderPath,
-                                folder = img.split("//")[:-1], 
-                                filename = img.split("//")[-1],
-                                path = img,
+                                folder = imgPath.split("//")[:-1], 
+                                filename = imgPath.split("//")[-1],
+                                path = imgPath,
                                 database = "ascaris",
                                 width = width,
                                 height = height,
