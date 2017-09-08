@@ -9,7 +9,7 @@ import os
 from tqdm import tqdm
 # Image manipulation
 import cv2
-import Pixels
+#import Pixels
 from PIL import Image
 # Tensor manipulation
 import numpy as np
