@@ -23,6 +23,8 @@ import pandas as pd
 # Image manipulation
 import cv2
 from PIL import Image
+# XML manipulation
+import xml.etree.cElementTree as ET
 
 # Database 
 from .mongo import *
@@ -55,17 +57,10 @@ class images2Dataset:
         self.images = {}
         for subfolder in self.subfolders:
             self.images[subfolder] = getImages(subfolder)
-        # Instantiate db client
-        self.db = db
-        if db:
-            self.dbClient = MongoDb(name = "data", create = create)
-        else:
-            pass
-        # If imagesSize is constant, then get a sample
-        if imagesSize == "constant":
-            self.height, self.width, self.depth = cv2.imread(self.images[self.subfolders[0]][0]).shape
-        # Empty dataframe
-        self.df = None
+        # Dummy
+        self.height = 100
+        self.width = 100
+        self.depth = 3
 
     def uris2MongoDB(self):
         """
@@ -89,7 +84,8 @@ class images2Dataset:
     def uris2Dataframe(self, 
                         returnTo = False):
         """
-        :param returnTo: bool that controls whether to return the dataframe or not
+        :param returnTo: bool that controls whether to return the dataframe 
+                        or not
         Convert image uris to dataframe
         """ 
         # Check the classes have the same length 
@@ -100,7 +96,47 @@ class images2Dataset:
             return self.df
         else:
             pass
-        
+
+    def uris2xmlAnnotations(self, df, VOCFormat = True):
+        """
+        WARNING:
+            * Supports a single folder with images inside
+        Creates an annotation for each of the images in the input dataframe
+        :param df: input dataframe that contains the paths of the images and their
+                    respective classes as columns
+        :param VOCFormat: input bool that decides if the annotations will have
+                            the VOC Dataset format
+        """
+        # Create folder named annotations
+        folderPath = os.path.join(os.getcwd(), "annotations")
+        createFolder(folderPath)
+        # Iterate over classes and images
+        for i in range(len(df.shape[0])):
+            # Get image path
+            img = df.iloc[i]
+            # Check it is not null 
+            if type(img) == str:
+                # Read image 
+                img = cv2.imread(img)
+                # Get image info
+                height, width, depth = img.shape
+                VOCFormat(folderPath = folderPath,
+                            folder = img.split("//")[:-1], 
+                            filename = img.split("//")[-1],
+                            path = img,
+                            database = "ascaris",
+                            width = width,
+                            height = height,
+                            depth = depth,
+                            name = "ascaris",
+                            xmin = 10,
+                            xmax = width - 10,
+                            ymin = 10,
+                            ymax = height - 10)
+            else:
+                pass
+
+
     ##################################TO FIX#############################################
     def images2Tensor(self):
         """
@@ -178,3 +214,49 @@ class images2Dataset:
         # Close file
         file.close()
     ##########################################################################
+
+def VOCFormat(folderPath,
+                folder, 
+                filename, 
+                path, 
+                database,
+                width,
+                height,
+                depth,
+                name,
+                xmin, 
+                xmax, 
+                ymin, 
+                ymax):
+    # Create annotation header
+    annotation = ET.Element("annotation")
+    # Image information
+    ET.SubElement(annotation, "folder", verified = "yes").text = folder
+    ET.SubElement(annotation, "filename").text = filename
+    ET.SubElement(annotation, "path").text = path
+    # Source
+    source = ET.SubElement(annotation, "source")
+    ET.SubElement(source, "database").text = database
+    # Size
+    size = ET.SubElement(annotation, "size")
+    ET.SubElement(size, "width").text = width
+    ET.SubElement(size, "height").text = height
+    ET.SubElement(size, "depth").text = depth
+    # Segemented
+    ET.SubElement(annotation, "segmented").text = "0"
+    # Object
+    object_ = ET.SubElement(annotation, "object")
+    ET.SubElement(object_, "name").text = name
+    ET.SubElement(object_, "pose").text = "Unespecified"
+    ET.SubElement(object_, "truncated").text = "0"
+    ET.SubElement(object_, "difficult").text = "0"
+    # Bound box inside object
+    bndbox = ET.SubElement(object_, "bndbox")
+    ET.SubElement(bndbox, "xmin").text = xmin
+    ET.SubElement(bndbox, "xmax").text = xmax
+    ET.SubElement(bndbox, "ymin").text = ymin
+    ET.SubElement(bndbox, "ymax").text = ymax
+    # Write file
+    tree = ET.ElementTree(annotation)
+    imgName = img.split("//")[-1].split(".jpg")[0]
+    tree.write(folderPath + "/" + imgName + ".xml")
