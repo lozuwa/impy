@@ -105,7 +105,7 @@ class images2Dataset:
             pass
 
     def uris2xmlAnnotations(self, 
-                            df, 
+                            folderPath = os.getcwd(), 
                             VOCFormat = True):
         """
         WARNING:
@@ -117,37 +117,104 @@ class images2Dataset:
                             the VOC Dataset format
         """
         # Create folder named annotations
-        folderPath = os.path.join(os.getcwd(), "annotations")
-        createFolder(folderPath)
-        # Get keys
-        keys = [each for each in df.keys()]
-        # Iterate over classes and images
-        for key in keys:
-            # Get images
-            imgs = df.get(key, None)
-            for imgPath in tqdm(imgs):
-                # Check img is not null
-                if type(imgPath) == str:
-                    # Read image 
-                    img = cv2.imread(imgPath)
-                    # Get image info
-                    height, width, depth = img.shape
-                    print(height, width, depth)
-                    VOCFormat(folderPath = folderPath,
-                                folder = imgPath.split("//")[:-1], 
-                                filename = imgPath.split("//")[-1],
-                                path = imgPath,
-                                database = "ascaris",
-                                width = width,
-                                height = height,
-                                depth = depth,
-                                name = "ascaris",
-                                xmin = 10,
-                                xmax = int(width) - 10,
-                                ymin = 10,
-                                ymax = int(height) - 10)
-                else:
-                    pass
+        folderPathAnnotations = os.path.join(os.getcwd(), "annotations")
+        createFolder(folderPathAnnotations)
+        # Read images inside the folder
+        imgsFolder = getImages(folderPath)
+        # Iterate over imgs
+        for imgPath in imgsFolder:
+            # Read images
+            frame = cv2.imread(imgPath)
+            #print(imgPath, frame)
+            # Get shape
+            height, width, depth = frame.shape
+            # Get image name
+            imgName = imgPath.split("/")[-1]
+            # Convert data to VOC
+            self.VOCFormat(folderPathAnnotations = folderPathAnnotations,\
+                            folder = "annotations",\
+                            filename = imgName,\
+                            path = imgPath,\
+                            database = "ASCARIS",\
+                            width = str(width),\
+                            height = str(height),\
+                            depth = str(depth),\
+                            name = "ASCARIS",\
+                            xmin = 1,\
+                            xmax = str(width-1),\
+                            ymin = 1,\
+                            ymax = str(height-1))
+
+    def VOCFormat(self,
+                    folderPathAnnotations,
+                    folder,
+                    filename,
+                    path,
+                    database,
+                    width,
+                    height,
+                    depth,
+                    name,
+                    xmin,
+                    xmax,
+                    ymin,
+                    ymax):
+        """
+        Method that converts an image to a xml annotation format in the 
+        PASCAL VOC dataset format. 
+        :param folderPath: input string with the path of the folder
+        :param folder: input string with the name "annotations"
+        :param path: input string with the path of the image
+        :param database: input string with the name of the database
+        :param width: input int with the width of the image
+        :param height: input int with the height of the image
+        :param depth: input int with the depth of the image
+        :param name: input string with the name of the class the image
+                    belongs to
+        :param xmin: input int with the pixel the cropping starts in the
+                    width of the image
+        :param xmax: input int with the pixel the cropping ends in the
+                    width of the image
+        :param ymin: input int with the pixel the cropping starts in the 
+                    height of the image
+        :param ymax: input int with the pixel the cropping ends in the 
+                    height of the image
+        """
+        # Create annotation header
+        annotation = ET.Element("annotation")
+        # Image information
+        ET.SubElement(annotation, "folder", verified = "yes").text = str(folder)
+        ET.SubElement(annotation, "filename").text = str(filename)
+        ET.SubElement(annotation, "path").text = str(path)
+        # Source
+        source = ET.SubElement(annotation, "source")
+        ET.SubElement(source, "database").text = str(database)
+        # Size
+        size = ET.SubElement(annotation, "size")
+        ET.SubElement(size, "width").text = str(width)
+        ET.SubElement(size, "height").text = str(height)
+        ET.SubElement(size, "depth").text = str(depth)
+        # Segemented
+        ET.SubElement(annotation, "segmented").text = "0"
+        # Object
+        object_ = ET.SubElement(annotation, "object")
+        ET.SubElement(object_, "name").text = str(name)
+        ET.SubElement(object_, "pose").text = "Unspecified"
+        ET.SubElement(object_, "truncated").text = "0"
+        ET.SubElement(object_, "difficult").text = "0"
+        # Bound box inside object
+        bndbox = ET.SubElement(object_, "bndbox")
+        ET.SubElement(bndbox, "xmin").text = str(xmin)
+        ET.SubElement(bndbox, "xmax").text = str(xmax)
+        ET.SubElement(bndbox, "ymin").text = str(ymin)
+        ET.SubElement(bndbox, "ymax").text = str(ymax)
+        # Write file
+        tree = ET.ElementTree(annotation)
+        drive, path_and_file = os.path.splitdrive(filename)
+        path, file = os.path.split(path_and_file)
+        file = file.split(".jpg")[0] + ".xml"
+        #print(os.path.join(folderPathAnnotations, file))
+        tree.write(os.path.join(folderPathAnnotations, file))
 
     ##################################TO FIX#############################################
     def images2Tensor(self):
@@ -226,49 +293,3 @@ class images2Dataset:
         # Close file
         file.close()
     ##########################################################################
-
-def VOCFormat(folderPath,
-                folder, 
-                filename, 
-                path, 
-                database,
-                width,
-                height,
-                depth,
-                name,
-                xmin, 
-                xmax, 
-                ymin, 
-                ymax):
-    # Create annotation header
-    annotation = ET.Element("annotation")
-    # Image information
-    ET.SubElement(annotation, "folder", verified = "yes").text = folder
-    ET.SubElement(annotation, "filename").text = filename
-    ET.SubElement(annotation, "path").text = path
-    # Source
-    source = ET.SubElement(annotation, "source")
-    ET.SubElement(source, "database").text = database
-    # Size
-    size = ET.SubElement(annotation, "size")
-    ET.SubElement(size, "width").text = width
-    ET.SubElement(size, "height").text = height
-    ET.SubElement(size, "depth").text = depth
-    # Segemented
-    ET.SubElement(annotation, "segmented").text = "0"
-    # Object
-    object_ = ET.SubElement(annotation, "object")
-    ET.SubElement(object_, "name").text = name
-    ET.SubElement(object_, "pose").text = "Unespecified"
-    ET.SubElement(object_, "truncated").text = "0"
-    ET.SubElement(object_, "difficult").text = "0"
-    # Bound box inside object
-    bndbox = ET.SubElement(object_, "bndbox")
-    ET.SubElement(bndbox, "xmin").text = xmin
-    ET.SubElement(bndbox, "xmax").text = xmax
-    ET.SubElement(bndbox, "ymin").text = ymin
-    ET.SubElement(bndbox, "ymax").text = ymax
-    # Write file
-    tree = ET.ElementTree(annotation)
-    imgName = img.split("//")[-1].split(".jpg")[0]
-    tree.write(folderPath + "/" + imgName + ".xml")

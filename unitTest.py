@@ -116,6 +116,22 @@ def test_divideIntoPatchesSAMEPADDING():
     cv2.imshow("adf", frame)
     cv2.waitKey(0)
 
+def test_uris2xmlAnnotations():
+    from impy.images2Dataset import images2Dataset as imda
+    from impy.utils import *
+    import pandas as pd
+    import os
+
+    dataset = im2da()
+    path = os.path.join("C://Users//HP//Dropbox//Databases//", "ASCARIS_LUMBRICOIDES")
+
+    df = getImages(path)
+    df = pd.DataFrame({"ASCARIS": df})
+    print(type(df))
+
+    #dataset.uris2xmlAnnotations(df = df)
+
+
 ################ PROCESSES #######################
 DBRESIZED_FOLDER = os.getcwd()+"/dbResized/"
 
@@ -168,4 +184,4 @@ def test_saveImageDatasetKeras():
 
 if __name__ == "__main__":
     # Which one would you like to test?
-    test_uris2Dataframe()
+    test_uris2xmlAnnotations()
