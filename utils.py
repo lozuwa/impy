@@ -25,14 +25,29 @@ def getFolders(folder):
     :param folder: string that contains the name of the folder that we want to extract subfolders
     : return: list of subfolders in the folder
     """
-    return [os.path.join(folder, each) for each in os.listdir(folder) if os.path.isdir(each)]
+    pathsReturn = []
+    #print(os.listdir(folder))
+    for fold in os.listdir(folder):
+        path = os.path.join(folder, fold)
+        if os.path.isdir(path):
+            pathsReturn.append(path)
+        else:
+            pass
+    return pathsReturn
 
 def getImages(folder):
     """ 
     :param folder: string that contains the name of the folder that we want to extract images
     : return: list of images in the folder
     """
-    return [os.path.join(folder, each) for each in os.listdir(folder)]
+    filesReturn = []
+    for files in os.listdir(folder):
+        path = os.path.join(folder, files)
+        if os.path.isfile(path):
+            filesReturn.append(path)
+        else:
+            pass
+    return filesReturn
 
 def isFile(file):
     """

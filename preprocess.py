@@ -11,6 +11,7 @@ from tqdm import tqdm
 import cv2
 #import Pixels
 from PIL import Image
+import PIL
 # Tensor manipulation
 import numpy as np
 from numpy import r_, c_
@@ -43,16 +44,17 @@ class preprocessImageDataset:
         :param height: integer that tells the height to resize
         """
         # Create new directory
-        DB_PATH = os.getcwd() + "/dbResized/"
+        DB_PATH = os.path.join(os.getcwd(), "dbResized")
         assert createFolder(DB_PATH) == True,\
                 PROBLEM_CREATING_FOLDER
         # Read Images
         keys = getDictKeys(self.data)
         for key in tqdm(keys):
             imgs = self.data.get(key, None)
-            # Create subfolders for eanumberPatchesHeight subfolder
-            NAME_SUBFOLDER = key.split("/")[-1]
-            assert createFolder(DB_PATH + NAME_SUBFOLDER) == True,\
+            # Create subfolders for each subfolder
+            DIR, NAME_SUBFOLDER = os.path.split(key)
+            #NAME_SUBFOLDER = key.split("/")[-1]
+            assert createFolder(os.path.join(DB_PATH, NAME_SUBFOLDER)) == True,\
                     PROBLEM_CREATING_FOLDER
             # Iterate images 
             for img in imgs:
@@ -63,9 +65,10 @@ class preprocessImageDataset:
                     # Resize image
                     frame = frame.resize((width, height),\
                                             PIL.Image.LANCZOS)
-                    IMAGE_NAME = "/" + img.split("/")[-1]
+                    dir_, IMAGE_NAME = os.path.split(img)
+                    #IMAGE_NAME = "/" + img.split("/")[-1]
                     # Save the image 
-                    frame.save(DB_PATH + NAME_SUBFOLDER + IMAGE_NAME)
+                    frame.save(os.path.join(DB_PATH, NAME_SUBFOLDER, IMAGE_NAME))
                 else:
                     pass
         print(RESIZING_COMPLETE)

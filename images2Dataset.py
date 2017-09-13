@@ -56,6 +56,7 @@ class images2Dataset:
         self.dbFolder = dbFolder
         # Set subfolders
         self.subfolders = getFolders(self.dbFolder)
+        #print(getFolders(self.dbFolder))
         # Set images per folder
         self.images = {}
         # Check for single folder
