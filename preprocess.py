@@ -242,23 +242,23 @@ class preprocessImage:
         Constructor of preprocessImage class
         """
         pass
-        
+
     def divideIntoPatches(self,
-                        imageWidth, 
-                        imageHeight, 
-                        slideWindowSize, 
-                        strideSize, 
+                        imageWidth,
+                        imageHeight,
+                        slideWindowSize,
+                        strideSize,
                         padding):
         """
         Divides the image into N patches depending on the stride size,
         the sliding window size and the type of padding.
         :param imageWidth: int that represents the width of the image
         :param imageHeight: int that represents the height of the image
-        :param slideWindowSize: tuple (height, width) that represents the size 
+        :param slideWindowSize: tuple (height, width) that represents the size
                         of the sliding window
         :param strideSize: tuple (height, width) that represents the amount
-                        of pixels to move on height and width direction 
-        :param padding: string ("VALID", "SAME") that tells the type of 
+                        of pixels to move on height and width direction
+        :param padding: string ("VALID", "SAME") that tells the type of
                         padding
         : return: a list containing the number of patches that fill the
                 given parameters, int containing the number of row patches,
@@ -338,7 +338,7 @@ class preprocessImage:
                 # Re-initialize width parameters
                 startPixelsWidth = 0
                 slideWindowWidth = slideWindowSize[1]
-                # Update height with strides 
+                # Update height with strides
                 startPixelsHeight += strideHeigth
                 slideWindowHeight += strideHeigth
             #######################TOFIX############################
@@ -346,22 +346,22 @@ class preprocessImage:
                     numberPatchesHeight+1,\
                     numberPatchesWidth+1,\
                     zeros_h,\
-                    zeros_w 
+                    zeros_w
             ########################################################
         else:
             raise Exception("Type of padding not understood")
-    
-def getValidPadding(slideWindowHeight, 
-                    strideHeigth, 
-                    imageHeight, 
-                    slideWindowWidth, 
-                    strideWidth, 
+
+def getValidPadding(slideWindowHeight,
+                    strideHeigth,
+                    imageHeight,
+                    slideWindowWidth,
+                    strideWidth,
                     imageWidth):
-    """ 
+    """
     Given the dimensions of an image, the strides of the sliding window
-    and the size of the sliding window. Find the number of patches that 
+    and the size of the sliding window. Find the number of patches that
     fit in the image if the type of padding is VALID.
-    :param slideWindowHeight: int that represents the height of the slide 
+    :param slideWindowHeight: int that represents the height of the slide
                                 Window
     :param strideHeight: int that represents the height of the stride
     :param imageHeight: int that represents the height of the image
@@ -369,7 +369,7 @@ def getValidPadding(slideWindowHeight,
                                 window
     :param strideWidth: int that represents the width of the stride
     :param imageWidth: int that represents the width of the image
-    : return: int that contains the number of patches in the height 
+    : return: int that contains the number of patches in the height
                 dimension. Another int that contains the number of patches
                 in the width dimension.
     """
@@ -500,4 +500,21 @@ def drawGrid(frame,
         cv2.addWeighted(frame[patch[0]:patch[2],patch[1]:patch[3],:],\
                         0.8, roi, 0.2, 0, roi)
         frame[patch[0]:patch[2],patch[1]:patch[3],:] = roi
+    return frame
+
+def drawBoxes(frame,
+              patchesCoordinates,
+              patchesLabels):
+    """
+    Draws a box or boxes over the frame
+    :param frame: input cv2 image
+    :param patchesCoordinates: a list containing sublists [iy, ix, y, x]
+                              of coordinates
+    :param patchesLabels: a list containing the labels of the coordinates
+    """
+    for coord in patchesCoordinates:
+        # Decode coordinate [iy, ix, y, x]
+        ix, iy, x, y = coord[0], coord[1], coord[2], coord[3]
+        # Draw box
+        cv2.rectangle(frame, (ix, iy), (x, y), (255, 0, 0), 8)
     return frame
