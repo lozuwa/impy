@@ -5,12 +5,22 @@ Author: Rodrigo Loza
 Description: Unit tests
 """
 # General purpose
-import os 
+import os
+import sys
+import tqdm
+# Data manipulation
+import pandas as pd
+# Tensor manipulation
+import numpy as np
+# Image manipulation
+import cv2
+from PIL import Image
+import PIL
 # Visualization
 import matplotlib.pyplot as plt
 from matplotlib import style
 style.use("ggplot")
-# Image 
+# Image
 import cv2
 import PIL
 # Main
@@ -22,7 +32,7 @@ from .stats import *
 # Preprocess
 from .preprocess import *
 
-DB_FOLDER = os.getcwd()+"/tests/db/"
+DB_FOLDER = os.path.join(os.getcwd(), "tests", "db")
 
 ################ SINGLE METHODS #######################
 def test_fillDictRows():
@@ -36,7 +46,8 @@ def test_uris2Dataframe():
     print(df)
 
 def test_tensorSizes():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     stats = stats(df)
     stats.tensorSizes()
@@ -133,7 +144,7 @@ def test_uris2xmlAnnotations():
 
 
 ################ PROCESSES #######################
-DBRESIZED_FOLDER = os.getcwd()+"/dbResized/"
+DBRESIZED_FOLDER = os.path.join(os.getcwd(), "dbResized")
 
 def test_images2Tensor():
     # Create Images2Dataset instance

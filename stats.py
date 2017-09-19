@@ -7,6 +7,7 @@ Description: Utils methods
 # General purpose 
 import os
 import sys
+import tqdm
 # Image manipulation
 import cv2
 from PIL import Image
@@ -29,7 +30,7 @@ class stats:
 		"""
 		self.data = data
 
-	def classesBalance(self, 
+	def classesBalance(self,
 						visualize = False):
 		"""
 		:param visualize: bool that decides if output visualization
@@ -99,7 +100,7 @@ class stats:
 		depths = []
 		# Iterate over images 
 		keys = getDictKeys(self.data)
-		for key in keys:
+		for key in tqdm(keys):
 			imgs = self.data[key]
 			for img in imgs:
 				if type(img) == str:

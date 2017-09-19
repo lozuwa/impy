@@ -41,8 +41,8 @@ def getImages(folder):
     : return: list of images in the folder
     """
     filesReturn = []
-    for files in os.listdir(folder):
-        path = os.path.join(folder, files)
+    for file in os.listdir(folder):
+        path = os.path.join(folder, file)
         if os.path.isfile(path):
             filesReturn.append(path)
         else:

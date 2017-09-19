@@ -112,8 +112,7 @@ class images2Dataset:
         WARNING:
             * Supports a single folder with images inside
         Creates an annotation for each of the images in the input dataframe
-        :param df: input dataframe that contains the paths of the images and their
-                    respective classes as columns
+        :param folderpath: input os path that contains the path to the images folder
         :param VOCFormat: input bool that decides if the annotations will have
                             the VOC Dataset format
         """
@@ -130,17 +129,17 @@ class images2Dataset:
             # Get shape
             height, width, depth = frame.shape
             # Get image name
-            imgName = imgPath.split("/")[-1]
+            dir_, imgName = os.path.split(imgPath)
             # Convert data to VOC
             self.VOCFormat(folderPathAnnotations = folderPathAnnotations,\
                             folder = "annotations",\
                             filename = imgName,\
                             path = imgPath,\
-                            database = "ASCARIS",\
+                            database = "parasites",\
                             width = str(width),\
                             height = str(height),\
                             depth = str(depth),\
-                            name = "ASCARIS",\
+                            name = imgName,\
                             xmin = 1,\
                             xmax = str(width-1),\
                             ymin = 1,\
