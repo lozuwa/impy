@@ -128,18 +128,21 @@ class images2Dataset:
             #print(imgPath, frame)
             # Get shape
             height, width, depth = frame.shape
-            # Get image name
-            dir_, imgName = os.path.split(imgPath)
+            # Get filename
+            dir_, filename = os.path.split(imgPath)
+            # Get name
+            match = re.match(r'([A-Za-z_]+)(_[0-9_]+)(\.jpg)', filename)
+            name = match.groups()[0]
             # Convert data to VOC
             self.VOCFormat(folderPathAnnotations = folderPathAnnotations,\
                             folder = "annotations",\
-                            filename = imgName,\
+                            filename = filename,\
                             path = imgPath,\
-                            database = "parasites",\
+                            database = "SPID",\
                             width = str(width),\
                             height = str(height),\
                             depth = str(depth),\
-                            name = imgName,\
+                            name = name,\
                             xmin = 1,\
                             xmax = str(width-1),\
                             ymin = 1,\
