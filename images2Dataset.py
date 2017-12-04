@@ -11,12 +11,12 @@ The library assumes:
                                     - ...
 * All the images have the same size
 """
-# General purpose 
+# General purpose
 import os
 import sys
 from tqdm import tqdm
 # Matrix manipulation
-import numpy as np 
+import numpy as np
 # Data manipulation
 import pandas as pd
 # Image manipulation
@@ -24,8 +24,10 @@ import cv2
 from PIL import Image
 # XML manipulation
 import xml.etree.cElementTree as ET
+# Regular expressions
+import re
 
-# Database 
+# Database
 from .mongo import *
 # Utils
 from .utils import *
@@ -34,15 +36,37 @@ class images2Dataset:
     def __init__(self):
         print("Created new instance of images2Dataset")
 
+<<<<<<< HEAD
     def addData(self, 
                 dbFolder = os.getcwd()):
+||||||| merged common ancestors
+    def addData(self, 
+                dbFolder = os.getcwd(), 
+                create = False, 
+                db = False, 
+                imagesSize = "constant"):
+=======
+    def addData(self,
+                dbFolder = os.getcwd(),
+                create = False,
+                db = False,
+                imagesSize = "constant"):
+>>>>>>> 9a0457f110e878e9b5165a627db46949325e8c5c
         """
-        :param dbFolder: string that contains the folder where all the 
+        :param dbFolder: string that contains the folder where all the
                             images live
         :param imagesSize: string that decides to use constant or multiple
                             sizes for images. Not constant parameter
+<<<<<<< HEAD
                             requires padding feature.
         """ 
+||||||| merged common ancestors
+                            requires padding feature. 
+        """ 
+=======
+                            requires padding feature.
+        """
+>>>>>>> 9a0457f110e878e9b5165a627db46949325e8c5c
         # Set database folder
         assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
         assert type(dbFolder) == str, "dbFolder must be a string"
@@ -67,8 +91,8 @@ class images2Dataset:
         :param returnTo: bool that controls whether to return the dataframe 
                         or not
         Convert image uris to dataframe
-        """ 
-        # Check the classes have the same length 
+        """
+        # Check the classes have the same length
         self.images = fillDictRows(self.images)
         # Create dataframe
         self.df = pd.DataFrame(self.images)
@@ -77,8 +101,8 @@ class images2Dataset:
         else:
             pass
 
-    def uris2xmlAnnotations(self, 
-                            folderPath = os.getcwd(), 
+    def uris2xmlAnnotations(self,
+                            folderPath = os.getcwd(),
                             VOCFormat = True):
         """
         WARNING:
@@ -103,7 +127,7 @@ class images2Dataset:
             # Get filename
             dir_, filename = os.path.split(imgPath)
             # Get name
-            match = re.match(r'([A-Za-z_]+)(_[0-9_]+)(\.jpg)', filename)
+            match = re.match(r"([A-Za-z_]+)(_[0-9_]+)(\.jpg)", filename)
             name = match.groups()[0]
             # Convert data to VOC
             self.VOCFormat(folderPathAnnotations = folderPathAnnotations,\

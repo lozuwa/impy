@@ -26,11 +26,11 @@ class preprocessImageDataset:
     """
     def __init__(self,
                 data = []):
-        """ 
+        """
         Constructor of the preprcoessImageDataset
         :param data: pandas dataframe that contains as features the
-                    name of the classes and as values the paths of 
-                    the images. 
+                    name of the classes and as values the paths of
+                    the images.
         """
         self.data = data
 
@@ -40,7 +40,7 @@ class preprocessImageDataset:
         """
         Resizes all the images in the db. The new images are stored
         in a local folder named "dbResized"
-        :param width: integer that tells the width to resize 
+        :param width: integer that tells the width to resize
         :param height: integer that tells the height to resize
         """
         # Create new directory
@@ -56,9 +56,9 @@ class preprocessImageDataset:
             #NAME_SUBFOLDER = key.split("/")[-1]
             assert createFolder(os.path.join(DB_PATH, NAME_SUBFOLDER)) == True,\
                     PROBLEM_CREATING_FOLDER
-            # Iterate images 
+            # Iterate images
             for img in imgs:
-                # Filter nan values 
+                # Filter nan values
                 if type(img) == str:
                     # Open image
                     frame = Image.open(img)
@@ -67,7 +67,7 @@ class preprocessImageDataset:
                                             PIL.Image.LANCZOS)
                     dir_, IMAGE_NAME = os.path.split(img)
                     #IMAGE_NAME = "/" + img.split("/")[-1]
-                    # Save the image 
+                    # Save the image
                     frame.save(os.path.join(DB_PATH, NAME_SUBFOLDER, IMAGE_NAME))
                 else:
                     pass
@@ -82,7 +82,7 @@ class preprocessImageDataset:
         DB_PATH = os.getcwd() + "/dbGray/"
         assert createFolder(DB_PATH) == True,\
                 PROBLEM_CREATING_FOLDER
-        # Read images 
+        # Read images
         keys = getDictKeys(self.data)
         for key in tqdm(keys):
             imgs = self.data.get(key, None)
@@ -91,7 +91,7 @@ class preprocessImageDataset:
             assert createFolder(DB_PATH + NAME_SUBFOLDER) == True,\
                     PROBLEM_CREATING_FOLDER
             for img in imgs:
-                # Filter nan values 
+                # Filter nan values
                 if type(img) == str:
                     # Read image
                     frame = Image.open(img)
@@ -110,14 +110,14 @@ class preprocessImageDataset:
         """
         Splits the dataset into a training and a validation set
         :param trainSize: int that represents the size of the training set
-        :param validationSize: int that represents the size of the 
+        :param validationSize: int that represents the size of the
                                 validation set
         : return: four vectors that contain the training and test examples
                     trainImgsPaths, trainImgsClass
                     testImgsPaths, testImgsClass
         """
-        # Split dataset in the way that we get the paths of the images 
-        # in a train set and a test set. 
+        # Split dataset in the way that we get the paths of the images
+        # in a train set and a test set.
         # ----- | class0, class1, class2, class3, class4
         # TRAIN | path0   path1   path2   path3   path4
         # TRAIN | path0   path1   path2   path3   path4
@@ -130,16 +130,16 @@ class preprocessImageDataset:
                                                         train_size = trainSize,\
                                                         test_size = validationSize)
         print(trainX.shape, testX.shape)
-        # Once the dataset has been partitioned, we are going 
+        # Once the dataset has been partitioned, we are going
         # append the paths of the matrix into a single vector.
         # TRAIN will hold all the classes' paths in train
         # TEST will hold all the classes' paths in test
         # Each class wil have the same amount of examples.
         trainImgsPaths = []
         trainImgsClass = []
-        testImgsPaths = [] 
+        testImgsPaths = []
         testImgsClass = []
-        # Append TRAIN and TEST images 
+        # Append TRAIN and TEST images
         keys = self.data.keys()
         for key in keys:
             imgsTrain = trainX[key]
@@ -181,7 +181,7 @@ class preprocessImageDataset:
         result = createFolder(DB_PATH + VALIDATION_SUBFOLDER)
         assert result == True,\
                 PROBLEM_CREATING_FOLDER
-        # Create classes folders inside train and validation 
+        # Create classes folders inside train and validation
         keys = self.data.keys()
         for key in keys:
             # Train subfolder
@@ -308,7 +308,7 @@ class preprocessImage:
             startPixelsHeight = 0
             startPixelsWidth = 0
             patchesCoordinates = []
-            # Modify image tensor 
+            # Modify image tensor
             zeros_h, zeros_w = getSamePadding(slideWindowHeight,\
                                                 strideHeigth,\
                                                 imageHeight,\
@@ -473,18 +473,18 @@ def drawGrid(frame,
             patches,
             patchesLabels):
     """
-    Draws the given patches on top of the input image 
-    :param frame: opencv input image 
+    Draws the given patches on top of the input image
+    :param frame: opencv input image
     :param patches: a list containing the coordinates of the patches
                     calculated for the image
     : return: opencv image named frame that contains the same input
-                image but with a grid of patches draw on top. 
+                image but with a grid of patches draw on top.
     """
     # Iterate through patches
     for i in range(len(patches)):
         # Get patch
         patch = patches[i]
-        # "Decode" patch 
+        # "Decode" patch
         startHeight, startWidth, endHeight, endWidth = patch[0], patch[1],\
                                                         patch[2], patch[3]
         # Draw grids
@@ -514,7 +514,7 @@ def drawBoxes(frame,
     """
     for coord in patchesCoordinates:
         # Decode coordinate [iy, ix, y, x]
-        ix, iy, x, y = coord[0], coord[1], coord[2], coord[3]
+        iy, ix, y, x = coord[0], coord[1], coord[2], coord[3]
         # Draw box
         cv2.rectangle(frame, (ix, iy), (x, y), (255, 0, 0), 8)
     return frame
