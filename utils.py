@@ -75,7 +75,7 @@ def createFolder(folder, verbosity = False):
                     It is assumed folder contains the complete path
     : return: boolean that asserts the creation of the folder 
     """
-    if isFolder(folder):
+    if os.path.isdir(folder):
         if verbosity:
             print("Folder {} already exists".format(folder))
         return True
@@ -87,25 +87,6 @@ def createFolder(folder, verbosity = False):
             return False
         return True
 
-def getDictKeys(dict_):
-    """
-    :param dict_: dictionary that contains the classes and the images
-    : return: dictionary's keys
-    """
-    keys = dict_.keys()
-    return keys
-
-def getDictValues(dict_, 
-                    key):
-    """
-    :param dict: dictionary that contains the classes and the images
-    :param key: string value that selects a specific class in dict
-    : return: values for dict[key]
-    """
-    values = dict_.get(key, None)
-    #assert type(values) == list, "Values is not a list"
-    return values
-
 def fillDictRows(dict_):
     """
     Fill missing data points so all the values in the dictionary 
@@ -113,7 +94,7 @@ def fillDictRows(dict_):
     :param dict_: dictionary that has the keys and values to fix
     : return: return the filled dictionary 
     """
-    keys = getDictKeys(dict_)
+    keys = dict_.keys()
     size_ = []
     for key in keys:
         size_.append(len(dict_.get(key, None)))

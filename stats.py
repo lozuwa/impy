@@ -27,6 +27,7 @@ class stats:
 				data = {}):
 		""" 
 		Exploratory data analysis class
+		:param data: input Pandas DataFrame
 		"""
 		self.data = data
 
@@ -36,10 +37,10 @@ class stats:
 		:param visualize: bool that decides if output visualization
 		: return: a list that depicts each class absolute frequency 
 		"""
-		classes = getDictKeys(self.data)
+		classes = self.data.keys()
 		values = []
 		for class_ in classes:
-			vals = [each for each in getDictValues(self.data, class_)]
+			vals = [each for each in self.data.get(class_, None)]
 			# Filter nans
 			for i in range(vals.count(np.nan)):
 				vals.remove(np.nan)
@@ -50,7 +51,7 @@ class stats:
 			sendClass = []
 			# Clean xticks names
 			for class_ in classes:
-				sendClass.append(class_.split("/")[-1])
+				sendClass.append(os.path.split(class_)[-1])
 			# Plot 
 			self.scatterPlot(x = sendClass,
 							y = values, 
@@ -99,7 +100,7 @@ class stats:
 		sizes = []
 		depths = []
 		# Iterate over images 
-		keys = getDictKeys(self.data)
+		kykeys = self.data.keys()
 		for key in tqdm(keys):
 			imgs = self.data[key]
 			for img in imgs:

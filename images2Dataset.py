@@ -2,15 +2,14 @@
 package: Images2Dataset
 class: Images2Dataset (main)
 Author: Rodrigo Loza
-Description: This library is intended to convert an image raw dataset to a vectorial structured dataset.
+Description: This library converts an image raw dataset to a vectorial structured dataset.
 The library assumes:
-* Mongodb is running
 * The folder structure follows:
                                 - Db Folder
                                     - Dataset 0
                                     - Dataset 1
                                     - ...
-* All the images have the same size 
+* All the images have the same size
 """
 # General purpose 
 import os
@@ -33,21 +32,16 @@ from .utils import *
 
 class images2Dataset:
     def __init__(self):
-        pass
+        print("Created new instance of images2Dataset")
 
     def addData(self, 
-                dbFolder = os.getcwd(), 
-                create = False, 
-                db = False, 
-                imagesSize = "constant"):
+                dbFolder = os.getcwd()):
         """
         :param dbFolder: string that contains the folder where all the 
                             images live
-        :param create: bool that decides whether to create a new db or not
-        :param db: bool that decides to use db or not
         :param imagesSize: string that decides to use constant or multiple
                             sizes for images. Not constant parameter
-                            requires padding feature. 
+                            requires padding feature.
         """ 
         # Set database folder
         assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
@@ -65,33 +59,11 @@ class images2Dataset:
         else:
             for subfolder in self.subfolders:
                 self.images[subfolder] = getImages(subfolder)
-        # Dummy
-        self.height = 100
-        self.width = 100
-        self.depth = 3
-
-    def uris2MongoDB(self):
-        """
-        Images stored on hard disk, links available in mongoDB database
-        : return: boolean that indicates success 
-        """ 
-        assert self.db == True,\
-                "mongodb can't be used unless db parameter is set to true"
-        # Get keys 
-        keys = getDictKeys(self.images)
-        # Save vectors inside keys to db
-        for key in keys:
-            # Get images of class "key"
-            assert key != None,\
-                    "There was a problem with key"
-            imgs = self.images.get(key)
-            # Write uris
-            for img in imgs:
-                self.dbClient.writeData(img)
 
     def uris2Dataframe(self, 
                         returnTo = False):
         """
+        Convert uris to a Pandas dataframe 
         :param returnTo: bool that controls whether to return the dataframe 
                         or not
         Convert image uris to dataframe

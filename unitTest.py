@@ -33,6 +33,7 @@ from .stats import *
 from .preprocess import *
 
 DB_FOLDER = os.path.join(os.getcwd(), "tests", "db")
+DBRESIZED_FOLDER = os.path.join(os.getcwd(), "dbResized")
 
 ################ SINGLE METHODS #######################
 def test_fillDictRows():
@@ -41,25 +42,28 @@ def test_fillDictRows():
     print(dict_)
 
 def test_uris2Dataframe():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     print(df)
 
 def test_tensorSizes():
     dataset = im2da()
-    dataset.addData(dbFolder = dbFolder = DB_FOLDER)
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     stats = stats(df)
     stats.tensorSizes()
 
 def test_classesBalance():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     stats_ = stats(df)
     stats_.classesBalance(visualize = True)
 
 def test_resizeImages():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     stats_ = stats(df)
     stats_.tensorSizes()
@@ -67,13 +71,15 @@ def test_resizeImages():
     prep.resizeImages(width = 300, height = 300)
 
 def test_rgb2gray():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     prep = preprocessImageDataset(df)
     prep.rgb2gray()
 
 def test_splitImageDataset():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     prep = preprocessImageDataset(df)
     trainImgsPaths, testImgsPaths, trainImgsClass, testImgsClass = prep.splitImageDataset()
@@ -132,7 +138,7 @@ def test_uris2xmlAnnotations():
     from impy.utils import *
     import pandas as pd
     import os
-
+    
     dataset = im2da()
     path = os.path.join("C://Users//HP//Dropbox//Databases//", "ASCARIS_LUMBRICOIDES")
 
@@ -144,11 +150,10 @@ def test_uris2xmlAnnotations():
 
 
 ################ PROCESSES #######################
-DBRESIZED_FOLDER = os.path.join(os.getcwd(), "dbResized")
-
 def test_images2Tensor():
-    # Create Images2Dataset instance
-    dataset = im2da(dbFolder = DB_FOLDER)
+    # Create images2Dataset instance
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     # Convert to dataframe
     df = dataset.uris2Dataframe(returnTo = True)
     # Compute stats
@@ -165,8 +170,9 @@ def test_images2Tensor():
     print(features.shape, labels.shape)
 
 def test_images2CSV():
-    # Create Images2Dataset instance
-    dataset = im2da(dbFolder = DB_FOLDER)
+    # Create images2Dataset instance
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     # Convert to dataframe
     df = dataset.uris2Dataframe(returnTo = True)
     # Compute stats
@@ -182,7 +188,8 @@ def test_images2CSV():
     dataset.images2CSV()
 
 def test_saveImageDatasetKeras():
-    dataset = im2da(dbFolder = DB_FOLDER)
+    dataset = im2da()
+    dataset.addData(dbFolder = DB_FOLDER)
     df = dataset.uris2Dataframe(returnTo = True)
     prep = preprocessImageDataset(df)
     trainImgsPaths, trainImgsClass, testImgsPaths, testImgsClass = prep.splitImageDataset()

@@ -214,4 +214,4 @@ except:
 
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.1"
+__version__ = "0.2"
