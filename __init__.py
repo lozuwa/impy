@@ -198,20 +198,27 @@ import sys
 try:
     from .utils import *
 except:
-    raise Exception("utils library could not be loaded")
+    raise ImportError("utils library could not be loaded")
 try:
     from .preprocess import *
 except:
-    raise Exception("preprocess libary could not be loaded")
+    raise ImportError("preprocess libary could not be loaded")
 try:
     from .stats import *
 except:
-    raise Exception("stats could not be loaded")
+    raise ImportError("stats could not be loaded")
 try:
     from .images2Dataset import *
 except:
-    raise Exception("stats could not be loaded")
+    raise ImportError("stats could not be loaded")
+
+try:
+    from .objectDetection import *
+except:
+    raise ImportError("objectDetection could not be loaded")
 
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.2"
+__version__ = "0.3"
+__log__ = "Added support for the object detection api from google. There is \
+            a class to load frozen graphs and compute inference"

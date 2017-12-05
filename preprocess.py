@@ -319,11 +319,11 @@ class preprocessImage:
             imageHeight += zeros_h
             # Valid padding stride should fit exactly
             numberPatchesHeight, numberPatchesWidth = getValidPadding(slideWindowHeight,\
-                                                                    strideHeigth,\
-                                                                    imageHeight,\
-                                                                    slideWindowWidth,\
-                                                                    strideWidth,\
-                                                                    imageWidth)
+                                                                        strideHeigth,\
+                                                                        imageHeight,\
+                                                                        slideWindowWidth,\
+                                                                        strideWidth,\
+                                                                        imageWidth)
             #######################TOFIX############################
             for i in range(numberPatchesHeight+1):
                 for j in range(numberPatchesWidth+1):

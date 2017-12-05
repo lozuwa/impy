@@ -36,37 +36,14 @@ class images2Dataset:
     def __init__(self):
         print("Created new instance of images2Dataset")
 
-<<<<<<< HEAD
     def addData(self, 
                 dbFolder = os.getcwd()):
-||||||| merged common ancestors
-    def addData(self, 
-                dbFolder = os.getcwd(), 
-                create = False, 
-                db = False, 
-                imagesSize = "constant"):
-=======
-    def addData(self,
-                dbFolder = os.getcwd(),
-                create = False,
-                db = False,
-                imagesSize = "constant"):
->>>>>>> 9a0457f110e878e9b5165a627db46949325e8c5c
         """
         :param dbFolder: string that contains the folder where all the
                             images live
         :param imagesSize: string that decides to use constant or multiple
                             sizes for images. Not constant parameter
-<<<<<<< HEAD
-                            requires padding feature.
-        """ 
-||||||| merged common ancestors
-                            requires padding feature. 
-        """ 
-=======
-                            requires padding feature.
         """
->>>>>>> 9a0457f110e878e9b5165a627db46949325e8c5c
         # Set database folder
         assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
         assert type(dbFolder) == str, "dbFolder must be a string"
