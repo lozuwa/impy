@@ -291,7 +291,7 @@ class preprocessImage:
                                                     startPixelsWidth,\
                                                     slideWindowHeight,\
                                                     slideWindowWidth])
-                    # Update width with strides 
+                    # Update width with strides
                     startPixelsWidth += strideWidth
                     slideWindowWidth += strideWidth
                 # Re-initialize the width parameters 
