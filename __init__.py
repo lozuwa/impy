@@ -212,11 +212,6 @@ try:
 except:
     raise ImportError("stats could not be loaded")
 
-try:
-    from .objectDetection import *
-except:
-    raise ImportError("objectDetection could not be loaded")
-
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
 __version__ = "0.3"
