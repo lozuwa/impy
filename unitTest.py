@@ -145,7 +145,6 @@ def test_uris2xmlAnnotations():
     df = getImages(path)
     df = pd.DataFrame({"ASCARIS": df})
     print(type(df))
-
     #dataset.uris2xmlAnnotations(df = df)
 
 

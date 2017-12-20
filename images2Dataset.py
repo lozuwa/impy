@@ -27,8 +27,6 @@ import xml.etree.cElementTree as ET
 # Regular expressions
 import re
 
-# Database
-from .mongo import *
 # Utils
 from .utils import *
 
