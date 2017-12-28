@@ -506,7 +506,8 @@ def get_same_padding(slide_window_height,
 
 def lazySAMEpad(frame,
 				zeros_h,
-				zeros_w):
+				zeros_w,
+				padding_type = "ONE_SIDE"):
 	"""
 	Given an image and the number of zeros to be added in height 
 	and width dimensions, this function fills the image with the 
@@ -516,35 +517,50 @@ def lazySAMEpad(frame,
 					in the height dimension
 	:param zeros_w: int that represents the amount of zeros to be added 
 					in the width dimension
+	: param padding_type: string that determines the side where to pad the image.
+					If BOTH_SIDES, then padding is applied to both sides.
+					If ONE_SIDE, then padding is applied to the right and the bottom.
+					Default: ONE_SIDE
 	: return: a new opencv image with the added zeros
 	"""
-	rows, cols, d = frame.shape
-	# If height is even or odd
-	if (zeros_h % 2 == 0):
-		zeros_h = int(zeros_h/2)
-		frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
-					np.zeros((zeros_h, cols, 3))]
-	else:
-		zeros_h += 1
-		zeros_h = int(zeros_h/2)
-		frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
-					np.zeros((zeros_h, cols, 3))]
+	if padding_type == "BOTH_SIDES":
+		rows, cols, d = frame.shape
+		# If height is even or odd
+		if (zeros_h % 2 == 0):
+			zeros_h = int(zeros_h/2)
+			frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
+						np.zeros((zeros_h, cols, 3))]
+		else:
+			zeros_h += 1
+			zeros_h = int(zeros_h/2)
+			frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
+						np.zeros((zeros_h, cols, 3))]
 
-	rows, cols, d = frame.shape
-	# If width is even or odd 
-	if (zeros_w % 2 == 0):
-		zeros_w = int(zeros_w/2)
-		# Container 
-		container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-		container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
-		frame = container #c_[np.zeros((rows, zeros_w)), frame, np.zeros((rows, zeros_w))]
-	else:
-		zeros_w += 1
-		zeros_w = int(zeros_w/2)
-		container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-		container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
-		frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
-	return frame
+		rows, cols, d = frame.shape
+		# If width is even or odd 
+		if (zeros_w % 2 == 0):
+			zeros_w = int(zeros_w/2)
+			# Container 
+			container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
+			container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
+			frame = container #c_[np.zeros((rows, zeros_w)), frame, np.zeros((rows, zeros_w))]
+		else:
+			zeros_w += 1
+			zeros_w = int(zeros_w/2)
+			container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
+			container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
+			frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
+		return frame
+	elif padding_type == "ONE_SIDE":
+		rows, cols, d = frame.shape
+		# Pad height dimension
+		frame = r_[frame, np.zeros((zeros_h, cols, 3))]
+		# Pad width dimension
+		rows, cols, d = frame.shape
+		container = np.zeros((rows, cols + zeros_w, 3), np.uint8)
+		container[:, :cols, :] = frame
+		container[:, cols:, :] = np.zeros((rows, zeros_w, 3), np.uint8)
+		return container
 
 def drawGrid(frame,
 			patches,

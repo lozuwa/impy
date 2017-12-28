@@ -141,7 +141,7 @@ def test_divideIntoPatches():
 
 def test_divideIntoPatchesSAMEPADDING():
     WINDOW_SIZE = 500
-    STRIDE_SIZE = 250
+    STRIDE_SIZE = 500
     NAME_IMG = os.getcwd()+"/tests/img.jpg"
     frame = cv2.imread(NAME_IMG)
     image_height, image_width, depth = frame.shape
@@ -156,9 +156,11 @@ def test_divideIntoPatchesSAMEPADDING():
                                     slide_window_size,
                                     stride_size,
                                     padding)
+    print("Before padding: {}".format(frame.shape))
     frame = lazySAMEpad(frame.copy(),
                         zeros_h,
                         zeros_w)
+    print("After padding: {}".format(frame.shape))
     frame = drawGrid(frame.copy(),\
                     patches_coordinates,\
                     [1 for each in patches_coordinates])
