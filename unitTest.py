@@ -23,14 +23,15 @@ style.use("ggplot")
 # Image
 import cv2
 import PIL
-# Main
-from .images2Dataset import images2Dataset as im2da
-# Utils
+# Local classes
+"""from .images2Dataset import images2Dataset as im2da
 from .utils import *
-# Stats
 from .stats import *
-# Preprocess
-from .preprocess import *
+from .preprocess import *"""
+from impy.images2Dataset import images2Dataset as im2da
+from impy.utils import *
+from impy.stats import *
+from impy.preprocess import *
 
 DB_FOLDER = os.path.join(os.getcwd(), "tests", "db")
 DBRESIZED_FOLDER = os.path.join(os.getcwd(), "dbResized")
@@ -84,60 +85,93 @@ def test_splitImageDataset():
     prep = preprocessImageDataset(df)
     trainImgsPaths, testImgsPaths, trainImgsClass, testImgsClass = prep.splitImageDataset()
 
+def test_get_valid_padding():
+	slide_window_height = 500
+	stride_height = 500
+	image_height = 2200
+	slide_window_width = 500
+	stride_width = 500
+	image_width = 2200
+	num_patches_height, num_patches_width = get_valid_padding(slide_window_height,
+															 stride_height,
+															 image_height,
+															 slide_window_width,
+															 stride_width,
+															 image_width)
+	print(num_patches_height, num_patches_width)
+
+def test_get_same_padding():
+	slide_window_height = 500
+	stride_height = 500
+	image_height = 2600
+	slide_window_width = 500
+	stride_width = 500
+	image_width = 2600
+	zeros_h, zeros_w = get_same_padding(slide_window_height,
+															 stride_height,
+															 image_height,
+															 slide_window_width,
+															 stride_width,
+															 image_width)
+	print(zeros_h, zeros_w)
+
 def test_divideIntoPatches():
     NAME_IMG = os.getcwd()+"/tests/img.jpg"
     frame = cv2.imread(NAME_IMG)
-    imageHeight, imageWidth, depth = frame.shape
-    slideWindowSize = (350,350)
-    strideSize = (350,350)
+    print("Image size: ", frame.shape)
+    image_height, image_width, depth = frame.shape
+    slide_window_size = (500, 500)
+    stride_size = (250, 250)
     padding = "VALID"
     prep = preprocessImage()
-    patchesCoordinates, numberPatchesHeight,\
-            numberPatchesWidth = prep.divideIntoPatches(imageWidth,
-                                                        imageHeight,
-                                                        slideWindowSize,
-                                                        strideSize,
-                                                        padding)
+    patches_coordinates, \
+    number_patches_height, number_patches_width = prep.divideIntoPatches(image_width,
+			                                                        image_height,
+			                                                        slide_window_size,
+			                                                        stride_size,
+			                                                        padding)
+    #print(patchesCoordinates)
     frame = drawGrid(frame.copy(),\
-                    patchesCoordinates,\
-                    [1 for each in patchesCoordinates])
+                    patches_coordinates,\
+                    [1 for each in patches_coordinates])
     cv2.namedWindow("adf", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("adf", 640, 530)
     cv2.imshow("adf", frame)
     cv2.waitKey(0)
 
 def test_divideIntoPatchesSAMEPADDING():
-    WINDOW_SIZE = 700
+    WINDOW_SIZE = 500
+    STRIDE_SIZE = 250
     NAME_IMG = os.getcwd()+"/tests/img.jpg"
     frame = cv2.imread(NAME_IMG)
-    imageHeight, imageWidth, depth = frame.shape
-    slideWindowSize = (WINDOW_SIZE, WINDOW_SIZE)
-    strideSize = (WINDOW_SIZE, WINDOW_SIZE)
+    image_height, image_width, depth = frame.shape
+    slide_window_size = (WINDOW_SIZE, WINDOW_SIZE)
+    stride_size = (STRIDE_SIZE, STRIDE_SIZE)
     padding = "SAME"
     prep = preprocessImage()
-    patchesCoordinates, numberPatchesHeight,\
-    numberPatchesWidth, zeros_h,\
-    zeros_w = prep.divideIntoPatches(imageWidth,
-                                    imageHeight,
-                                    slideWindowSize,
-                                    strideSize,
+    patches_coordinates, number_patches_height,\
+    number_patches_width, zeros_h,\
+    zeros_w = prep.divideIntoPatches(image_width,
+                                    image_height,
+                                    slide_window_size,
+                                    stride_size,
                                     padding)
     frame = lazySAMEpad(frame.copy(),
                         zeros_h,
                         zeros_w)
     frame = drawGrid(frame.copy(),\
-                    patchesCoordinates,\
-                    [1 for each in patchesCoordinates])
+                    patches_coordinates,\
+                    [1 for each in patches_coordinates])
     cv2.namedWindow("adf", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("adf", 640, 530)
     cv2.imshow("adf", frame)
     cv2.waitKey(0)
 
 def test_uris2xmlAnnotations():
-    from impy.images2Dataset import images2Dataset as imda
-    from impy.utils import *
-    import pandas as pd
-    import os
+    #from impy.images2Dataset import images2Dataset as imda
+    #from impy.utils import *
+    #import pandas as pd
+    #import os
     
     dataset = im2da()
     path = os.path.join("C://Users//HP//Dropbox//Databases//", "ASCARIS_LUMBRICOIDES")
@@ -201,4 +235,4 @@ def test_saveImageDatasetKeras():
 
 if __name__ == "__main__":
     # Which one would you like to test?
-    test_uris2xmlAnnotations()
+    test_divideIntoPatchesSAMEPADDING()
