@@ -214,6 +214,6 @@ except:
 
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.3"
-__log__ = "Added support for the object detection api from google. There is \
-            a class to load frozen graphs and compute inference"
+__version__ = "0.4"
+__log__ = "Removed object detection class. The paths were messy and hardcoded, feature left for the future. \
+		Wrote a cleaner implementation of preprocessImage.divideIntoPatches, also fixed issues with weird patching sizes."
