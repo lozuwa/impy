@@ -376,8 +376,8 @@ class preprocessImage:
 																		 image_width)
 			#print('numberPatchesHeight: ', numberPatchesHeight, 'numberPatchesWidth: ', numberPatchesWidth)
 			for i in range(number_patches_height):
-				for j in range(number_patches_with):
-					patchesCoordinates.append([start_pixels_height,\
+				for j in range(number_patches_width):
+					patches_coordinates.append([start_pixels_height,\
 													start_pixels_width,\
 													end_pixels_height,\
 													end_pixels_width])

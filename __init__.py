@@ -211,9 +211,12 @@ try:
     from .images2Dataset import *
 except:
     raise ImportError("stats could not be loaded")
+try:
+	from .load_tensorflow_models import *
+except:
+	raise ImportError("load_tensorflow_models could not be loaded")
 
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.4"
-__log__ = "Removed object detection class. The paths were messy and hardcoded, feature left for the future. \
-		Wrote a cleaner implementation of preprocessImage.divideIntoPatches, also fixed issues with weird patching sizes."
+__version__ = "0.5"
+__log__ = "Added class to load tensorflow graphs."
