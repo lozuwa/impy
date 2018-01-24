@@ -17,9 +17,12 @@ from PIL import Image
 import cv2
 
 # Object detection libraries
-sys.path.append("/home/pfm/Documents/models/research/object_detection/")
-from utils import label_map_util
-from utils import visualization_utils as vis_util
+try:
+	sys.path.append("/home/pfm/Documents/models/research/object_detection/")
+	from utils import label_map_util
+	from utils import visualization_utils as vis_util
+except:
+	pass
 
 # Impy
 from impy.preprocess import *
