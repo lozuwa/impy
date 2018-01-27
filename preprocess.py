@@ -21,7 +21,7 @@ from sklearn.model_selection import train_test_split
 # Utils
 from .utils import *
 
-class preprocessImageDataset:
+class PreprocessImageDataset:
 	"""
 	Allows operations on images
 	"""
@@ -245,233 +245,268 @@ class preprocessImage:
 		pass
 
 	def divideIntoPatches(self,
-						imageWidth,
-						imageHeight,
-						slideWindowSize = (0, 0),
-						strideSize = (0, 0),
+						image_width,
+						image_height,
+						slide_window_size = (0, 0),
+						stride_size = (0, 0),
 						padding = "VALID",
 						number_patches = (1, 1)):
 		"""
 		Divides the image into N patches depending on the stride size,
 		the sliding window size and the type of padding.
-		:param imageWidth: int that represents the width of the image
-		:param imageHeight: int that represents the height of the image
-		:param slideWindowSize: tuple (height, width) that represents the size
-						of the sliding window
-		:param strideSize: tuple (height, width) that represents the amount
-						of pixels to move on height and width direction
-		:param padding: string ("VALID", "SAME") that tells the type of
+		:param image_width: int that represents the width of the image
+		:param image_height: int that represents the height of the image
+		:param slide_window_size: tuple (width, height) that represents the size
+									of the sliding window
+		:param stride_size: tuple (width, height) that represents the amount
+							of pixels to move on height and width direction
+		:param padding: string ("VALID", "SAME", "VALID_FIT_ALL") that tells the type of
 						padding
-		:param number_of_patches: tuple (number_height, number_width) that 
+		:param number_of_patches: tuple (number_width, number_height) that 
 									contains the number of patches in each axis
 		: return: a list containing the number of patches that fill the
 				given parameters, int containing the number of row patches,
 				int containing the number of column patches
 		"""
 		# Get sliding window sizes
-		slideWindowHeight, slideWindowWidth  = slideWindowSize[0],\
-												slideWindowSize[1]
-		assert (slideWindowHeight < imageHeight) and (slideWindowWidth < imageWidth),\
+		slide_window_width, slide_window_height = slide_window_size[0], slide_window_size[1]
+		assert (slide_window_height < image_height) and (slide_window_width < image_width),\
 				SLIDE_WINDOW_SIZE_TOO_BIG
 		# Get strides sizes
-		strideHeigth, strideWidth = strideSize[0], strideSize[1]
-		assert (strideHeigth < imageHeight) and (strideWidth < imageWidth),\
+		stride_width, stride_height = stride_size[0], stride_size[1]
+		assert (stride_height < image_height) and (stride_width < image_width),\
 				STRIDE_SIZE_TOO_BIG
 		# Start padding operation
 		if padding == 'VALID':
-			startPixelsHeight = 0
-			startPixelsWidth = 0
-			patchesCoordinates = []
-			numberPatchesHeight, numberPatchesWidth = getValidPadding(slideWindowHeight,
-																	 strideHeigth,
-																	 imageHeight,
-																	 slideWindowWidth,
-																	 strideWidth,
-																	 imageWidth)
-			print('numberPatchesHeight: ', numberPatchesHeight, 'numberPatchesWidth: ', numberPatchesWidth)
-			for i in range(numberPatchesHeight):
-				for j in range(numberPatchesWidth):
-					patchesCoordinates.append([startPixelsHeight,\
-													startPixelsWidth,\
-													slideWindowHeight,\
-													slideWindowWidth])
-					# Update width with strides 
-					startPixelsWidth += strideWidth
-					slideWindowWidth += strideWidth
-				# Re-initialize the width parameters 
-				startPixelsWidth = 0
-				slideWindowWidth = slideWindowSize[1]
-				# Update height with height stride size
-				startPixelsHeight += strideHeigth 
-				slideWindowHeight += strideHeigth
-			return patchesCoordinates,\
-					numberPatchesHeight,\
-					numberPatchesWidth
-		elif padding == 'SAME':
-			startPixelsHeight = 0
-			startPixelsWidth = 0
-			patchesCoordinates = []
-			# Modify image tensor
-			zeros_h, zeros_w = getSamePadding(slideWindowHeight,\
-												strideHeigth,\
-												imageHeight,\
-												slideWindowWidth,\
-												strideWidth,\
-												imageWidth)
-			imageWidth += zeros_w
-			imageHeight += zeros_h
-			# Valid padding stride should fit exactly
-			numberPatchesHeight, numberPatchesWidth = getValidPadding(slideWindowHeight,\
-																		strideHeigth,\
-																		imageHeight,\
-																		slideWindowWidth,\
-																		strideWidth,\
-																		imageWidth)
-			#######################TOFIX############################
-			for i in range(numberPatchesHeight+1):
-				for j in range(numberPatchesWidth+1):
-			########################################################
-					patchesCoordinates.append([startPixelsHeight,\
-												startPixelsWidth,\
-												slideWindowHeight,\
-												slideWindowWidth])
+			start_pixels_height = 0
+			end_pixels_height = slide_window_height
+			start_pixels_width = 0
+			end_pixels_width = slide_window_width
+			patches_coordinates = []
+			number_patches_height, number_patches_width = get_valid_padding(slide_window_height,
+																		 stride_height,
+																		 image_height,
+																		 slide_window_width,
+																		 stride_width,
+																		 image_width)
+			print('numberPatchesHeight: ', number_patches_height, 'numberPatchesWidth: ', number_patches_width)
+			for i in range(number_patches_height):
+				for j in range(number_patches_width):
+					patches_coordinates.append([start_pixels_height,\
+													start_pixels_width,\
+													end_pixels_height,\
+													end_pixels_width])
 					# Update width with strides
-					startPixelsWidth += strideWidth
-					slideWindowWidth += strideWidth
-				# Re-initialize width parameters
-				startPixelsWidth = 0
-				slideWindowWidth = slideWindowSize[1]
-				# Update height with strides
-				startPixelsHeight += strideHeigth
-				slideWindowHeight += strideHeigth
-			#######################TOFIX############################
-			return patchesCoordinates,\
-					numberPatchesHeight+1,\
-					numberPatchesWidth+1,\
+					start_pixels_width += stride_width
+					end_pixels_width += stride_width
+				# Re-initialize the width parameters 
+				start_pixels_width = 0
+				end_pixels_width = slide_window_width
+				# Update height with height stride size
+				start_pixels_height += stride_height
+				end_pixels_height += stride_height
+			return patches_coordinates,\
+					number_patches_height,\
+					number_patches_width
+		elif padding == 'SAME':
+			start_pixels_height = 0
+			end_pixels_height = slide_window_height
+			start_pixels_width = 0
+			end_pixels_width = slide_window_width
+			patches_coordinates = []
+			# Modify image tensor
+			zeros_h, zeros_w = get_same_padding(slide_window_height,
+																				 stride_height,
+																				 image_height,
+																				 slide_window_width,
+																				 stride_width,
+																				 image_width)
+			image_width += zeros_w
+			image_height += zeros_h
+			# Valid padding stride should fit exactly
+			number_patches_height, number_patches_width = get_valid_padding(slide_window_height,
+																		 stride_height,
+																		 image_height,
+																		 slide_window_width,
+																		 stride_width,
+																		 image_width)
+			for i in range(number_patches_height):
+				for j in range(number_patches_width):
+					patches_coordinates.append([start_pixels_height,\
+													start_pixels_width,\
+													end_pixels_height,\
+													end_pixels_width])
+					# Update width with strides
+					start_pixels_width += stride_width
+					end_pixels_width += stride_width
+				# Re-initialize the width parameters 
+				start_pixels_width = 0
+				end_pixels_width = slide_window_width
+				# Update height with height stride size
+				start_pixels_height += stride_height
+				end_pixels_height += stride_height
+			return patches_coordinates,\
+					number_patches_height,\
+					number_patches_width,\
 					zeros_h,\
 					zeros_w
-			########################################################
+
 		elif padding == "VALID_FIT_ALL":
 			# Get number of patches
 			patches_cols = number_patches[0]
 			patches_rows = number_patches[1]
 			# Determine the size of the windows for the patches
-			strideHeigth = math.floor(imageHeight / patches_rows)
-			slideWindowHeight = strideHeigth
-			strideWidth = math.floor(imageWidth / patches_cols)
-			slideWindowWidth = strideWidth
+			stride_height = math.floor(image_height / patches_rows)
+			slide_window_height = stride_height
+			stride_width = math.floor(image_width / patches_cols)
+			slide_window_width = stride_width
 			#print("Size: ", strideHeigth, slideWindowHeight, strideWidth, slideWindowWidth)
 			# Get valid padding
-			startPixelsHeight = 0
-			startPixelsWidth = 0
-			patchesCoordinates = []
-			numberPatchesHeight, numberPatchesWidth = getValidPadding(slideWindowHeight,
-																	 strideHeigth,
-																	 imageHeight,
-																	 slideWindowWidth,
-																	 strideWidth,
-																	 imageWidth)
+			start_pixels_height = 0
+			end_pixels_height = slide_window_height
+			start_pixels_width = 0
+			end_pixels_width = slide_window_width
+			patches_coordinates = []
+			number_patches_height, number_patches_width = get_valid_padding(slide_window_height,
+																		 stride_height,
+																		 image_height,
+																		 slide_window_width,
+																		 stride_width,
+																		 image_width)
 			#print('numberPatchesHeight: ', numberPatchesHeight, 'numberPatchesWidth: ', numberPatchesWidth)
-			for i in range(numberPatchesHeight):
-				for j in range(numberPatchesWidth):
-					patchesCoordinates.append([startPixelsHeight,\
-													startPixelsWidth,\
-													slideWindowHeight,\
-													slideWindowWidth])
+			for i in range(number_patches_height):
+				for j in range(number_patches_width):
+					patches_coordinates.append([start_pixels_height,\
+													start_pixels_width,\
+													end_pixels_height,\
+													end_pixels_width])
 					# Update width with strides
-					startPixelsWidth += strideWidth
-					slideWindowWidth += strideWidth
-				# Re-initialize the width parameters 
-				startPixelsWidth = 0
-				slideWindowWidth = strideWidth
+					start_pixels_width += stride_width
+					end_pixels_width += stride_width
+				# Re-initialize the width parameters
+				start_pixels_width = 0
+				end_pixels_width = stride_width
 				# Update height with height stride size
-				startPixelsHeight += strideHeigth 
-				slideWindowHeight += strideHeigth
-			return patchesCoordinates,\
-					numberPatchesHeight,\
-					numberPatchesWidth
+				start_pixels_height += stride_height
+				end_pixels_height += stride_height
+			return patches_coordinates,\
+					number_patches_height,\
+					number_patches_width
 		else:
 			raise Exception("Type of padding not understood")
 
-def getValidPadding(slideWindowHeight,
-					strideHeigth,
-					imageHeight,
-					slideWindowWidth,
-					strideWidth,
-					imageWidth):
+def get_valid_padding(slide_window_height,
+					 stride_height,
+					 image_height,
+					 slide_window_width,
+					 stride_width,
+					 image_width):
 	"""
 	Given the dimensions of an image, the strides of the sliding window
 	and the size of the sliding window. Find the number of patches that
 	fit in the image if the type of padding is VALID.
-	:param slideWindowHeight: int that represents the height of the slide
+	:param slide_window_height: int that represents the height of the slide
 								Window
-	:param strideHeight: int that represents the height of the stride
-	:param imageHeight: int that represents the height of the image
-	:param slideWindowWidth: int that represents the width of the slide
+	:param stride_height: int that represents the height of the stride
+	:param image_height: int that represents the height of the image
+	:param slide_window_width: int that represents the width of the slide
 								window
-	:param strideWidth: int that represents the width of the stride
-	:param imageWidth: int that represents the width of the image
-	: return: int that contains the number of patches in the height
-				dimension. Another int that contains the number of patches
-				in the width dimension.
+	:param stride_width: int that represents the width of the stride
+	:param image_width: int that represents the width of the image
+	: return: a tuple containing the number of patches in the height and 
+			and the width dimension.
 	"""
-	numberPatchesHeight_ = 0
-	numberPatchesWidth_ = 0
-	while(slideWindowHeight <= imageHeight):
-		slideWindowHeight += strideHeigth
-		numberPatchesHeight_ += 1
-	while(slideWindowWidth <= imageWidth):
-		slideWindowWidth += strideWidth
-		numberPatchesWidth_ += 1
-	return numberPatchesHeight_, numberPatchesWidth_
+	number_patches_height_ = 0
+	number_patches_width_ = 0
+	while(True):
+		if slide_window_height <= image_height:
+			slide_window_height += stride_height
+			number_patches_height_ += 1
+		elif slide_window_height > image_height:
+			break
+		else:
+			continue
+	while(True):
+		if slide_window_width <= image_width:
+			slide_window_width += stride_width
+			number_patches_width_ += 1	
+		elif slide_window_width > image_width:
+			break
+		else:
+			continue
+	return (number_patches_height_, number_patches_width_)
 
-def getSamePadding(slideWindowHeight, 
-					strideHeigth, 
-					imageHeight, 
-					slideWindowWidth, 
-					strideWidth, 
-					imageWidth):
+def get_same_padding(slide_window_height,
+					 stride_height,
+					 image_height,
+					 slide_window_width,
+					 stride_width,
+					 image_width):
 	""" 
 	Given the dimensions of an image, the strides of the sliding window
 	and the size of the sliding window. Find the number of zeros needed
 	for the image so the sliding window fits as type of padding SAME. 
 	Then find the number of patches that fit in the image. 
-	:param slideWindowHeight: int that represents the height of the slide 
+	:param slide_window_height: int that represents the height of the slide 
 								Window
-	:param strideHeight: int that represents the height of the stride
-	:param imageHeight: int that represents the height of the image
-	:param slideWindowWidth: int that represents the width of the slide
+	:param stride_height: int that represents the height of the stride
+	:param image_height: int that represents the height of the image
+	:param slide_window_width: int that represents the width of the slide
 								window
-	:param strideWidth: int that represents the width of the stride
-	:param imageWidth: int that represents the width of the image
-	: return: int zeros_h that represents the amount of zeros
-				to add in the height dimension. int zeros_w 
-				that represents the amount of zeros to add 
-				in the width dimension. 
+	:param stride_width: int that represents the width of the stride
+	:param image_width: int that represents the width of the image
+	: return: a tuple containing the amount of zeros
+				to add in the height dimension and the amount of zeros
+				to add in the width dimension. 
 	"""
-	aux_slideWindowHeight = slideWindowHeight
-	aux_slideWindowWidth = slideWindowWidth
-	numberPatchesHeight_ = 0
-	numberPatchesWidth_ = 0
-	while(imageHeight > slideWindowHeight):
-		slideWindowHeight += strideHeigth
-		numberPatchesHeight_ += 1
-	while(imageWidth > slideWindowWidth):
-		slideWindowWidth += strideWidth
-		numberPatchesWidth_ += 1
-	# Pixels left that do not fit in the kernel 
-	resid_h = imageHeight - (slideWindowHeight-strideHeigth)
-	resid_w = imageWidth - (slideWindowWidth-strideWidth)
-	# Amount of zeros to add to the image 
-	zeros_h = aux_slideWindowHeight - resid_h
-	zeros_w = aux_slideWindowWidth - resid_w
+	# Initialize auxiliar variables
+	number_patches_height_ = 0
+	number_patches_width_ = 0
+	# Calculate the number of patches that fit
+	while(True):
+		if slide_window_height <= image_height:
+			slide_window_height += stride_height
+			number_patches_height_ += 1
+		elif slide_window_height > image_height:
+			break
+		else:
+			continue
+	while(True):
+		if slide_window_width <= image_width:
+			slide_window_width += stride_width
+			number_patches_width_ += 1	
+		elif slide_window_width > image_width:
+			break
+		else:
+			continue
+	# Fix the excess in slide_window
+	slide_window_height -= stride_height
+	slide_window_width -= stride_width
+	#print(number_patches_height_, number_patches_width_)
+	#print(slide_window_height, slide_window_width)
+	# Calculate how many pixels to add
+	zeros_h = 0
+	zeros_w = 0
+	if slide_window_width == image_width:
+		pass
+	else:
+		# Pixels left that do not fit in the kernel
+		assert slide_window_width < image_width, "Slide window + stride is bigger than width"
+		zeros_w = (slide_window_width + stride_width) - image_width
+	if slide_window_height == image_height:
+		pass
+	else:
+		# Pixels left that do not fit in the kernel 
+		assert slide_window_height < image_height, "Slide window + stride is bigger than height"
+		zeros_h = (slide_window_height + stride_height) - image_height
 	#print(slideWindowHeight, imageHeight, resid_h, zeros_h)
 	# Return amount of zeros
-	return zeros_h, zeros_w
+	return (zeros_h, zeros_w)
 
 def lazySAMEpad(frame,
 				zeros_h,
-				zeros_w):
+				zeros_w,
+				padding_type = "ONE_SIDE"):
 	"""
 	Given an image and the number of zeros to be added in height 
 	and width dimensions, this function fills the image with the 
@@ -481,35 +516,50 @@ def lazySAMEpad(frame,
 					in the height dimension
 	:param zeros_w: int that represents the amount of zeros to be added 
 					in the width dimension
+	: param padding_type: string that determines the side where to pad the image.
+					If BOTH_SIDES, then padding is applied to both sides.
+					If ONE_SIDE, then padding is applied to the right and the bottom.
+					Default: ONE_SIDE
 	: return: a new opencv image with the added zeros
 	"""
-	rows, cols, d = frame.shape
-	# If height is even or odd
-	if (zeros_h % 2 == 0):
-		zeros_h = int(zeros_h/2)
-		frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
-					np.zeros((zeros_h, cols, 3))]
-	else:
-		zeros_h += 1
-		zeros_h = int(zeros_h/2)
-		frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
-					np.zeros((zeros_h, cols, 3))]
+	if padding_type == "BOTH_SIDES":
+		rows, cols, d = frame.shape
+		# If height is even or odd
+		if (zeros_h % 2 == 0):
+			zeros_h = int(zeros_h/2)
+			frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
+						np.zeros((zeros_h, cols, 3))]
+		else:
+			zeros_h += 1
+			zeros_h = int(zeros_h/2)
+			frame = r_[np.zeros((zeros_h, cols, 3)), frame,\
+						np.zeros((zeros_h, cols, 3))]
 
-	rows, cols, d = frame.shape
-	# If width is even or odd 
-	if (zeros_w % 2 == 0):
-		zeros_w = int(zeros_w/2)
-		# Container 
-		container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-		container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
-		frame = container #c_[np.zeros((rows, zeros_w)), frame, np.zeros((rows, zeros_w))]
-	else:
-		zeros_w += 1
-		zeros_w = int(zeros_w/2)
-		container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
-		container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
-		frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
-	return frame
+		rows, cols, d = frame.shape
+		# If width is even or odd 
+		if (zeros_w % 2 == 0):
+			zeros_w = int(zeros_w/2)
+			# Container 
+			container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
+			container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
+			frame = container #c_[np.zeros((rows, zeros_w)), frame, np.zeros((rows, zeros_w))]
+		else:
+			zeros_w += 1
+			zeros_w = int(zeros_w/2)
+			container = np.zeros((rows,(zeros_w*2+cols),3), np.uint8)
+			container[:,zeros_w:container.shape[1]-zeros_w:,:] = frame
+			frame = container #c_[np.zeros((rows, zeros_w, 3)), frame, np.zeros((rows, zeros_w, 3))]
+		return frame
+	elif padding_type == "ONE_SIDE":
+		rows, cols, d = frame.shape
+		# Pad height dimension
+		frame = r_[frame, np.zeros((zeros_h, cols, 3))]
+		# Pad width dimension
+		rows, cols, d = frame.shape
+		container = np.zeros((rows, cols + zeros_w, 3), np.uint8)
+		container[:, :cols, :] = frame
+		container[:, cols:, :] = np.zeros((rows, zeros_w, 3), np.uint8)
+		return container
 
 def drawGrid(frame,
 			patches,

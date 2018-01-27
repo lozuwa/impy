@@ -211,14 +211,12 @@ try:
     from .images2Dataset import *
 except:
     raise ImportError("stats could not be loaded")
-
 try:
-    from .objectDetection import *
+	from .load_tensorflow_models import *
 except:
-    raise ImportError("objectDetection could not be loaded")
+	raise ImportError("load_tensorflow_models could not be loaded")
 
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.3"
-__log__ = "Added support for the object detection api from google. There is \
-            a class to load frozen graphs and compute inference"
+__version__ = "0.5"
+__log__ = "Added class to load tensorflow graphs."

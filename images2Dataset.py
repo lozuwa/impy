@@ -30,7 +30,7 @@ import re
 # Utils
 from .utils import *
 
-class images2Dataset:
+class Images2Dataset:
     def __init__(self):
         print("Created new instance of images2Dataset")
 
