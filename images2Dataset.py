@@ -25,21 +25,20 @@ using this class.
 # Utils
 import os
 import datetime
+import cv2
+import pandas as pd
 
 class Images2Dataset(object):
 		def __repr__(self):
 			return "Images2Dataset({})".format("PathToSomeFolder")
 
 		def __init__(self,
-									dbFolder = None,
-									datasetFormat = None):
+									dbFolder = None):
 			"""
 			Constructor.
 			"""
 			if dbFolder == None:
 				raise ValueError("You must provide a folder.")
-			if datasetFormat == None:
-				datasetFormat = "normal"
 			# Assert paths
 			if not os.path.isdir(dbFolder):
 				raise Exception("Path to foler does not exist.")
@@ -52,7 +51,7 @@ class Images2Dataset(object):
 		def propertyfoldersAndFiles(self):
 			return self.foldersAndFiles
 
-		@property.setter
+		@propertyfoldersAndFiles.setter
 		def propertyfoldersAndFiles(self,
 																	newFoldersAndFiles):
 			self.foldersAndFiles = newFoldersAndFiles
@@ -123,11 +122,15 @@ class Images2Dataset(object):
 			# Set dictionary again
 			self.foldersAndFiles = newFoldersAndFiles
 
-		def computeStats(self):
-			print("Distribution of classes and data points: ")
-			for folder, files in zip(self.foldersAndFiles.keys(),
-																self.foldersAndFiles.values()):
-				print("{}: {}".format(folder, len(files)))
+		def dataset2Dataframe(self):
+			# Local variables
+			df = pd.DataFrame({})
+			# Iterate over folders
+			for folder in self.foldersAndFiles:
+				for file in self.foldersAndFiles.get(folder, None):
+					frame = cv2.imread(os.path.join(self.pathDbFolder, folder, file))
+					size = frame.shape
+					rows, cols = size[0], size[1]
 
 def now():
 	"""

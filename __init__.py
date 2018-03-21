@@ -20,8 +20,6 @@ The docstring examples assume that `numpy` has been imported as `np`::
 # Import libraries 
 import sys
 
-# Load modules
-<<<<<<< HEAD
 # try:
 #     from .utils import *
 # except:
@@ -44,20 +42,5 @@ import sys
 # 	raise ImportError("load_tensorflow_models could not be loaded")
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.4"
-__log__ = "Removed object detection class. The paths were messy and hardcoded, feature left for the future. \
-		Wrote a cleaner implementation of preprocessImage.divideIntoPatches, also fixed issues with weird patching sizes."
-
-
-# Data augmentation
-"""
-DataAugmentationMethods -> Interface that defines the 
-                            methods to be implemented.
-
-DataAugmentation -> Implements DataAugmentationMethods
-                    and implements all of the methods.
-
-DataAugmentation_test -> Tests the methods implemented 
-                          in data augmentation.
-
-"""                    
+__version__ = "0.5"
+__log__ = "Refactored the whole library, I did not like it. Now everything has a more OOP approach."
