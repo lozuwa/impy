@@ -15,7 +15,7 @@ class DataAugmentation_test(unittest.TestCase):
 	
 	def setUp(self):
 		self.frame = cv2.imread("cv.jpg")
-		self.bndbox = [100, 100, 200, 200]
+		self.bndbox = [100, 100, 150, 150]
 		self.da = DataAugmentation()
 
 	def tearDown(self):
@@ -24,24 +24,24 @@ class DataAugmentation_test(unittest.TestCase):
 	def test_horizontal_flip(self):
 		frame = self.da.horizontalFlip(self.frame)
 		cv2.imshow("__frameOther__", frame)
-		cv2.waitKey(2000)
+		cv2.waitKey(100)
 		cv2.destroyAllWindows()
 
 	def test_vertical_flip(self):
 		frame = self.da.verticalFlip(self.frame)
 		cv2.imshow("__frameOther__", frame)
-		cv2.waitKey(2000)
+		cv2.waitKey(100)
 		cv2.destroyAllWindows()
 
 	def test_jitter_boxes(self):
 		frame = self.da.jitterBoxes(self.frame)
 		cv2.imshow("__frameOther__", frame)
-		cv2.waitKey(2000)
+		cv2.waitKey(100)
 		cv2.destroyAllWindows()
 
 	def test_random_rotation(self):
 		theta = 0
-		for i in range(0):
+		for i in range(1):
 			frame, ps = self.da.randomRotation(self.frame, 
 																				self.bndbox,
 																				theta)
@@ -59,6 +59,30 @@ class DataAugmentation_test(unittest.TestCase):
 		x, y = DataAugmentation.rotation_equations(x, y, theta)
 		self.assertEqual(x, -10)
 		self.assertEqual(y, 10)
+
+	def test_center_crop(self):
+		rows, cols, depth = self.frame.shape
+		ROIxmin, ROIxmax, ROIymin, ROIymax,\
+			xmin, xmax, ymin, ymax = self.da.centerCrop(frameHeight = rows,
+																									frameWidth = cols,
+																									bndbxCoordinates = self.bndbox,
+																									offset = 200)
+		cropped = self.frame[ROIxmin:ROIxmax, ROIymin:ROIymax, :]
+		cv2.imshow("__center_crop__", cropped)
+		cv2.waitKey(3000)
+		cv2.destroyAllWindows()
+
+	def test_crop_with_translation(self):
+		rows, cols, depth = self.frame.shape
+		ROIxmin, ROIxmax, ROIymin, ROIymax,\
+			xmin, xmax, ymin, ymax = self.da.cropWithTranslation(frameHeight = rows,
+																									frameWidth = cols,
+																									bndbxCoordinates = self.bndbox,
+																									offset = 100)
+		cropped = self.frame[ROIxmin:ROIxmax, ROIymin:ROIymax, :]
+		cv2.imshow("__crop_translation__", cropped)
+		cv2.waitKey(1000)
+		cv2.destroyAllWindows()
 
 if __name__ == "__main__":
 	unittest.main()
