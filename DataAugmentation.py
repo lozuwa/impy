@@ -8,6 +8,8 @@ Log:
 	Novemeber, 2017 -> Re-estructured class.
 	December, 2017 -> Researched most used data augmentation techniques.
 	March, 2018 -> Coded methods.
+TODO:
+	Copy the code from the work's pc for the cropping methods.
 """
 # Libraries
 from interface import implements
