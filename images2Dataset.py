@@ -1,269 +1,146 @@
 """
-package: Images2Dataset
-class: Images2Dataset (main)
+package: impy
+class: Images2Dataset
 Author: Rodrigo Loza
-Description: This library converts an image raw dataset to a vectorial structured dataset.
-The library assumes:
-* The folder structure follows:
-                                - Db Folder
-                                    - Dataset 0
-                                    - Dataset 1
-                                    - ...
-* All the images have the same size
+Description: Class that loads an image dataset.
+We recommend giving some structure to your dataset before
+using this class.
+* The folder's structure should be like this:
+						- Data set/
+								- Folder class 0/
+									- Image 1
+									- Image 2 
+									- ...
+								- Folder class 1/
+									- Image 1
+									- Image 2 
+									- ...
+								- ...
+- You should provide the path to the Data set folder.
+- We recommend giving the data set folder a descriptive name.
+- The nested folders should contain the name of the class.
+- The file names of the images inside the folders don't matter. If you
+	would like to give them proper names, then use the formatDataset method.
 """
-# General purpose
-import os
-import sys
-from tqdm import tqdm
-# Matrix manipulation
-import numpy as np
-# Data manipulation
-import pandas as pd
-# Image manipulation
-import cv2
-from PIL import Image
-# XML manipulation
-import xml.etree.cElementTree as ET
-# Regular expressions
-import re
-
 # Utils
-from .utils import *
+import os
+import datetime
+import cv2
+import pandas as pd
 
-class images2Dataset:
-    def __init__(self):
-        print("Created new instance of images2Dataset")
+class Images2Dataset(object):
+		def __repr__(self):
+			return "Images2Dataset({})".format("PathToSomeFolder")
 
-    def addData(self, 
-                dbFolder = os.getcwd()):
-        """
-        :param dbFolder: string that contains the folder where all the
-                            images live
-        :param imagesSize: string that decides to use constant or multiple
-                            sizes for images. Not constant parameter
-        """
-        # Set database folder
-        assert dbFolder != os.getcwd(), "dbFolder can't be the same directory"
-        assert type(dbFolder) == str, "dbFolder must be a string"
-        assert isFolder(dbFolder) == True, "folder does not exist"
-        self.dbFolder = dbFolder
-        # Set subfolders
-        self.subfolders = getFolders(self.dbFolder)
-        #print(getFolders(self.dbFolder))
-        # Set images per folder
-        self.images = {}
-        # Check for single folder
-        if len(self.subfolders) == 0:
-            self.images = getImages(dbFolder)
-        else:
-            for subfolder in self.subfolders:
-                self.images[subfolder] = getImages(subfolder)
+		def __init__(self,
+									dbFolder = None):
+			"""
+			Constructor.
+			"""
+			if dbFolder == None:
+				raise ValueError("You must provide a folder.")
+			# Assert paths
+			if not os.path.isdir(dbFolder):
+				raise Exception("Path to foler does not exist.")
+			# Save the path to dbFolder
+			self.pathDbFolder = dbFolder
+			# Create a dictionary with the folders and its images
+			self.foldersAndFiles = self.getFolderAndFiles(parentFolder = dbFolder)
 
-    def uris2Dataframe(self, 
-                        returnTo = False):
-        """
-        Convert uris to a Pandas dataframe 
-        :param returnTo: bool that controls whether to return the dataframe 
-                        or not
-        Convert image uris to dataframe
-        """
-        # Check the classes have the same length
-        self.images = fillDictRows(self.images)
-        # Create dataframe
-        self.df = pd.DataFrame(self.images)
-        if returnTo:
-            return self.df
-        else:
-            pass
+		@property
+		def propertyfoldersAndFiles(self):
+			return self.foldersAndFiles
 
-    def uris2xmlAnnotations(self,
-                            folderPath = os.getcwd(),
-                            VOCFormat = True):
-        """
-        WARNING:
-            * Supports a single folder with images inside
-        Creates an annotation for each of the images in the input dataframe
-        :param folderpath: input os path that contains the path to the images folder
-        :param VOCFormat: input bool that decides if the annotations will have
-                            the VOC Dataset format
-        """
-        # Create folder named annotations
-        folderPathAnnotations = os.path.join(os.getcwd(), "annotations")
-        createFolder(folderPathAnnotations)
-        # Read images inside the folder
-        imgsFolder = getImages(folderPath)
-        # Iterate over imgs
-        for imgPath in imgsFolder:
-            # Read images
-            frame = cv2.imread(imgPath)
-            #print(imgPath, frame)
-            # Get shape
-            height, width, depth = frame.shape
-            # Get filename
-            dir_, filename = os.path.split(imgPath)
-            # Get name
-            match = re.match(r"([A-Za-z_]+)(_[0-9_]+)(\.jpg)", filename)
-            name = match.groups()[0]
-            # Convert data to VOC
-            self.VOCFormat(folderPathAnnotations = folderPathAnnotations,\
-                            folder = "annotations",\
-                            filename = filename,\
-                            path = imgPath,\
-                            database = "SPID",\
-                            width = str(width),\
-                            height = str(height),\
-                            depth = str(depth),\
-                            name = name,\
-                            xmin = 1,\
-                            xmax = str(width-1),\
-                            ymin = 1,\
-                            ymax = str(height-1))
+		@propertyfoldersAndFiles.setter
+		def propertyfoldersAndFiles(self,
+																	newFoldersAndFiles):
+			self.foldersAndFiles = newFoldersAndFiles
 
-    def VOCFormat(self,
-                    folderPathAnnotations,
-                    folder,
-                    filename,
-                    path,
-                    database,
-                    width,
-                    height,
-                    depth,
-                    name,
-                    xmin,
-                    xmax,
-                    ymin,
-                    ymax):
-        """
-        Method that converts an image to a xml annotation format in the 
-        PASCAL VOC dataset format. 
-        :param folderPath: input string with the path of the folder
-        :param folder: input string with the name "annotations"
-        :param path: input string with the path of the image
-        :param database: input string with the name of the database
-        :param width: input int with the width of the image
-        :param height: input int with the height of the image
-        :param depth: input int with the depth of the image
-        :param name: input string with the name of the class the image
-                    belongs to
-        :param xmin: input int with the pixel the cropping starts in the
-                    width of the image
-        :param xmax: input int with the pixel the cropping ends in the
-                    width of the image
-        :param ymin: input int with the pixel the cropping starts in the 
-                    height of the image
-        :param ymax: input int with the pixel the cropping ends in the 
-                    height of the image
-        """
-        # Create annotation header
-        annotation = ET.Element("annotation")
-        # Image information
-        ET.SubElement(annotation, "folder", verified = "yes").text = str(folder)
-        ET.SubElement(annotation, "filename").text = str(filename)
-        ET.SubElement(annotation, "path").text = str(path)
-        # Source
-        source = ET.SubElement(annotation, "source")
-        ET.SubElement(source, "database").text = str(database)
-        # Size
-        size = ET.SubElement(annotation, "size")
-        ET.SubElement(size, "width").text = str(width)
-        ET.SubElement(size, "height").text = str(height)
-        ET.SubElement(size, "depth").text = str(depth)
-        # Segemented
-        ET.SubElement(annotation, "segmented").text = "0"
-        # Object
-        object_ = ET.SubElement(annotation, "object")
-        ET.SubElement(object_, "name").text = str(name)
-        ET.SubElement(object_, "pose").text = "Unspecified"
-        ET.SubElement(object_, "truncated").text = "0"
-        ET.SubElement(object_, "difficult").text = "0"
-        # Bound box inside object
-        bndbox = ET.SubElement(object_, "bndbox")
-        ET.SubElement(bndbox, "xmin").text = str(xmin)
-        ET.SubElement(bndbox, "xmax").text = str(xmax)
-        ET.SubElement(bndbox, "ymin").text = str(ymin)
-        ET.SubElement(bndbox, "ymax").text = str(ymax)
-        # Write file
-        tree = ET.ElementTree(annotation)
-        drive, path_and_file = os.path.splitdrive(filename)
-        path, file = os.path.split(path_and_file)
-        file = file.split(".jpg")[0] + ".xml"
-        #print(os.path.join(folderPathAnnotations, file))
-        tree.write(os.path.join(folderPathAnnotations, file))
+		def getFolderAndFiles(self, parentFolder = None):
+			"""
+			Get a data structure with the folders and the files.
+			Args:
+				parentFolder: A list containing folder names.
+			Returns:
+				A hashmap containing the folders and its images. 
+				{"folder1": [image1, image2, ...], "folder2": [image1, image2, ...]}
+			"""
+			# Local vairables
+			if parentFolder == None:
+				raise ValueError("ParentFolder cannot be empty.")
+			foldersAndFiles = {}
+			# Read folders
+			foldersInParent = os.listdir(parentFolder)
+			for folderInParent in foldersInParent:
+				files = os.listdir(os.path.join(parentFolder, folderInParent))
+				files = self.filterAllowedImageFormats(files)
+				foldersAndFiles[folderInParent] = files
+			return foldersAndFiles
 
-    ##################################TO FIX#############################################
-    def images2Tensor(self):
-        """
-        Convert images in each subfolder to a tensor X and a 
-        tensor label Y
-        : return: a tensor X of features and a tensor Y of labels
-        """
-        # Assert memory constraints
-        assert (self.height <= 50) and (self.width <= 50),\
-                RESIZE_DATASET
-        # Previous calculations
-        rows = self.height*self.width*self.depth
-        # Get keys
-        keys = [each for each in self.images.keys()]
-        columns = []
-        for key in keys:
-            columns.append(len(self.images.get(key)))
-        # Number of classes
-        numberClasses = len(self.subfolders)
-        # Data (rows are the number of features or pixels) 
-        # (columns are the number of examples)
-        features = np.zeros([rows,])
-        # Labels
-        classes = np.eye(numberClasses)
-        labels = np.zeros([numberClasses,])
-        # Read images in each subfolder
-        for k in tqdm(range(len(keys))):
-            # Get images of class "key"
-            imgs = self.images.get(keys[k])
-            # Read image
-            for img in imgs:
-                if type(img) == str:
-                    frame  = cv2.imread(img).reshape(-1, 1)
-                    features = np.c_[features, frame]
-                    labels = np.c_[labels, classes[k].reshape(-1, 1)]
-                else:
-                    pass
-        return features[:, 1:], labels[:, 1:]
+		def filterAllowedImageFormats(self, files):
+			"""
+			Filter Image files.
+			Args:
+				files: A list containing image files.
+			Returns:
+				A list containing the filetered files with the 
+				allowed formats.
+			"""
+			ALLOWED_FILE_FORMATS = ["jpg", "png"]
+			allowedFiles = []
+			for f in files:
+				if f.split(".")[1] in ALLOWED_FILE_FORMATS:
+					allowedFiles.append(f)
+			return allowedFiles
 
-    def images2CSV(self):
-        """
-        Convert images in each subfolder to vectors written in a csv file 
-        : return: a tensor X of features and a tensor Y of labels
-        """
-        # Assert memory constraints
-        assert (self.height <= 100) and (self.width <= 100),\
-                SCALE_DATASET
-        # Create file
-        NAME_FILE = "dbResized/dataset.csv"
-        file = open(NAME_FILE, "w")
-        # Get keys
-        keys = [each for each in self.images.keys()]
-        # Number of classes
-        numberClasses = len(keys)
-        classes = [each for each in range(numberClasses)]
-        # Write columns
-        for each in range(self.height*self.width*self.depth):
-            file.write(str(each)+",")
-        file.write("label"+"\n")
-        # Read images in each subfolder
-        for k in tqdm(range(len(keys))):
-            # Get images of class "key"
-            imgs = self.images.get(keys[k])
-            # Iterate over images
-            for img in imgs:
-                if type(img) == str:
-                    frame = cv2.imread(img).reshape(-1, 1)
-                    for i in range(frame.shape[0]):
-                        # Write pixels
-                        file.write(str(frame[i, :]) + ",")
-                    # Write labels
-                    file.write(str(classes[k])+"\n")
-                else:
-                    pass
-        # Close file
-        file.close()
-    ##########################################################################
+		def formatDataset(self):
+			# Local variables
+			newFoldersAndFiles = {}
+			# Iterate over class names
+			for className in self.foldersAndFiles.keys():
+				# Update className
+				newFoldersAndFiles[className] = []
+				# Get files names
+				fileNames = self.foldersAndFiles[className]
+				# Iterate over file names
+				for fileName in fileNames:
+					# Get path to fileName
+					pathToFileName = os.path.join(self.pathDbFolder,
+																				className,
+																				fileName)
+					# Assert path to file
+					if not os.path.isfile(pathToFileName):
+						raise Exception("Path to file does not exist.")
+					# Create a new name for the file
+					newFileName = "_".join([className, now()]) + ".jpg"
+					newPathToFileName = os.path.join(os.path.split(pathToFileName)[0],
+																						newFileName)
+					# Update filename
+					newFoldersAndFiles[className].append(newFileName)
+					# Rename file with its respective class name
+					os.rename(pathToFileName, newPathToFileName)
+			# Set dictionary again
+			self.foldersAndFiles = newFoldersAndFiles
+
+		def dataset2Dataframe(self):
+			# Local variables
+			df = pd.DataFrame({})
+			# Iterate over folders
+			for folder in self.foldersAndFiles:
+				for file in self.foldersAndFiles.get(folder, None):
+					frame = cv2.imread(os.path.join(self.pathDbFolder, folder, file))
+					size = frame.shape
+					rows, cols = size[0], size[1]
+
+def now():
+	"""
+	Staticmehtod that returns a date.
+	Returns:
+		A string that contains the actual time in the following format:
+			day_minute_second_microsecond.
+	"""
+	now = datetime.datetime.now()
+	now = list(map(str, [now.day, now.minute,
+												now.second, now.microsecond]))
+	return "{}_{}_{}_{}".format(now[0], now[1], now[2], now[3])
+		
