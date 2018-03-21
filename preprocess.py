@@ -2,7 +2,7 @@
 package: Images2Dataset
 class: imageProcess
 Author: Rodrigo Loza
-Description: Preprocess image dataset or singular images
+Description: Preprocess image dataset or singular images.
 """
 # General purpose
 import os
