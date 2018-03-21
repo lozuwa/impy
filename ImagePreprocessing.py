@@ -150,9 +150,19 @@ class ImagePreprocessing(object):
 																		 stride_width,
 																		 image_width)
 			#print('numberPatchesHeight: ', numberPatchesHeight, 'numberPatchesWidth: ', numberPatchesWidth)
+<<<<<<< HEAD:ImagePreprocessing.py
 			for i in range(numberPatches_height):
 				for j in range(numberPatches_width):
 					patches_coordinates.append([start_pixels_height,\
+||||||| fbdf844... type: feature
+			for i in range(number_patches_height):
+				for j in range(number_patches_width):
+					patches_coordinates.append([start_pixels_height,\
+=======
+			for i in range(number_patches_height):
+				for j in range(number_patches_with):
+					patchesCoordinates.append([start_pixels_height,\
+>>>>>>> parent of fbdf844... type: feature:preprocess.py
 													start_pixels_width,\
 													end_pixels_height,\
 													end_pixels_width])
