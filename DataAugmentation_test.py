@@ -72,7 +72,7 @@ class DataAugmentation_test(unittest.TestCase):
 		cropped = self.frame[ROIxmin:ROIxmax, ROIymin:ROIymax, :]
 		print("Center cropped: ", cropped.shape)
 		cv2.imshow("__center_crop__", cropped)
-		cv2.waitKey(3000)
+		cv2.waitKey(100)
 		cv2.destroyAllWindows()
 
 	def test_crop_with_translation(self):
@@ -84,7 +84,15 @@ class DataAugmentation_test(unittest.TestCase):
 																									offset = 100)
 		cropped = self.frame[ROIxmin:ROIxmax, ROIymin:ROIymax, :]
 		cv2.imshow("__crop_translation__", cropped)
-		cv2.waitKey(1000)
+		cv2.waitKey(100)
+		cv2.destroyAllWindows()
+
+	def test_fancyPCA(self):
+		frame_pca = self.da.fancyPCA(frame = self.frame)
+		# cv2.imwrite("test.jpg", frame_pca)
+		cv2.imshow("__original__", self.frame)
+		cv2.imshow("__pca__", frame_pca)
+		cv2.waitKey(100)
 		cv2.destroyAllWindows()
 
 if __name__ == "__main__":

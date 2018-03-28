@@ -16,6 +16,7 @@ from interface import implements
 import math
 import random
 import cv2
+import numpy as np
 
 try:
 	from .BoundingBoxDataAugmentationMethods import *
@@ -135,6 +136,11 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			raise Exception("Xmin is bigger")
 		if ymin > ymax:
 			raise Exception("Ymin is bigger")
+		# Check if xmax, ymax is not equal to the cropped patch.
+		if xmax == (ROIxmax - ROIxmin):
+			xmax -= 1
+		if ymax == (ROIymax - ROIymin):
+			ymax -= 1
 		# Return cropping and bndbox coordinates
 		return (ROIxmin, ROIymin, ROIxmax, ROIymax,\
 				xmin, ymin, xmax, ymax)
@@ -303,10 +309,15 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		# Ymax is determinable
 		ymax = ymin + heightRoi
 
+		# Check sizes are the maintained
+		assert (ymax-ymin) == (ymax_-ymin_), "Heights are not the same : {}, {} {}".\
+											format((ymax-ymin), ymax_, ymin_)
+		assert (xmax-xmin) == (xmax_-xmin_), "Widths are not the same : {}, {} {}".\
+											format((xmax-xmin), xmax_, xmin_)
+
 		# Check if xmax, ymax is not equal to the cropped patch
 		if xmax == (ROIxmax - ROIxmin):
 			xmax -= 1
-
 		if ymax == (ROIymax - ROIymin):
 			ymax -= 1
 
@@ -325,11 +336,6 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 
 		assert ymax != (ROIymax - ROIymin), "ymax is equal to frame height."
 		assert xmax != (ROIxmax - ROIxmin), "xmax is equal to frame width."
-
-		assert (ymax-ymin) == (ymax_-ymin_), "Heights are not the same : {}, {} {}".\
-											format((ymax-ymin), ymax_, ymin_)
-		assert (xmax-xmin) == (xmax_-xmin_), "Widths are not the same : {}, {} {}".\
-											format((xmax-xmin), xmax_, xmin_)
 
 		# Return the computed coordinates
 		return (ROIxmin, ROIxmax, ROIymin, ROIymax, xmin, xmax, ymin, ymax)
@@ -455,15 +461,23 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		# print(p0, p1, p2, p3)
 		# Make sure ix, iy, x, y are valid
 		if ix < 0:
-			raise Exception("ix is negative.")
+			# If ix is smaller, then it was impossible to place 
+			# the coordinate inside the image because of the angle. 
+			# In this case, the safest option is to set ix to 0.
+			print("WARNING: ix is negative.", ix)
+			ix = 0
 		if iy < 0:
-			raise Exception("iy is negative.")
+			# If iy is smaller, then it was impossible to place 
+			# the coordinate inside the image because of the angle. 
+			# In this case, the safest option is to set iy to 0.
+			print("WARNING: iy is negative.", iy)
+			iy = 0
 		if x >= cols:
-			x -= 1
-			print("WARNING: x was the width of the frame.")
+			print("WARNING: x was the width of the frame.", x, cols)
+			x = cols - 1
 		if y >= rows:
-			y -= 1
-			print("WARNING: y was the height of the frame.")
+			print("WARNING: y was the height of the frame.", y, rows)
+			y = rows - 1
 		# Return frame and coordinates
 		return frame, [ix, iy, x, y]
 
@@ -514,7 +528,7 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 				raise Exception("Frame cannot be emtpy.")
 		except:
 			pass
-		if frame.shape != 3:
+		if len(frame.shape) != 3:
 			raise Exception("Frame must have 3 dimensions")
 		# Local variables
 		colorsOriginal = [0, 1, 2]
@@ -527,6 +541,52 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		frame[:, :, 2] = frame[:, :, colorsShuffle[0]], \
 										frame[:, :, colorsShuffle[1]], \
 										frame[:, :, colorsShuffle[2]]
+		return frame
+
+	def fancyPCA(self, frame = None):
+		"""
+		Implementation of fancy PCA.
+		Args:
+			pass
+		Returns:
+			pass
+		"""
+		# Assertions
+		try:
+			if frame == None:
+				raise Exception("Frame cannot be empty.")
+		except:
+			pass
+		if len(frame.shape) != 3:
+			raise Exception("Frame must have 3 dimensions")
+		# Local variables
+		height, width, depth = frame.shape
+		# Create matrix
+		redCol = frame[:, :, 2].reshape(-1, 1)
+		greenCol = frame[:, :, 1].reshape(-1, 1)
+		blueCol = frame[:, :, 0].reshape(-1, 1)
+		# Calculate the mean of every column and substract it
+		uRed = np.mean(redCol)
+		uGreen = np.mean(greenCol)
+		uBlue = np.mean(blueCol)
+		redCol = redCol - uRed
+		greenCol = greenCol - uGreen
+		blueCol = blueCol - uBlue
+		# Define matrix
+		matrix = np.zeros([redCol.shape[0], 3])
+		matrix[:, 0] = list(redCol)
+		matrix[:, 1] = list(greenCol)
+		matrix[:, 2] = list(blueCol)
+		# Normalize data
+		# Depends on the data
+		# Apply PCA
+		cov = np.cov(matrix.T)
+		eigvals, eigvects = np.linalg.eigh(cov)
+		pca = np.sqrt(eigvals)*eigvects
+		perturb = [int(each) for each in (pca*np.random.randn(3)*0.1).sum(axis=1)]
+		print("Perturbation: ", perturb)
+		# Add perturbation vector to frame
+		frame = frame + perturb
 		return frame
 
 
