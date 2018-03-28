@@ -131,8 +131,10 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 				ROIymax = ymax + missingDown
 			# Ymax is easily determinable.
 			ymax = ymin + heightRoi
-		assert xmin < xmax, "Xmin is bigger"
-		assert ymin < ymax, "Ymin is bigger"
+		if xmin > xmax:
+			raise Exception("Xmin is bigger")
+		if ymin > ymax:
+			raise Exception("Ymin is bigger")
 		# Return cropping and bndbox coordinates
 		return (ROIxmin, ROIymin, ROIxmax, ROIymax,\
 				xmin, ymin, xmax, ymax)
@@ -235,7 +237,7 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			else:
 				ROIxmax = xmax + spaceXMax
 			# Xmax is determinable
-			xmax = xmin + widthRoi
+			# xmax = xmin + widthRoi
 		# If there is not space on the left, then crop at origin.
 		else:
 			# Crop at origin.
@@ -251,7 +253,10 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			else:
 				compensateX = 0
 			ROIxmax += compensateX
-			xmax = xmin + widthRoi
+			# Xmax is determinable
+			# xmax = xmin + widthRoi
+		# Xmax is determinable
+		xmax = xmin + widthRoi
 
 		# Y
 		# If there is space on the top, then crop.
@@ -277,7 +282,7 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			else:
 				ROIymax = ymax + spaceYMax
 			# Ymax should be determinable.
-			ymax = ymin + heightRoi
+			# ymax = ymin + heightRoi
 		# If there is no space on the top, then crop at origin.
 		else:
 			# Crop at origin.
@@ -293,8 +298,17 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			else:
 				compensateY = 0
 			ROIymax += compensateY
-			# ymax is determinable.
-			ymax = ymin + heightRoi
+			# Ymax is determinable.
+			# ymax = ymin + heightRoi
+		# Ymax is determinable
+		ymax = ymin + heightRoi
+
+		# Check if xmax, ymax is not equal to the cropped patch
+		if xmax == (ROIxmax - ROIxmin):
+			xmax -= 1
+
+		if ymax == (ROIymax - ROIymin):
+			ymax -= 1
 
 		# print("Before: {},{},{},{}".format(xmin_, xmax_,\
 		# 																		ymin_, ymax_))
@@ -304,19 +318,13 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		# print("Coordinates: {},{},{},{}".format(xmin, xmax,\
 		# 																				ymin, ymax))
 
-		assert (ROIxmax - ROIxmin) > offset - (offset*0.2), "X dimension is too small"
-		assert (ROIymax - ROIymin) > offset - (offset*0.2), "Y dimension is too small"
-
-		assert (ROIxmax - ROIxmin) < offset + (offset*0.2), "X dimension is too big"
-		assert (ROIymax - ROIymin) < offset + (offset*0.2), "Y dimension is too big"
-
-		square_relation = ((ROIxmax - ROIxmin) / (ROIymax - ROIymin))
-		assert (square_relation > 0.90) and (square_relation < 1.10), "ROI is not a square"
-
 		assert ymin >= 0, "Ymin is negative"
 		assert ymax >= 0, "Ymax is negative"
 		assert xmin >= 0, "Xmin is negative"
 		assert xmax >= 0, "Xmax is negative"
+
+		assert ymax != (ROIymax - ROIymin), "ymax is equal to frame height."
+		assert xmax != (ROIxmax - ROIxmin), "xmax is equal to frame width."
 
 		assert (ymax-ymin) == (ymax_-ymin_), "Heights are not the same : {}, {} {}".\
 											format((ymax-ymin), ymax_, ymin_)
@@ -324,8 +332,7 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 											format((xmax-xmin), xmax_, xmin_)
 
 		# Return the computed coordinates
-		return (ROIxmin, ROIxmax, ROIymin, ROIymax,\
-						xmin, xmax, ymin, ymax)
+		return (ROIxmin, ROIxmax, ROIymin, ROIymax, xmin, xmax, ymin, ymax)
 
 	def jitterBoxes(self, frame = None, quantity = None):
 		"""
@@ -446,6 +453,17 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		ix, x = min(xs), max(xs)
 		iy, y = min(ys), max(ys)
 		# print(p0, p1, p2, p3)
+		# Make sure ix, iy, x, y are valid
+		if ix < 0:
+			raise Exception("ix is negative.")
+		if iy < 0:
+			raise Exception("iy is negative.")
+		if x >= cols:
+			x -= 1
+			print("WARNING: x was the width of the frame.")
+		if y >= rows:
+			y -= 1
+			print("WARNING: y was the height of the frame.")
 		# Return frame and coordinates
 		return frame, [ix, iy, x, y]
 
