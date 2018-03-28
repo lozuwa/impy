@@ -62,12 +62,15 @@ class DataAugmentation_test(unittest.TestCase):
 
 	def test_center_crop(self):
 		rows, cols, depth = self.frame.shape
-		ROIxmin, ROIxmax, ROIymin, ROIymax,\
+		print("Image size: ", rows, cols, depth)
+		ROIxmin, ROIymin, ROIxmax, ROIymax,\
 			xmin, xmax, ymin, ymax = self.da.centerCrop(frameHeight = rows,
 																									frameWidth = cols,
 																									bndbxCoordinates = self.bndbox,
 																									offset = 200)
+		print("Center crop image: ", ROIxmin, ROIxmax, ROIymin, ROIymax)
 		cropped = self.frame[ROIxmin:ROIxmax, ROIymin:ROIymax, :]
+		print("Center cropped: ", cropped.shape)
 		cv2.imshow("__center_crop__", cropped)
 		cv2.waitKey(3000)
 		cv2.destroyAllWindows()
