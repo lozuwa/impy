@@ -146,3 +146,13 @@ class BoundingBoxDataAugmentationMethods(Interface):
 			A tensor that has shifted the order of its colors.
 		"""
 		pass
+
+	def fancyPCA(self, frame = None):
+		"""
+		Fancy PCA implementation.
+		Args:
+			frame: A tensor that contains an image.
+		Returns:
+			A tensor that contains the altered image by fancy PCA.
+		"""
+		pass

@@ -545,11 +545,11 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 
 	def fancyPCA(self, frame = None):
 		"""
-		Implementation of fancy PCA.
+		Fancy PCA implementation.
 		Args:
-			pass
+			frame: A tensor that contains an image.
 		Returns:
-			pass
+			A tensor that contains the altered image by fancy PCA.
 		"""
 		# Assertions
 		try:
@@ -578,7 +578,8 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		matrix[:, 1] = list(greenCol)
 		matrix[:, 2] = list(blueCol)
 		# Normalize data
-		# Depends on the data
+		# If the data is in the range 0-1, then normalize the image.
+		# If the data is in the range 0-255, then don't normalize. 
 		# Apply PCA
 		cov = np.cov(matrix.T)
 		eigvals, eigvects = np.linalg.eigh(cov)
