@@ -26,6 +26,217 @@ class ImagePreprocessing(object):
 		"""
 		super(ImagePreprocessing, self).__init__()
 	
+	def adjustImage(self,
+								frameHeight = None,
+								frameWidth = None,
+								croppingCoordinates = None,
+								bndboxes = None,
+								offset = None):
+		"""
+		Adjusts a cropped frame to the desired size using its parent image
+		while maintaing the coordinates.
+		Args:
+			frameHeight: An int that contains the height of the image.
+			frameWidth: An int that contains the width of the image.
+			croppingCoordinates: A list of ints that contains the coordinates to crop an image.
+			bndboxes: A list of lists that contains bounding boxes coordinates.
+			offset: An int that contains the desired size of the cropped frame.
+		Returns:
+			A list that contains the coordinates to crop the parent image and a list of lists that
+			contains the bounding boxes of the cropped frame. 
+		Raises:
+			When bounding boxes are not inside the ROI limitation.
+		"""
+		# Local variable assertions
+		if frameHeight == None:
+			raise Exception("Parameter {} cannot be empty.".format("frameHeight"))
+		if frameWidth == None:
+			raise Exception("Parameter {} cannot be empty.".format("frameWidth"))
+		if croppingCoordinates == None:
+			raise Exception("Parameter {} cannot be empty.".format("croppingCoordinates"))
+		if bndboxes == None:
+			raise Exception("Parameter {} cannot be empty.".format("bndboxes"))
+		if offset == None:
+			raise Exception("Parameter {} cannot be empty.".format("offset"))
+		# Local variables
+		xmin, ymin, xmax, ymax = croppingCoordinates
+		RoiX, RoiY = (xmax - xmin), (ymax - ymin)
+		if (RoiY >= offset):
+			offsetY = 10
+		else:
+			offsetY = offset - RoiY
+		if (RoiX >= offset):
+			offsetX = 10
+		else:
+			offsetX = offset - RoiX
+		# print(offsetX, offsetY)
+		# Determine space on x.
+		offsetXLeft = offsetX // 2
+		offsetXRight = offsetX - offsetXLeft
+		# Determine space on y.
+		offsetYTop = offsetY // 2
+		offsetYBottom = offsetY - offsetYTop
+		# Add space on X.
+		# If there is not enough space on the left.
+		if ((xmin - offsetXLeft) < 0):
+			# Crop at origin. 
+			RoiXMin = 0
+			# Xmin bounding boxes is maintained.
+			xminBoundingBoxes = "maintain"
+			# Determine if there is space on the right to compensate.
+			if ((xmax + offsetXLeft + offsetXRight) < frameWidth):
+				RoiXMax = xmax + offsetXLeft + offsetXRight
+			elif ((xmax + offsetXLeft + offsetXRight) == frameWidth):
+				RoiXMax = frameWidth
+			# There is not enough space to compensate on the right.
+			else:
+				# If there is space on the right.
+				if ((xmax + offsetXRight) < frameWidth):
+					RoiXMax = xmax + offsetXRight
+				elif ((xmax + offsetXRight) == frameWidth):
+					RoiXMax = frameWidth
+				# If there is not space, then raise an error.
+				else:
+					raise ValueError("xmax({}) + offsetXRight({}) is inconsistent."\
+													.format(xmax, offsetXRight))
+		# If there is space on the left.
+		else:
+			# Compute RoiXMin.
+			RoiXMin = xmin - offsetXLeft
+			# Xmin bounding boxes is set to offsetXLeft
+			xminBoundingBoxes = "offsetXLeft"
+			# Check if there is space on the right.
+			if ((xmax + offsetXRight) < frameWidth):
+				RoiXMax = xmax + offsetXRight
+			elif ((xmax + offsetXRight) == frameWidth):
+				RoiXMax = frameWidth
+			# If there is not space on the right.
+			else:
+				RoiXMax = frameWidth
+				# Check if we can compensate on the left.
+				if ((xmin - offsetXLeft - offsetXRight) > 0):
+					RoiXMin = xmin - offsetXLeft - offsetXRight
+					# Xmin bounding boxes is set to offsetXLeft
+					xminBoundingBoxes = "offsetXLeftandoffsetXRight"
+				elif ((xmin - offsetXLeft - offsetXRight) == 0):
+					RoiXMin = 0
+					# Xmin bounding boxes is set to offsetXLeft
+					xminBoundingBoxes = "offsetXLeftandoffsetXRight"
+				# If we cannot compensate then leave it.
+				else:
+					pass
+
+		# Add space on y.
+		# If there is enough not enough space in the top.
+		if ((ymin - offsetYTop) < 0):
+			# Crop at origin.
+			RoiYMin = 0
+			# Ymin bounding boxes is maintained.
+			yminBoundingBoxes = "maintain"
+			# Determine if there is space in the bottom to compensate.
+			if ((ymax + offsetYTop + offsetYBottom) < frameHeight):
+				RoiYMax = ymax + offsetYTop + offsetYBottom
+			elif ((ymax + offsetYTop + offsetYBottom) == frameHeight):
+				RoiYMax = frameHeight
+			# There is not enough space in the bottom to compensate.
+			else:
+				# If there is space in the bottom.
+				if ((ymax + offsetYBottom) < frameHeight):
+					RoiYMax = ymax + offsetYBottom
+				elif ((ymax + offsetYBottom) == frameHeight):
+					RoiYMax = frameHeight
+				# If there is not space, then raise an error.
+				else:
+					raise ValueError("ymax({}) + offsetYBottom({}) is inconsistent"\
+														.format(ymax, RoiYMax))
+		# If there is space in the top.
+		else:
+			RoiYMin = ymin - offsetYTop
+			# Ymin bounding boxes is set to be the offsetYTop
+			yminBoundingBoxes = "offsetYTop"
+			# Check space in the bottom.
+			if ((ymax + offsetYBottom) < frameHeight):
+				RoiYMax = ymax + offsetYTop
+			elif ((ymax + offsetYBottom) == frameHeight):
+				RoiYMax = frameHeight
+			# There is not enough space in the bottom.
+			else:
+				RoiYMax = frameHeight
+				# Check if we can compensate in the top.
+				if ((ymin - offsetYTop - offsetYBottom) > 0):
+					RoiYMin = ymin - offsetYTop - offsetYBottom
+					yminBoundingBoxes = "offsetYTopandoffsetYBottom"
+				elif ((ymin - offsetYTop - offsetYBottom) == 0):
+					RoiYMin = 0
+					yminBoundingBoxes = "offsetYTopandoffsetYBottom"
+				# If there is not enough space, then leave it.
+				else:
+					pass
+
+		# Update bounding boxes
+		for bndbox in bndboxes:
+			# Compute width and height
+			widthBoundingBox = bndbox[2] - bndbox[0]
+			heightBoundingBox = bndbox[3] - bndbox[1]
+			# Check for x
+			if xminBoundingBoxes == "maintain":
+				print("maintain")
+				bndbox[0], bndbox[2] = bndbox[0], bndbox[0] + widthBoundingBox
+			elif xminBoundingBoxes == "offsetXLeft":
+				print("offsetXLeft ", offsetXLeft)
+				bndbox[0], bndbox[2] = offsetXLeft + (bndbox[0] - xmin), \
+															offsetXLeft + (bndbox[0] - xmin) + widthBoundingBox
+			elif xminBoundingBoxes == "offsetXLeftandoffsetXRight":
+				print("offsetXLeftandoffsetXRight", offsetXLeft, offsetXRight)
+				bndbox[0], bndbox[2] = offsetXLeft + offsetXRight + (bndbox[0] - xmin), \
+																offsetXLeft + offsetXRight + (bndbox[0] - xmin) + \
+																widthBoundingBox
+			# Check for y
+			if yminBoundingBoxes == "maintain":
+				print("maintain")
+				print(bndbox[1], ymin)
+				bndbox[1], bndbox[3] = bndbox[1], bndbox[1] + heightBoundingBox
+			elif yminBoundingBoxes == "offsetYTop":
+				print("offsetYTop ", offsetYTop)
+				bndbox[1], bndbox[3] = offsetYTop + (bndbox[1] - ymin), \
+																offsetYTop + (bndbox[1] - ymin) + heightBoundingBox
+			elif yminBoundingBoxes == "offsetYTopandoffsetYBottom":
+				print("offsetYTopandoffsetYBottom ", offsetYTop, offsetYBottom)
+				bndbox[1], bndbox[3] = offsetYTop + offsetYBottom + (bndbox[1] - ymin), \
+																offsetYTop + offsetYBottom + (bndbox[1] - ymin) + \
+																heightBoundingBox
+		# Fix limits and check assertions.
+		for bdx in bndboxes:
+			if (bdx[2] == (RoiXMax-RoiXMin)):
+				bdx[2] -= 1
+			if (bdx[3] == (RoiYMax-RoiYMin)):
+				bdx[3] -= 1
+			if (bdx[0] < 0):
+				raise ValueError("Xmin is negative")
+			if (bdx[0] > (RoiXMax-RoiXMin)):
+				print(bdx[0])
+				raise ValueError("Xmin is bigger than RoiX")
+			if (bdx[1] < 0):
+				raise ValueError("Ymin is negative")
+			if (bdx[1] > (RoiYMax-RoiYMin)):
+				raise ValueError("Ymin is bigger than RoiY")
+			if (bdx[2] < 0):
+				raise ValueError("Xmax is negative")
+			if (bdx[2] > (RoiXMax-RoiXMin)):
+				raise ValueError("Xmax is bigger than RoiX")
+			if (bdx[3] < 0):
+				raise ValueError("Ymax is negative")
+			if (bdx[3] > (RoiYMax-RoiYMin)):
+				raise ValueError("Ymax is bigger than RoiY")
+		if ((RoiXMax-RoiXMin) < offset-100):
+			raise ValueError("Cropping frame is much smaller than offset in x {}."\
+												.format((RoiXMax-RoiXMin)))
+		if ((RoiYMax-RoiYMin) < offset-100):
+			raise ValueError("Cropping frame is much smaller than offset in y {}."\
+												.format((RoiYMax-RoiYMin)))
+		# Return cropping coordinates and updated bounding boxes
+		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, bndboxes
+
 	def divideIntoPatches(self,
 												imageWidth = None,
 												imageHeight = None,
@@ -86,7 +297,7 @@ class ImagePreprocessing(object):
 																								 slideWindowWidth,
 																								 strideWidth,
 																								 imageWidth)
-			print("numberPatchesHeight: ", numberPatchesHeight, "numberPatchesWidth: ", numberPatchesWidth)
+			# print("numberPatchesHeight: ", numberPatchesHeight, "numberPatchesWidth: ", numberPatchesWidth)
 			for i in range(numberPatchesHeight):
 				for j in range(numberPatchesWidth):
 					patchesCoordinates.append([startPixelsHeight,\

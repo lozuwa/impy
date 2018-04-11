@@ -50,5 +50,45 @@ class ImageProcessing_test(unittest.TestCase):
 														padding = "SAME")
 		self.assertEqual(len(patches), (35))
 
+	def test_adjustImage(self):
+		# Local variables
+		frameHeight = 3096
+		frameWidth = 4128
+		offset = 1032
+		x_coordinates = []
+		y_coordinates = []
+		# Testing bounding boxes
+		# bndboxes = [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943], \
+		bndboxes = [[3723, 1461, 3832, 1547]]
+		# print("Bounding boxes before: ", bndboxes)
+		for bndbox in bndboxes:
+			x_coordinates.append(bndbox[0])
+			x_coordinates.append(bndbox[2])
+			y_coordinates.append(bndbox[1])
+			y_coordinates.append(bndbox[3])
+		min_x, min_y = min(x_coordinates), min(y_coordinates)
+		max_x, max_y = max(x_coordinates), max(y_coordinates)
+		# print("Cropping box: ", min_x, min_y, max_x, max_y)
+		RoiXMin, RoiYMin, RoiXMax,\
+		RoiYMax, bndboxes = self.prep.adjustImage(frameHeight = frameHeight,
+																					frameWidth = frameWidth,
+																					croppingCoordinates = [min_x, min_y,\
+																																	max_x, max_y],
+																					bndboxes = bndboxes,
+																					offset = offset)
+		# print("Cropping coordinates: ", RoiXMin, RoiYMin, RoiXMax, RoiYMax)
+		# print("Size after cropping: ", (RoiXMax-RoiXMin), (RoiYMax-RoiYMin))
+		# print("Bounding boxes after: ", bndboxes)
+		# Assertions
+		self.assertGreaterEqual((RoiXMax-RoiXMin), offset-100, "Cropping frame is " + \
+																														"much smaller than offset.")
+		self.assertGreaterEqual((RoiYMax-RoiYMin), offset-100, "Cropping frame is " + \
+																														"much smaller than offset.")
+		for bdx in bndboxes:
+			self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")
+			self.assertGreaterEqual(bdx[1], 0, "Ymin is negative")
+			self.assertLessEqual(bdx[2], frameWidth, "Xmax is negative")
+			self.assertLessEqual(bdx[3], frameHeight, "Ymax is negative")
+
 if __name__ == "__main__":
 	unittest.main()

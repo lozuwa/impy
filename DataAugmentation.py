@@ -73,17 +73,17 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		# Local variables.
 		xmin, ymin, xmax, ymax = bndbxCoordinates
 		# print("c: ", xmin, ymin, xmax, ymax)
-		# Initialize variables.
+		# Compute Roi's size.
 		heightRoi = ymax - ymin
 		widthRoi = xmax - xmin
 		# How much are we missing on each side?
 		if heightRoi >= offset:
-			missingUp = 10
-			missingDown = 10
+			missingTop = 10
+			missingBottom = 10
 		else:
 			missingY = offset - heightRoi
-			missingUp = missingY // 2
-			missingDown = missingY - missingUp
+			missingTop = missingY // 2
+			missingBottom = missingY - missingTop
 		if widthRoi >= offset:
 			missingLeft = 10
 			missingRight = 10
@@ -91,56 +91,104 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 			missingX = offset - widthRoi
 			missingLeft = missingX // 2
 			missingRight = missingX - missingLeft
-		# Initialize new ROI points.
-		ROIxmin, ROIxmax, ROIymin, ROIymax = 0, 0, 0, 0
-		# Compute the points.
-		# Fox x
-		if (xmin - missingLeft) <= 0:
-			# Xmin is determinable.
+		# Add space on x.
+		# If there is not enough space on the left.
+		if ((xmin - missingLeft) < 0):
+			# Crop at origin.
 			ROIxmin = 0
-			xmin = xmin
-			# xmax is just the width plus xmin.
-			xmax = xmin + widthRoi
-			ROIxmax = xmax + missingRight
-		else:
-			# xmin is determinable
-			ROIxmin = xmin - missingLeft
-			xmin = missingLeft
-			# Then, ROIxmax might be constrained.
-			if (xmax + missingRight) >= frameWidth:
+			# xmin = xmin
+			# Check space on the right
+			# If there is enough space on the right to compensate left.
+			if ((xmax + missingLeft + missingRight) < frameWidth):
+				ROIxmax = xmax + missingLeft + missingRight
+				# xmax = xmin + widthRoi
+			elif ((xmax + missingLeft + missingRight) == frameWidth):
 				ROIxmax = frameWidth
+				# xmax = frameWidth - 1
+			# There is not enough space for all the offset on the right
 			else:
-				ROIxmax = xmax + missingRight
-			# xmax is easily determinable.
-			xmax = xmin + widthRoi
-		# Fox y
-		if (ymin - missingUp) <= 0:
-			# Ymin is determinable.
-			ROIymin = 0
-			ymin = ymin
-			# Ymax is just the heigh plus ymin.
-			ymax = ymin + heightRoi
-			ROIymax = ymax + missingDown
+				# If there is only space for the right offset.
+				if ((xmax + missingRight) < frameWidth):
+					ROIxmax = xmax + missingRight
+					# xmax = xmin + widthRoi
+				# If the space is limited to the width
+				elif ((xmax + missingRight) == frameWidth):
+					ROIxmax = frameWidth
+					# xmax = frameWidth - 1
+				# Otherwise there is an inconsistency in the data.
+				else:
+					raise ValueError("xmax({}) + missingRight({}) is being inconsistent."\
+													.format(xmax, missingRight))
+		# If there is space on the left.
 		else:
-			# Ymin is determinable.
-			ROIymin = ymin - missingUp
-			ymin = missingUp
-			# Then, ROIymax might be constrained.
-			if (ymax + missingDown) >= frameHeight:
-				ROIymax = frameHeight
+			ROIxmin = xmin - missingLeft
+			xminBoundingBoxes = "maintain"
+			# Check space on the right.
+			# If there is space on the right.
+			if ((xmax + missingRight) < frameWidth):
+				ROIxmax = xmax + missingRight
+				xmaxBoundingBoxes = "missingRight"
+			elif ((xmax + missingRight) == frameWidth):
+				ROIxmax = frameWidth
+				xmaxBoundingBoxes = "missingRight"
+			# If there is not space on the right.
 			else:
-				ROIymax = ymax + missingDown
-			# Ymax is easily determinable.
-			ymax = ymin + heightRoi
-		if xmin > xmax:
-			raise Exception("Xmin is bigger")
-		if ymin > ymax:
-			raise Exception("Ymin is bigger")
-		# Check if xmax, ymax is not equal to the cropped patch.
-		if xmax == (ROIxmax - ROIxmin):
-			xmax -= 1
-		if ymax == (ROIymax - ROIymin):
-			ymax -= 1
+				# Crop at width.
+				ROIxmax = frameWidth
+				# Check if there is space on the left to compensate.
+				if ((xmin - missingLeft - missingRight) > 0):
+					ROIxmin = xmin - missingLeft - missingRight
+					xmaxBoundingBoxes = "missingRightandmissingLeft"
+				elif ((xmin - missingLeft - missingRight) == 0):
+					ROIxmin = 0
+					xmaxBoundingBoxes = "missingRightandmissingLeft"
+				# If there is not space on the left. So leave ROixmin.
+				else:
+					pass
+		# Add space on y.
+		# If there is not enough space in the top. 
+		if ((ymin - missingTop) < 0):
+			# Crop at origin
+			ROIymin = 0
+			# Check if there is space to compensate in the bottom.
+			if ((ymin + missingTop + missingBottom) < frameHeight):
+				ROIymax = missing + missingTop + missingBottom
+			elif ((ymin + missingTop + missingBottom) == frameHeight):
+				ROIymax = frameHeight
+			# If there is not enough space to compensate.
+			else:
+				# If there is space in the bottom.
+				if ((ymax + missingBottom) < frameHeight):
+					ROIymax = ymax + missingBottom
+				elif ((ymax + missingBottom) == frameHeight):
+					pass
+				# If there is not enough space, there is an inconsistency.
+				else:
+					raise ValueError("ymax({}) + missingBottom({}) is bigger than frameHeight({})"\
+													.format(ymax, missingBottom, frameHeight))
+		# If there is space in the top.
+		else:
+			# Crop at coordinate.
+			ROIymin = ymin - missingTop
+			# Check if there is space in the bottom.
+			if ((ymax + missingBottom) < frameHeight):
+				ROIymax = ymax + missingBottom
+			elif ((ymax + missingBottom) == frameHeight):
+				ROIymax = frameHeight
+			# If there is not space in the bottom, then 
+			# try to compensate in the top.
+			else:
+				ROIymax = frameHeight
+				# Check if there is space to compensate in the top.
+				if ((ymin - missingTop - missingBottom) > 0):
+					ROIymin = ymin - missingTop - missingBottom
+				elif ((ymin - missingTop - missingBottom) == 0):
+					ROIymin = 0
+				# If there is not space then leave it.
+				else:
+					pass
+		# Update bounding boxes
+		#TODO:
 		# Return cropping and bndbox coordinates
 		return (ROIxmin, ROIymin, ROIxmax, ROIymax,\
 				xmin, ymin, xmax, ymax)
@@ -591,3 +639,15 @@ class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 		return frame
 
 
+"""
+Bounding boxes before:  [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943]]
+Cropping coordinates:  1487 1728 2521 1943
+Size after cropping:  1034 215
+Bounding boxes after:  [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943]]
+Traceback (most recent call last):
+  File "resize.py", line 550, in <module>
+    process_bndbox(xml_name, img_name)
+  File "resize.py", line 359, in process_bndbox
+    assert (bdx[0] > 0) and (bdx[0] < (RoiXMax-RoiXMin)), "ERROR xmin"
+AssertionError: ERROR xmin
+"""
