@@ -9,51 +9,7 @@ Log:
 	Novemeber, 2017 -> Re-estructured class.
 	December, 2017 -> Researched most used data augmentation techniques.
 	March, 2018 -> Coded methods.
-	April, 2018 -> Redesigned the methods to support multiple bounding
-								 boxes (traditional data augmentation tools.)
-	April, 2018 -> Redefined list of augmenters:
-
-	Input to all methods: Given an image with its bounding boxes.
-	---------------
-	Space dimension
-	---------------
-	1. Scaling
-		Resize the image to (h' x w') and maintain the bounding boxes' sizes.
-	2. Crop
-		Crop the bounding boxes using random coordinates.
-	3. Pad (also translation)
-		Include exterior pixels to bounding boxes.
-	4. Flip horizontally
-		Flip the bounding boxes horizontally.
-	5. Flip vertically
-		Flip the bounding boxes vertically.
-	6. Rotation
-		Randomly rotates the bounding boxes.
-	7. Jitter boxes
-		Draws random color boxes inside the bounding boxes. 
-
-	---------------
-	Color dimension
-	---------------
-	1. Change color space
-		Change the color space of the image.
-	2. Gaussian blur 
-		Convolves the image with a Gaussian filter.
-	3. Average blur
-		Convolves the image with an average blur filter.
-	4. Median blur
-		Convolves the image with a median filter.
-	5. Sharpen
-		Convolves the image with a sharpening filter.
-	6. Add gaussian noise
-		Adds the image with a gaussian tensor of the same size. The 
-		tensor is produced with a normal distribution. 
-	7. Contrast
-		Multiplies the image pixels with a value C that produces a 
-		ligher or darker image.
-	8. Dropout
-		Sets pixels to zero with probability P. 
-	
+	April, 2018 -> Redesigned the methods to support multiple bounding boxes.
 """
 # Libraries
 from interface import implements
@@ -67,82 +23,31 @@ try:
 except:
 	from BoundingBoxDataAugmentationMethods import *
 
-class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
+class DataAugmentation(implements(BoundingBoxDataAugmentationMethods)):
 	"""
-	BoundingBoxAugmenters class. This class implements a set of data augmentation
-	tools for bouding boxes.
+	DataAugmentation class. This class implements a set of data augmentation
+	tools for bouding boxes and images.
 	IMPORTANT
 	- This class assumes input images are numpy tensors that follow the opencv
 	color format BGR.
 	"""
 	def __init__(self):
-		super(BoundingBoxAugmenters, self).__init__()
+		# Super class
+		super(DataAugmentation, self).__init__()
 
-	def scale(self,
-						frame = None,
-						boundingBoxes = None,
-						resizeSize = None,
-						interpolationMethod = None):
+	def cropWithTranslation(self,
+													frameHeight = None,
+													frameWidth = None,
+													bndbxCoordinates = None,
+													offset = None):
 		"""
-		Scales an image with its bounding boxes to another size while maintaing the 
-		coordinates of the bounding boxes.
-		Args:
-			frame: A tensor that contains an image.
-			boundingBoxes: A list of lists that contains the coordinates of the bounding
-											boxes that are part of the image.
-			resizeSize: A tuple that contains the resizing values.
-			interpolationMethod: Set the type of interpolation method. 
-														(INTER_NEAREST -> 0,
-														INTER_LINEAR -> 1, 
-														INTER_CUBIC -> 2, 
-														INTER_LANCZOS4 -> 4)
-		Returns:
-			An image that has been scaled and a list of lists that contains the new 
-			coordinates of the bounding boxes.
-		"""
-		# Local variable assertions
-		if (resizeSize == None):
-			raise ValueError("resizeSize cannot be empty.")
-		elif (type(resizeSize) != tuple):
-			raise ValueError("resizeSize has to be a tuple (width, height)")
-		else:
-			if (len(resizeSize) != 2):
-				raise ValueError("resizeSize must be a tuple of size 2 (width, height)")
-			else:
-				resizeWidth, resizeHeight = resizeSize
-				if (resizeWidth == 0 or resizeHeight == 0):
-					raise ValueError("Neither width nor height can be 0.")
-		if (interpolationMethod == None):
-			interpolationMethod = 2
-		# Local variables
-		height, width, depth = frame.shape
-		reduX = height / resizeHeight
-		reduY = width / resizeWidth
-		# Scale image
-		frame = cv2.resize(frame.copy(), resizeSize, interpolationMethod)
-		# Fix bounding boxes
-		for boundingBox in boundingBoxes:
-			# Decode bounding box
-			ix, iy, x, y = boundingBox
-			# Update its values with the resizing factor
-			ix, iy, x, y = ix // reduX, iy // reduY, x // reduX, y // reduY
-			# Check variables are not the same as the right and bottom boundaries
-			ix, iy, x, y = Data
-		# Return values
-		return frame, boundingBoxes
-
-	def translate(self,
-								frameHeight = None,
-								frameWidth = None,
-								boundingBoxes = None,
-								offset = None):
-		"""
-		Given an image and its bounding boxes, this method translates the bounding boxes
-		to create an alteration of the image.
+		Crops the bounding box from the frame giving it an asymetric 
+		offset at each side so translation is simulated inside the context
+		of the cropped patch.
 		Args:
 			frameHeight: An int that represents the height of the frame.
 			frameWidth: An int that representst he width of the frame.
-			boundingBoxes: A tuple of ints that contains the coordinates of the
+			bndbxCoordinates: A tuple of ints that contains the coordinates of the
 												bounding box in the frame.
 			offset: An int that contains the amount of space that will be used to limit
 							the size of the cropped patch.
@@ -150,8 +55,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 			An 8-sized tuple that contains the coordinates to crop the original frame
 			and the new coordinates of the bounding box inside the cropped patch.
 		Example:
-			Given an image and its bounding boxes, translate the bounding boxes in the 
-			allowed space the image .
+			Given an image and a bounding box, crop the bndbox with an offset to 
+			maintain context of the object.
 				-------------------
 				|                 |
 				|     ---         |
@@ -172,10 +77,166 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 				|                 |           
 				-------------------
 		"""
+		# Local variables
+		# Decode bndbox
+		xmin, ymin, xmax, ymax = bndbxCoordinates
+		# Compensation
+		compensateX, compensateY = 0, 0
+		# Save for later
+		xmax_, xmin_, ymax_, ymin_ = xmax, xmin, ymax, ymin
+		# Size of the bounding box
+		widthRoi = xmax - xmin
+		heightRoi = ymax - ymin
+		
+		# How much are we missing on each side
+		# If the width is bigger than the pretended image size, then 
+		# add a small amount of space.
+		if widthRoi >= offset:
+			missingX = 10
+		# Otherwise, save the amount of space that we require.
+		else:
+			missingX = offset - widthRoi
+		# If the height is bigger than the pretended image size, then
+		# add a small amount of space.
+		if heightRoi >= offset:
+			missingY = 10
+		else:
+			missingY = offset - heightRoi
+
+		# Define how much to add on each side of the bounding box.
+		spaceXMin = int(random.random()*(missingX-5))
+		spaceXMax = missingX - spaceXMin
+		spaceYMin = int(random.random()*(missingY-5))
+		spaceYMax = missingY - spaceYMin
+		# print("missingX: {}, missingY: {}".format(missingX, missingY))
+		# print("spaceXMin: {} spaceXMax: {} spaceYMin: {} spaceYMax: {}"/
+		# .format(spaceXMin, spaceXMax, spaceYMin, spaceYMax))
+		
+		# Compute the roi and the bounding box coordinates.
+		# X
+		# If there is space on the left, then crop.
+		if (xmin - spaceXMin) > 0:
+			# Crop on the left, no restriction.
+			ROIxmin = xmin - spaceXMin
+			# Xmin is the space on the left.
+			xmin = spaceXMin
+			# That means xmax may or may not be out of bounds.
+			# If ROIxmax is out of bounds, then crop at width.
+			if (xmax + spaceXMax) >= frameWidth:
+				# Crop at width.
+				ROIxmax = frameWidth
+				# Reduce ROIxmin and xmin to compensate.
+				widthRoiC = ROIxmax - ROIxmin
+				if (offset - widthRoiC) >= 0:
+					compensateX = (offset - widthRoiC)
+				else:
+					compensateX = 0
+				ROIxmin -= compensateX
+				xmin += compensateX
+			# If xmax is not out of bounds, then add xmax and spaceXMax.
+			else:
+				ROIxmax = xmax + spaceXMax
+			# Xmax is determinable
+			# xmax = xmin + widthRoi
+		# If there is not space on the left, then crop at origin.
+		else:
+			# Crop at origin.
+			ROIxmin = 0
+			# Xmin is maintained
+			xmin = xmin
+			# ROIxmax and xmax are determinable
+			ROIxmax = xmax + spaceXMax 
+			# Compensate in xmax
+			widthRoiC = ROIxmax - ROIxmin
+			if (offset - widthRoiC) >= 0:
+				compensateX = (offset - widthRoiC)
+			else:
+				compensateX = 0
+			ROIxmax += compensateX
+			# Xmax is determinable
+			# xmax = xmin + widthRoi
+		# Xmax is determinable
+		xmax = xmin + widthRoi
+
+		# Y
+		# If there is space on the top, then crop.
+		if (ymin - spaceYMin) > 0:
+			# Crop on the top, no restriction.
+			ROIymin = ymin - spaceYMin
+			# Ymin should be the spaceYMin.
+			ymin = spaceYMin
+			# That means ROIymax may or may not be out of bounds.
+			# If ROIymax is out of bounds.
+			if (ymax + spaceYMax) >= frameHeight:
+				# Crop at height.
+				ROIymax = frameHeight
+				heightRoiC = ROIymax - ROIymin
+				# Compensate ROIymin.
+				if (offset - heightRoiC) >= 0:
+					compensateY = offset - heightRoiC
+				else:
+					compensateY = 0
+				ROIymin -= compensateY
+				ymin += compensateY
+			# Otherwise, ROIymax is ymax + spaceYMax
+			else:
+				ROIymax = ymax + spaceYMax
+			# Ymax should be determinable.
+			# ymax = ymin + heightRoi
+		# If there is no space on the top, then crop at origin.
+		else:
+			# Crop at origin.
+			ROIymin = 0
+			# Ymin is maintained.
+			ymin = ymin
+			# ROIYmax and ymax are determinable.
+			ROIymax = ymax + spaceYMax
+			# Compensate in ROIymax.
+			heightRoiC = ROIymax - ROIymin
+			if (offset - heightRoiC):
+				compensateY = offset - heightRoiC
+			else:
+				compensateY = 0
+			ROIymax += compensateY
+			# Ymax is determinable.
+			# ymax = ymin + heightRoi
+		# Ymax is determinable
+		ymax = ymin + heightRoi
+
+		# Check sizes are the maintained
+		assert (ymax-ymin) == (ymax_-ymin_), "Heights are not the same : {}, {} {}".\
+											format((ymax-ymin), ymax_, ymin_)
+		assert (xmax-xmin) == (xmax_-xmin_), "Widths are not the same : {}, {} {}".\
+											format((xmax-xmin), xmax_, xmin_)
+
+		# Check if xmax, ymax is not equal to the cropped patch
+		if xmax == (ROIxmax - ROIxmin):
+			xmax -= 1
+		if ymax == (ROIymax - ROIymin):
+			ymax -= 1
+
+		# print("Before: {},{},{},{}".format(xmin_, xmax_,\
+		# 																		ymin_, ymax_))
+		# print("ROI: {}, {}, {}, {}".format(ROIxmax, ROIxmin,\
+		# 																	ROIymax, ROIymin))
+		# print("Compensate: x: {}, y: {}".format(compensateX, compensateY))
+		# print("Coordinates: {},{},{},{}".format(xmin, xmax,\
+		# 																				ymin, ymax))
+
+		assert ymin >= 0, "Ymin is negative"
+		assert ymax >= 0, "Ymax is negative"
+		assert xmin >= 0, "Xmin is negative"
+		assert xmax >= 0, "Xmax is negative"
+
+		assert ymax != (ROIymax - ROIymin), "ymax is equal to frame height."
+		assert xmax != (ROIxmax - ROIxmin), "xmax is equal to frame width."
+
+		# Return the computed coordinates
+		return (ROIxmin, ROIxmax, ROIymin, ROIymax, xmin, xmax, ymin, ymax)
 
 	def jitterBoxes(self, frame = None, quantity = None):
 		"""
-		Draws random jitter boxes in the bounding boxes.
+		Draws random jitter boxes in the input frame.
 		Args:
 			frame: A tensor that contains an image.
 			quantity: An int that tells how many jitter boxes to create inside 
@@ -204,59 +265,29 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 		# Return frame
 		return frame
 
-	def horizontalFlip(self, frame = None, boundingBoxes = None):
+	def horizontalFlip(self, frame = None):
 		"""
 		Flip a bouding box by its horizontal axis.
 		Args:
 			frame: A tensor that contains an image with its bounding boxes.
 		Returns:
-			A tensor that has been flipped by its horizontal axis and a list
-			of lists that contains the coordinates of the bounding boxes. 
+			A tensor that has been flipped by its horizontal axis.
 		"""
-				# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
-		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
 		# Flip
-		frame = cv2.flip(frame, 1)
-		height, width, depth = frame.shape
-		# Flip bounding boxes.
-		for bndBox in boundingBoxes:
-			aux = bndBox[0]
-			bndBox[0] = width - bndBox[2]
-			bndBox[2] = bndBox[0] + (bndBox[2] - aux)
-		return frame, boundingBoxes
+		frame = cv2.flip(frame, 0)
+		return frame
 
-	def verticalFlip(self, frame = None, boundingBoxes = None):
+	def verticalFlip(self, frame = None):
 		"""
 		Flip a bouding box by its vertical axis.
 		Args:
 			frame: A tensor that contains a cropped bouding box from its frame.
 		Returns:
-			A tensor that has been flipped by its vertical axis and a list of lists 
-			that contains the coordinates of the bounding boxes.
+			A tensor that has been flipped by its vertical axis.
 		"""
-		# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
-		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
-		# Flip frame with opencv.
-		frame = cv2.flip(frame, 0)
-		height, width, depth = frame.shape
-		# Flip bounding boxes.
-		for bndBox in boundingBoxes:
-			aux = bndBox[1]
-			bndBox[1] = height - bndBox[3]
-			bndBox[3] = bndBox[1] + (bndBox[3] - aux)
-		return frame, boundingBoxes
+		# Flip
+		frame = cv2.flip(frame, 1)
+		return frame
 
 	def randomRotation(self, frame = None, bndbox = None, theta = None):
 		"""
@@ -448,7 +479,21 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 		eigvals, eigvects = np.linalg.eigh(cov)
 		pca = np.sqrt(eigvals)*eigvects
 		perturb = [int(each) for each in (pca*np.random.randn(3)*0.1).sum(axis=1)]
-		# print("Perturbation: ", perturb)
+		print("Perturbation: ", perturb)
 		# Add perturbation vector to frame
 		frame = frame + perturb
 		return frame
+
+
+"""
+Bounding boxes before:  [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943]]
+Cropping coordinates:  1487 1728 2521 1943
+Size after cropping:  1034 215
+Bounding boxes after:  [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943]]
+Traceback (most recent call last):
+  File "resize.py", line 550, in <module>
+    process_bndbox(xml_name, img_name)
+  File "resize.py", line 359, in process_bndbox
+    assert (bdx[0] > 0) and (bdx[0] < (RoiXMax-RoiXMin)), "ERROR xmin"
+AssertionError: ERROR xmin
+"""

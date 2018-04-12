@@ -55,26 +55,15 @@ class ImageProcessing_test(unittest.TestCase):
 		frameHeight = 3096
 		frameWidth = 4128
 		offset = 1032
-		x_coordinates = []
-		y_coordinates = []
 		# Testing bounding boxes
 		# bndboxes = [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943], \
 		bndboxes = [[3723, 1461, 3832, 1547]]
 		# print("Bounding boxes before: ", bndboxes)
-		for bndbox in bndboxes:
-			x_coordinates.append(bndbox[0])
-			x_coordinates.append(bndbox[2])
-			y_coordinates.append(bndbox[1])
-			y_coordinates.append(bndbox[3])
-		min_x, min_y = min(x_coordinates), min(y_coordinates)
-		max_x, max_y = max(x_coordinates), max(y_coordinates)
 		# print("Cropping box: ", min_x, min_y, max_x, max_y)
 		RoiXMin, RoiYMin, RoiXMax,\
 		RoiYMax, bndboxes = self.prep.adjustImage(frameHeight = frameHeight,
 																					frameWidth = frameWidth,
-																					croppingCoordinates = [min_x, min_y,\
-																																	max_x, max_y],
-																					bndboxes = bndboxes,
+																					boundingBoxes = bndboxes,
 																					offset = offset)
 		# print("Cropping coordinates: ", RoiXMin, RoiYMin, RoiXMax, RoiYMax)
 		# print("Size after cropping: ", (RoiXMax-RoiXMin), (RoiYMax-RoiYMin))

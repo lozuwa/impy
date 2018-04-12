@@ -29,37 +29,80 @@ class ImagePreprocessing(object):
 	def adjustImage(self,
 								frameHeight = None,
 								frameWidth = None,
-								croppingCoordinates = None,
-								bndboxes = None,
+								boundingBoxes = None,
 								offset = None):
 		"""
-		Adjusts a cropped frame to the desired size using its parent image
-		while maintaing the coordinates.
+		Given an image and its bounding boxes, this method creates an image with 
+		a size specified by the offset. The bounding boxes are centered and the missing
+		space is padded with the image to avoid losing context.
 		Args:
-			frameHeight: An int that contains the height of the image.
-			frameWidth: An int that contains the width of the image.
-			croppingCoordinates: A list of ints that contains the coordinates to crop an image.
-			bndboxes: A list of lists that contains bounding boxes coordinates.
-			offset: An int that contains the desired size of the cropped frame.
+			frameHeight: An int that represents the height of the frame.
+			frameWidth: An int that representst he width of the frame.
+			boundingBoxes: A list of lists that contains the coordinates of the
+												bounding boxes in the frame.
+			offset: An int that contains the amount of space to give at each side 
+							of the bounding box.
 		Returns:
-			A list that contains the coordinates to crop the parent image and a list of lists that
-			contains the bounding boxes of the cropped frame. 
-		Raises:
-			When bounding boxes are not inside the ROI limitation.
+			An 8-sized tuple that contains the coordinates to crop the original frame
+			and the new coordinates of the bounding box inside the cropped patch.
+		Example:
+			Given an image and its bounding boxes, find the boundaries that enclose
+			all the bounding boxes.
+				-------------------------     	------------------------
+				|                       |      |                       |
+				|     ---               |      | (x0,y0)------         |
+				|     | |               |      |     |        |        |
+				|     ---               |      |     |        |        |
+				|                       |      |     |        |        |
+				|            ---        |  ->  |     |        |        |
+				|            | |        |      |     |        |        |
+				|            ---        |      |     ------(x1,y1)     |
+				|                       |      |                       |
+				|                       |      |                       |
+				|                       |      |                       |
+				-------------------------      -------------------------
+			Then, center the image by padding its sides with the parent image. 
+			This is important in deep learning to avoid losing context.
+				--------------------------
+				|  Roi----------------    |
+				| |(x0,y0)------     |    |
+				| |    | --     |    |    |
+				| |    ||  |    |    |    |
+				| |    | --     |    |    |
+				| |    |        |    |    |
+				| |    |     -- |    |    |
+				| |    |    |  ||    |    |
+				| |    |     -- |    |    |
+				| |    ------(x1,y1) |    |
+				| |                  |    |
+				|  ------------------Roi  |
+				|                         |
+				-------------------------
 		"""
 		# Local variable assertions
-		if frameHeight == None:
+		if (frameHeight == None):
 			raise Exception("Parameter {} cannot be empty.".format("frameHeight"))
-		if frameWidth == None:
+		if (frameWidth == None):
 			raise Exception("Parameter {} cannot be empty.".format("frameWidth"))
-		if croppingCoordinates == None:
-			raise Exception("Parameter {} cannot be empty.".format("croppingCoordinates"))
-		if bndboxes == None:
+		if (boundingBoxes == None):
 			raise Exception("Parameter {} cannot be empty.".format("bndboxes"))
-		if offset == None:
+		if (offset == None):
 			raise Exception("Parameter {} cannot be empty.".format("offset"))
-		# Local variables
-		xmin, ymin, xmax, ymax = croppingCoordinates
+		if (frameWidth < offset):
+			raise Exception("offset cannot be smaller than image's width.")
+		if (frameHeight < offset):
+			raise Exception("offset cannot be smaller than image's height.")			
+		# Local variables.
+		x_coordinates = []
+		y_coordinates = []
+		# Compute the boundaries of the bounding boxes.
+		for bndbox in boundingBoxes:
+			x_coordinates.append(bndbox[0])
+			x_coordinates.append(bndbox[2])
+			y_coordinates.append(bndbox[1])
+			y_coordinates.append(bndbox[3])
+		xmin, xmax = min(x_coordinates), max(x_coordinates)
+		ymin, ymax = min(y_coordinates), max(y_coordinates)
 		RoiX, RoiY = (xmax - xmin), (ymax - ymin)
 		if (RoiY >= offset):
 			offsetY = 10
@@ -95,10 +138,12 @@ class ImagePreprocessing(object):
 					RoiXMax = xmax + offsetXRight
 				elif ((xmax + offsetXRight) == frameWidth):
 					RoiXMax = frameWidth
-				# If there is not space, then raise an error.
+				# If there is not space, then the x offset might have been set to 10.
+				# But the image is still too small. So crop at width.
 				else:
-					raise ValueError("xmax({}) + offsetXRight({}) is inconsistent."\
-													.format(xmax, offsetXRight))
+					RoiXMax = frameWidth
+					# raise ValueError("xmax({}) + offsetXRight({}) is inconsistent."\
+					# 								.format(xmax, offsetXRight))
 		# If there is space on the left.
 		else:
 			# Compute RoiXMin.
@@ -145,10 +190,12 @@ class ImagePreprocessing(object):
 					RoiYMax = ymax + offsetYBottom
 				elif ((ymax + offsetYBottom) == frameHeight):
 					RoiYMax = frameHeight
-				# If there is not space, then raise an error.
+				# If there is not space, then the y offset might have been set to 10.
+				# But the image is still too small. So crop at height.
 				else:
-					raise ValueError("ymax({}) + offsetYBottom({}) is inconsistent"\
-														.format(ymax, RoiYMax))
+					RoiYMax = frameHeight
+					# raise ValueError("ymax({}) + offsetYBottom({}) is inconsistent"\
+					# 									.format(ymax, RoiYMax))
 		# If there is space in the top.
 		else:
 			RoiYMin = ymin - offsetYTop
@@ -174,39 +221,39 @@ class ImagePreprocessing(object):
 					pass
 
 		# Update bounding boxes
-		for bndbox in bndboxes:
+		for bndbox in boundingBoxes:
 			# Compute width and height
 			widthBoundingBox = bndbox[2] - bndbox[0]
 			heightBoundingBox = bndbox[3] - bndbox[1]
 			# Check for x
 			if xminBoundingBoxes == "maintain":
-				print("maintain")
+				# print("maintain")
 				bndbox[0], bndbox[2] = bndbox[0], bndbox[0] + widthBoundingBox
 			elif xminBoundingBoxes == "offsetXLeft":
-				print("offsetXLeft ", offsetXLeft)
+				# print("offsetXLeft ", offsetXLeft)
 				bndbox[0], bndbox[2] = offsetXLeft + (bndbox[0] - xmin), \
 															offsetXLeft + (bndbox[0] - xmin) + widthBoundingBox
 			elif xminBoundingBoxes == "offsetXLeftandoffsetXRight":
-				print("offsetXLeftandoffsetXRight", offsetXLeft, offsetXRight)
+				# print("offsetXLeftandoffsetXRight", offsetXLeft, offsetXRight)
 				bndbox[0], bndbox[2] = offsetXLeft + offsetXRight + (bndbox[0] - xmin), \
 																offsetXLeft + offsetXRight + (bndbox[0] - xmin) + \
 																widthBoundingBox
 			# Check for y
 			if yminBoundingBoxes == "maintain":
-				print("maintain")
+				# print("maintain")
 				print(bndbox[1], ymin)
 				bndbox[1], bndbox[3] = bndbox[1], bndbox[1] + heightBoundingBox
 			elif yminBoundingBoxes == "offsetYTop":
-				print("offsetYTop ", offsetYTop)
+				# print("offsetYTop ", offsetYTop)
 				bndbox[1], bndbox[3] = offsetYTop + (bndbox[1] - ymin), \
 																offsetYTop + (bndbox[1] - ymin) + heightBoundingBox
 			elif yminBoundingBoxes == "offsetYTopandoffsetYBottom":
-				print("offsetYTopandoffsetYBottom ", offsetYTop, offsetYBottom)
+				# print("offsetYTopandoffsetYBottom ", offsetYTop, offsetYBottom)
 				bndbox[1], bndbox[3] = offsetYTop + offsetYBottom + (bndbox[1] - ymin), \
 																offsetYTop + offsetYBottom + (bndbox[1] - ymin) + \
 																heightBoundingBox
 		# Fix limits and check assertions.
-		for bdx in bndboxes:
+		for bdx in boundingBoxes:
 			if (bdx[2] == (RoiXMax-RoiXMin)):
 				bdx[2] -= 1
 			if (bdx[3] == (RoiYMax-RoiYMin)):
@@ -235,7 +282,7 @@ class ImagePreprocessing(object):
 			raise ValueError("Cropping frame is much smaller than offset in y {}."\
 												.format((RoiYMax-RoiYMin)))
 		# Return cropping coordinates and updated bounding boxes
-		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, bndboxes
+		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, boundingBoxes
 
 	def divideIntoPatches(self,
 												imageWidth = None,

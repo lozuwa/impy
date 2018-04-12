@@ -19,9 +19,9 @@ Log:
 	---------------
 	1. Scaling
 		Resize the image to (h' x w') and maintain the bounding boxes' sizes.
-	2. Crop
+	2. Random crop
 		Crop the bounding boxes using random coordinates.
-	3. Pad (also translation)
+	3. Random pad (also translation)
 		Include exterior pixels to bounding boxes.
 	4. Flip horizontally
 		Flip the bounding boxes horizontally.
@@ -116,20 +116,130 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 			interpolationMethod = 2
 		# Local variables
 		height, width, depth = frame.shape
-		reduX = height / resizeHeight
-		reduY = width / resizeWidth
+		reduY = height / resizeHeight
+		reduX = width / resizeWidth
 		# Scale image
 		frame = cv2.resize(frame.copy(), resizeSize, interpolationMethod)
 		# Fix bounding boxes
-		for boundingBox in boundingBoxes:
+		for i in range(len(boundingBoxes)):
 			# Decode bounding box
-			ix, iy, x, y = boundingBox
-			# Update its values with the resizing factor
+			ix, iy, x, y = boundingBoxes[i]
+			# Update values with the resizing factor
 			ix, iy, x, y = ix // reduX, iy // reduY, x // reduX, y // reduY
 			# Check variables are not the same as the right and bottom boundaries
-			ix, iy, x, y = Data
+			x, y = BoundingBoxAugmenters.checkBoundaries(x, y, width, height)
+			# Update list
+			boundingBoxes[i] = [i for i in map(int, [ix, iy, x, y])]
 		# Return values
 		return frame, boundingBoxes
+
+	def randomCrop(self,
+								boundingBoxes = None,
+								size = None):
+		"""
+		Crop a list of bounding boxes.
+		Args:
+			boundingBoxes: A list of lists that contains the coordinates of bounding 
+										boxes.
+			size: A tuple that contains the size of the crops to be performed.
+		Returns:
+			A list of lists with the updated coordinates of the bounding boxes after 
+			being cropped.
+		"""
+		# Local variables
+		if (boundingBoxes == None):
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		if (len(size) == 3):
+			height, width, depth = size
+		elif (len(size) == 2):
+			height, width = size
+		else:
+			raise Exception("Specify a size for the crops.")
+		# Iterate
+		for i in range(len(boundingBoxes)):
+			# Decode bndbox
+			ix, iy, x, y = boundingBoxes[i]
+			# Compute width and height
+			widthBndbox, heightBndbox = (x - ix), (y - iy)
+			# Generate random number for the x axis
+			rix = int(ix + (np.random.rand()*((x - width) - ix + 1)))
+			# Generate random number for the y axis
+			riy = int(iy + (np.random.rand()*((y - height) - iy + 1)))
+			# Compute crop
+			boundingBoxes[i] = rix, riy, rix + width, riy + height
+		# Return values
+		return boundingBoxes
+
+	def randomPad(self,
+								frameHeight = None,
+								frameWidth = None,
+								boundingBoxes = None,
+								size = None):
+		"""
+		Includes pixels from outside the bounding box as padding.
+		Args:
+			frameHeight: An int that contains the height of the frame.
+			frameWidth: An int that contains the width of the frame.
+			boundingBoxes: A list of lists that contains coordinates of bounding boxes.
+			size: A tuple that contains the size of pixels to pad the image with.
+		Returns:
+			A list of lists that contains the coordinates of the bounding
+			boxes padded with exterior pixels of the parent image.
+		"""
+		# Assertions
+		if (frameHeight == None):
+			raise ValueError("Frame height cannot be empty.")
+		if (frameWidth == None):
+			raise ValueError("Frame width cannot be empty.")
+		if (boundingBoxes == None):
+			raise ValueError("Bounding boxes cannot be empty.")
+		if (len(size) == 1):
+			padWidth, padHeight = size[0], 0
+		if (len(size) == 2):
+			padWidth, padHeight = size[0], size[1]
+		# Verify that padding is possible
+		x_coordinates = []
+		y_coordinates = []
+		for bndbox in boundingBoxes:
+			x_coordinates.append(bndbox[0])
+			x_coordinates.append(bndbox[1])
+			y_coordinates.append(bndbox[2])
+			y_coordinates.append(bndbox[3])
+		minx, miny, maxx, maxy = min(x_coordinates), min(y_coordinates), \
+															max(x_coordinates), max(y_coordinates)
+		if (minx == 0):
+			raise ValueError("The bounding box limit is 0 (x), cannot pad because there are" \
+											+ "no pixels to add.")
+		if (miny == 0):
+			raise ValueError("The bounding box limit is 0 (y), cannot pad because there are" \
+											+ "no pixels to add.")
+		if (maxx == frameWidth):
+			raise ValueError("The bounding box limit is the width of the frame (x)," + \
+													" cannot pad because there are no pixels to add.")
+		if (maxy == frameHeight):
+			raise ValueError("The bounding box limit is the height of the frame (y)," + \
+													" cannot pad because there are no pixels to add.")
+		for bndbox in boundingBoxes:
+			# Decode bounding box
+			ix, iy, x, y = bndbox
+			# Determine how much space is there to pad on each side.
+			padLeft = ix
+			padRight = frameWidth - x
+			padTop = iy
+			padBottom = frameHeight - y
+			if ((padLeft + padRight) >= padWidth):
+				pass
+			if ((padTop + padBottom) >= padHeight):
+				pass
+			# Generate random numbers
+			padx = np.random.rand()*width + 2
+			pady = np.random.rand()*height + 2
+			paddingLeft = padx // 2
+			paddingRight = padx - paddingLeft
+			paddingTop = pady // 2
+			paddingBottom = pady - paddingTop
+
+
 
 	def translate(self,
 								frameHeight = None,
@@ -355,6 +465,23 @@ class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
 		x_result = int((x*math.cos(theta)) - (y*math.sin(theta)))
 		y_result = int((x*math.sin(theta)) + (y*math.cos(theta)))
 		return x_result, y_result
+
+	@staticmethod
+	def checkBoundaries(x = None, y = None, width = None, height = None):
+		"""
+		Checks if the boundaries are in good shape.
+		Args:
+			x: An int that contains a coordinate.
+			y: An int that contains a coordinate.
+			width: An int that contains the x boundary of a frame.
+			height: An int that contains the y boundary of a frame.
+		"""
+		# End boundaries
+		if (x == width):
+			x -= 1
+		if (y == height):
+			y -= 1
+		return x, y
 
 	def addRandomBlur(self, frame = None, sigma = None):
 		"""
