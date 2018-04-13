@@ -52,6 +52,19 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		self.assertAlmostEqual(np.abs(bndboxes[0][1] - 250)//10, 0)
 		self.assertAlmostEqual(np.abs(bndboxes[0][2] - 375)//10, 0)
 		self.assertAlmostEqual(np.abs(bndboxes[0][3] - 375)//10, 0)
+		# Stretch test
+		boundingBoxes = [[100, 100, 150, 150]]
+		resizeSize = (400, 200)
+		scaled_frame, bndboxes = self.augmenter.scale(frame = frame,
+																									boundingBoxes = boundingBoxes,
+																									resizeSize = resizeSize,
+																									interpolationMethod = 2)
+		self.assertEqual(scaled_frame.shape[0], 200)
+		self.assertEqual(scaled_frame.shape[1], 400)
+		self.assertAlmostEqual(bndboxes[0][0], 200)
+		self.assertAlmostEqual(bndboxes[0][1], 100)
+		self.assertAlmostEqual(bndboxes[0][2], 300)
+		self.assertAlmostEqual(bndboxes[0][3], 150)
 
 	def test_random_crop(self):
 		# Prepare data

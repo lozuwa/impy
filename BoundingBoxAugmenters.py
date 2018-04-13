@@ -51,6 +51,11 @@ try:
 except:
 	from BoundingBoxAugmentationMethods import *
 
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
+
 class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 	"""
 	BoundingBoxAugmenters class. This class implements a set of data augmentation
@@ -63,6 +68,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 		super(BoundingBoxAugmenters, self).__init__()
 		# Create an object of ImagePreprocessing
 		self.prep = ImagePreprocessing()
+		self.assertion = AssertDataTypes()
 
 	def scale(self,
 						frame = None,
@@ -87,6 +93,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			coordinates of the bounding boxes.
 		"""
 		# Local variable assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (resizeSize == None):
 			raise ValueError("resizeSize cannot be empty.")
 		elif (type(resizeSize) != tuple):
@@ -251,11 +259,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			A tensor that contains an image altered by jitter boxes.
 		"""
 		# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame cannot be empty.")
-		except:
-			pass
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise ValueError("Bounding boxes cannot be empty.")
 		if (quantity == None):
@@ -296,11 +301,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			A tensor whose bounding boxes have been flipped by its horizontal axis.
 		"""
 		# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise Exception("Bounding boxes parameter cannot be empty.")
 		# Flip only the pixels inside the bounding boxes
@@ -325,11 +327,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			A tensor whose bounding boxes have been flipped by its vertical axis.
 		"""
 		# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise Exception("Bounding boxes parameter cannot be empty.")
 		# Flip only the pixels inside the bounding boxes
@@ -359,11 +358,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			that contains the rotated coordinates of the bounding box.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be emtpy.")
-		except:
-			pass
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if boundingBoxes == None:
 			raise Exception("Bnbdbox cannot be empty")
 		if theta == None:
@@ -407,6 +403,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
 			A tensor with the altered pixels.
 		"""
 		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (size == None):

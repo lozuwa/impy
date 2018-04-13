@@ -13,45 +13,42 @@ Log:
 								 boxes (traditional data augmentation tools.)
 	April, 2018 -> Redefined list of augmenters:
 
-	Input to all methods: Given an image with its bounding boxes.
 	---------------
 	Space dimension
 	---------------
 	1. Scaling
-		Resize the image to (h' x w') and maintain the bounding boxes' sizes.
-	2. Crop
-		Crop the bounding boxes using random coordinates.
-	3. Pad (also translation)
-		Include exterior pixels to bounding boxes.
+		Resize the image to (h' x w').
+	2. Translate
+		Translate an image.
+	3. Jitter boxes
+		Draws random color boxes inside the image. 
 	4. Flip horizontally
-		Flip the bounding boxes horizontally.
+		Flip the image horizontally.
 	5. Flip vertically
-		Flip the bounding boxes vertically.
+		Flip the image vertically.
 	6. Rotation
 		Randomly rotates the bounding boxes.
-	7. Jitter boxes
-		Draws random color boxes inside the bounding boxes. 
 
 	---------------
 	Color dimension
 	---------------
-	1. Change color space
-		Change the color space of the image.
-	2. Gaussian blur 
+	1. Invert color
+		Invert the color space of the image.
+	2. Histogram equalization
+		Equalize the contrast of an image.
+	3. Change brightness
+		Change the brightness of an image.
+	4. Random sharpening
+		Randomly add sharpening to an image.
+	5. Add gaussian noise
+		Add normal noise to an image.
+	6. Gaussian blur 
 		Convolves the image with a Gaussian filter.
-	3. Average blur
-		Convolves the image with an average blur filter.
-	4. Median blur
-		Convolves the image with a median filter.
-	5. Sharpen
-		Convolves the image with a sharpening filter.
-	6. Add gaussian noise
-		Adds the image with a gaussian tensor of the same size. The 
-		tensor is produced with a normal distribution. 
-	7. Contrast
-		Multiplies the image pixels with a value C that produces a 
-		ligher or darker image.
-	
+	7. Shift colors
+		Swap the color spaces of an image.
+	8. Fancy PCA
+		Add a color perturbation based on the computation
+		of color's space PCA.
 """
 # Libraries
 from interface import implements
@@ -61,9 +58,14 @@ import cv2
 import numpy as np
 
 try:
-	from .BoundingBoxAugmentersMethods import *
+	from .ImageAugmentersMethods import *
 except:
-	from BoundingBoxAugmentersMethods import *
+	from ImageAugmentersMethods import *
+
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
 
 class ImageAugmenters(implements(ImageAugmentersMethods)):
 	"""
@@ -75,39 +77,39 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 	"""
 	def __init__(self):
 		super(ImageAugmenters, self).__init__()
+		self.assertion = AssertDataTypes()
 
 	def scale(self,
 						frame = None,
-						boundingBoxes = None,
-						resizeSize = None,
+						size = None,
 						interpolationMethod = None):
 		"""
-		Scales an image with its bounding boxes to another size while maintaing the 
-		coordinates of the bounding boxes.
+		Scales an image to another size.
 		Args:
 			frame: A tensor that contains an image.
 			boundingBoxes: A list of lists that contains the coordinates of the bounding
 											boxes that are part of the image.
-			resizeSize: A tuple that contains the resizing values.
+			size: A tuple that contains the resizing values.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
 														INTER_LINEAR -> 1, 
 														INTER_CUBIC -> 2, 
 														INTER_LANCZOS4 -> 4)
 		Returns:
-			An image that has been scaled and a list of lists that contains the new 
-			coordinates of the bounding boxes.
+			An image that has been scaled.
 		"""
 		# Local variable assertions
-		if (resizeSize == None):
-			raise ValueError("resizeSize cannot be empty.")
-		elif (type(resizeSize) != tuple):
-			raise ValueError("resizeSize has to be a tuple (width, height)")
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (size == None):
+			raise ValueError("size cannot be empty.")
+		elif (type(size) != tuple):
+			raise ValueError("size has to be a tuple (width, height)")
 		else:
-			if (len(resizeSize) != 2):
-				raise ValueError("resizeSize must be a tuple of size 2 (width, height)")
+			if (len(size) != 2):
+				raise ValueError("size must be a tuple of size 2 (width, height)")
 			else:
-				resizeWidth, resizeHeight = resizeSize
+				resizeWidth, resizeHeight = size
 				if (resizeWidth == 0 or resizeHeight == 0):
 					raise ValueError("Neither width nor height can be 0.")
 		if (interpolationMethod == None):
@@ -117,146 +119,112 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		reduX = height / resizeHeight
 		reduY = width / resizeWidth
 		# Scale image
-		frame = cv2.resize(frame.copy(), resizeSize, interpolationMethod)
-		# Fix bounding boxes
-		for boundingBox in boundingBoxes:
-			# Decode bounding box
-			ix, iy, x, y = boundingBox
-			# Update its values with the resizing factor
-			ix, iy, x, y = ix // reduX, iy // reduY, x // reduX, y // reduY
-			# Check variables are not the same as the right and bottom boundaries
-			ix, iy, x, y = Data
+		frame = cv2.resize(frame.copy(), size, interpolationMethod)
 		# Return values
-		return frame, boundingBoxes
+		return frame
 
 	def translate(self,
-								frameHeight = None,
-								frameWidth = None,
-								boundingBoxes = None,
+								frame = None,
 								offset = None):
 		"""
 		Given an image and its bounding boxes, this method translates the bounding boxes
 		to create an alteration of the image.
 		Args:
-			frameHeight: An int that represents the height of the frame.
-			frameWidth: An int that representst he width of the frame.
-			boundingBoxes: A tuple of ints that contains the coordinates of the
-												bounding box in the frame.
-			offset: An int that contains the amount of space that will be used to limit
-							the size of the cropped patch.
+			frame: A tensor that contains an image.
+			offset: A tuple that contains the amoung of space to move on each axis.
+							(widthXheight)
 		Returns:
-			An 8-sized tuple that contains the coordinates to crop the original frame
-			and the new coordinates of the bounding box inside the cropped patch.
-		Example:
-			Given an image and its bounding boxes, translate the bounding boxes in the 
-			allowed space the image .
-				-------------------
-				|                 |
-				|     ---         |
-				|     | |         |
-				|     ---         |
-				|                 |
-				|                 |
-				|                 |           
-				-------------------
-			So,
-				-------------------
-				|   ---------     |
-				|   | ---   |     |
-				|   | | |   |     |
-				|   | ---   |     |
-				|   |       |     |
-				|   ---------     |
-				|                 |           
-				-------------------
+			A translated tensor by offset.
 		"""
+		# Local variables
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (len(frame.shape) == 3):
+			height, width, depth = frame.shape
+		elif (len(frame.shape) == 2):
+			height, width = frame.shape
+		else:
+			raise ValueError("Type of data not understood.")
+		if (len(offset) == 2):
+			tx, ty = offset
+		else:
+			raise ValueError("offset is not understood.")
+		# Translate image
+		M = np.float32([[1, 0, 100], [0, 1, 50]])
+		frame = cv2.warpAffine(frame, M, (width, height))
+		return frame
 
-	def jitterBoxes(self, frame = None, quantity = None):
+	def jitterBoxes(self,
+									frame = None,
+									size = None,
+									quantity = None,
+									color = None):
 		"""
 		Draws random jitter boxes in the bounding boxes.
 		Args:
 			frame: A tensor that contains an image.
+			size: A tuple that contains the size of the jitter boxes to draw.
 			quantity: An int that tells how many jitter boxes to create inside 
 							the frame.
+			color: A 3-sized tuple that contains the RGB code for a color. Default
+							is black (0,0,0)
 		Returns:
 			A tensor that contains an image altered by jitter boxes.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be empty.")
-		except:
-			pass
-		if quantity == None:
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (quantity == None):
 			quantity = 10
+		if (size == None):
+			raise Exception("Size cannot be empty.")
 		# Local variables
-		frameSize = frame.shape
-		rows, cols = frameSize[0], frameSize[1]
-		xj, yj = frameSize[0] // 8, frameSize[0] // 8
+		rows, cols, depth = frame.shape
 		# Create boxes
 		for i in range(quantity):
 			y = int(random.random() * rows) - (rows // 3)
 			x = int(random.random() * cols) - (cols // 3)
 			# Draw boxes on top of the image
-			frame = cv2.rectangle(frame, (x, y), (x+xj, y+yj), (0, 0, 0), -1)
+			frame = cv2.rectangle(frame, (x, y), (x+size[0], y+size[1]), color, -1)
 		# Return frame
 		return frame
 
-	def horizontalFlip(self, frame = None, boundingBoxes = None):
+	def horizontalFlip(self,
+										frame = None):
 		"""
-		Flip a bouding box by its horizontal axis.
+		Flip a frame by its horizontal axis.
 		Args:
-			frame: A tensor that contains an image with its bounding boxes.
+			frame: A tensor that contains an image.
 		Returns:
-			A tensor that has been flipped by its horizontal axis and a list
-			of lists that contains the coordinates of the bounding boxes. 
+			A tensor that has been flipped by its horizontal axis.
 		"""
-				# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
-		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		# Flip
 		frame = cv2.flip(frame, 1)
-		height, width, depth = frame.shape
-		# Flip bounding boxes.
-		for bndBox in boundingBoxes:
-			aux = bndBox[0]
-			bndBox[0] = width - bndBox[2]
-			bndBox[2] = bndBox[0] + (bndBox[2] - aux)
-		return frame, boundingBoxes
+		return frame
 
-	def verticalFlip(self, frame = None, boundingBoxes = None):
+	def verticalFlip(self,
+									frame = None):
 		"""
 		Flip a bouding box by its vertical axis.
 		Args:
-			frame: A tensor that contains a cropped bouding box from its frame.
+			frame: A tensor that contains an image.
 		Returns:
-			A tensor that has been flipped by its vertical axis and a list of lists 
-			that contains the coordinates of the bounding boxes.
+			A tensor that has been flipped by its vertical axis.
 		"""
 		# Assertions
-		try:
-			if (frame == None):
-				raise Exception("Frame parameter cannot be empty.")
-		except:
-			pass
-		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		# Flip frame with opencv.
 		frame = cv2.flip(frame, 0)
-		height, width, depth = frame.shape
-		# Flip bounding boxes.
-		for bndBox in boundingBoxes:
-			aux = bndBox[1]
-			bndBox[1] = height - bndBox[3]
-			bndBox[3] = bndBox[1] + (bndBox[3] - aux)
-		return frame, boundingBoxes
+		return frame
 
-	def randomRotation(self, frame = None, bndbox = None, theta = None):
+	def randomRotation(self,
+										frame = None,
+										bndbox = None,
+										theta = None):
 		"""
 		Rotate a frame clockwise by random degrees. Random degrees
 		is a number that is between 20-360.
@@ -271,14 +239,11 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			that contains the rotated coordinates of the bounding box.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be emtpy.")
-		except:
-			pass
-		if bndbox == None:
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (bndbox == None):
 			raise Exception("Bnbdbox cannot be empty")
-		if theta == None:
+		if (theta == None):
 			theta = (random.random() * math.pi) + math.pi / 3
 		# Local variables
 		thetaDegrees = theta * 180 / math.pi
@@ -303,10 +268,10 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		p2 = [ix, y]
 		p3 = [x, y]
 		# Compute rotations on coordinates
-		p0[0], p0[1] = DataAugmentation.rotation_equations(p0[0], p0[1], theta)
-		p1[0], p1[1] = DataAugmentation.rotation_equations(p1[0], p1[1], theta)
-		p2[0], p2[1] = DataAugmentation.rotation_equations(p2[0], p2[1], theta)
-		p3[0], p3[1] = DataAugmentation.rotation_equations(p3[0], p3[1], theta)
+		p0[0], p0[1] = ImageAugmenters.rotation_equations(p0[0], p0[1], theta)
+		p1[0], p1[1] = ImageAugmenters.rotation_equations(p1[0], p1[1], theta)
+		p2[0], p2[1] = ImageAugmenters.rotation_equations(p2[0], p2[1], theta)
+		p3[0], p3[1] = ImageAugmenters.rotation_equations(p3[0], p3[1], theta)
 		# Add centers to compensate
 		p0[0], p0[1] = p0[0] + (cols//2), rows - (p0[1] + (rows//2))
 		p1[0], p1[1] = p1[0] + (cols//2), rows - (p1[1] + (rows//2))
@@ -342,28 +307,157 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Return frame and coordinates
 		return frame, [ix, iy, x, y]
 
-	def addRandomBlur(self, frame = None, sigma = None):
+	def invertColor(self,
+									frame = None,
+									CSpace = None):
+		"""
+		Inverts the color of an image.
+		Args:
+			frame: A tensor that contains an image.
+			CSpace: A 3-sized tuple that contains booleans (B, G, R).
+							If a boolean is set to true, then we invert that channel.
+							If the 3 booleans are false, then we invert all the image.
+		Returns:
+			A tensor that has its color inverted.
+		"""
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (CSpace == None):
+			CSpace = [True, True, True]
+		# Check CSpace
+		if (CSpace[0] == True):
+			frame[:, :, 0] = cv2.bitwise_not(frame[:, :, 0])
+		else:
+			pass
+		if (CSpace[1] == True):
+			frame[:, :, 1] = cv2.bitwise_not(frame[:, :, 1])
+		else:
+			pass
+		if (CSpace[2] == True):
+			frame[:, :, 2] = cv2.bitwise_not(frame[:, :, 2])
+		else:
+			pass
+		# Return tensor
+		return frame
+
+	def histogramEqualization(self,
+														frame = None,
+														equalizationType = None):
+		"""
+		Args:
+			frame: A tensor that contains an image.
+			equalizationType: An int that defines what type of histogram
+						equalization algorithm to use.
+		Returns:
+			A frame whose channels have been equalized.
+		"""
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (equalizationType == None):
+			equalizationType = 0
+		# Equalize hist
+		if (equalizationType == 0):
+			equ = cv2.equalizeHist(frame)
+		elif (equalizationType == 1):
+			clahe = cv2.createCLAHE(clipLimit=2.0)
+			equ = clahe.apply(frame)
+		else:
+			raise ValueError("equalizationType not understood.")
+		return equ
+
+	def changeBrightness(self,
+											frame = None,
+											coefficient = None):
+		"""
+		Change the brightness of a frame.
+		Args:
+			frame: A tensor that contains an image.
+			coefficient: A float that changes the brightness of the image.
+									Default is a random number in the range of 2.
+		Returns:
+			A tensor with its brightness property changed.
+		"""
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (coefficient == None):
+			coefficient = int(np.random.rand()*2)
+		# Change brightness
+		frame = frame*coefficient
+		return frame
+
+	def randomSharpening(self,
+											frame = None):
+		"""
+		Args:
+			frame: A tensor that contains an image.
+		Returns:
+			A sharpened tensor.
+		"""
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		# Find edges
+		edges = cv2.Laplacian(frame, cv2.CV_64F)
+		# Add edges to original frame
+		prob = np.random.rand()
+		comp = 1 - prob
+		frame = cv2.addWeighted(edges, prob, frame, comp, 0)
+		return frame
+
+	def addGaussianNoise(self,
+											frame = None,
+											coefficient = None):
+		"""
+		Add gaussian noise to a tensor.
+		Args:
+			frame: A tensor that contains an image.
+			coefficient: A float that contains the amount of noise to add
+										to a frame.
+		Returns:
+			An altered frame that has gaussian noise.
+		"""
+		# Assertions
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (coefficient == None):
+			coefficient = 0.2
+		# Local variables
+		height, width, depth = frame.shape
+		# Create random noise
+		gaussianNoise = np.random.rand(height*width*depth) * 255
+		# Reshape noise
+		gaussianNoise = np.array([int(i) for i in gaussianNoise], np.uint8)
+		gaussianNoise = gaussianNoise.reshape([height, width, depth])
+		# Add noise to frame
+		frame = cv2.addWeighted(frame, 1-coefficient, gaussianNoise, coefficient, 0)
+		return frame
+
+	def gaussianBlur(self,
+										frame = None,
+										sigma = None):
 		"""
 		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
 		Sigma's default value is between 1 and 3.
 		Args:
 			frame: A tensor that contains an image.
+			sigma: A float that contains the value of the gaussian filter.
 		Returns:
 			A tensor with a rotation of the original image.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be emtpy.")
-		except:
-			pass
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if sigma == None:
 			sigma = float(random.random()*3) + 1
 		# Apply gaussian filter
 		frame = cv2.GaussianBlur(frame, (5, 5), sigma)
 		return frame
 
-	def shiftColors(self, frame = None):
+	def shiftColors(self,
+									frame = None):
 		"""
 		Shifts the colors of the frame.
 		Args:
@@ -372,12 +466,9 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			A tensor that has shifted the order of its colors.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be emtpy.")
-		except:
-			pass
-		if len(frame.shape) != 3:
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (len(frame.shape) != 3):
 			raise Exception("Frame must have 3 dimensions")
 		# Local variables
 		colorsOriginal = [0, 1, 2]
@@ -392,7 +483,8 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 										frame[:, :, colorsShuffle[2]]
 		return frame
 
-	def fancyPCA(self, frame = None):
+	def fancyPCA(self,
+							frame = None):
 		"""
 		Fancy PCA implementation.
 		Args:
@@ -401,12 +493,9 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			A tensor that contains the altered image by fancy PCA.
 		"""
 		# Assertions
-		try:
-			if frame == None:
-				raise Exception("Frame cannot be empty.")
-		except:
-			pass
-		if len(frame.shape) != 3:
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (len(frame.shape) != 3):
 			raise Exception("Frame must have 3 dimensions")
 		# Local variables
 		height, width, depth = frame.shape
