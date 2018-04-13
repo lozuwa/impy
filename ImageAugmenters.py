@@ -342,18 +342,6 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Return frame and coordinates
 		return frame, [ix, iy, x, y]
 
-	@staticmethod
-	def rotation_equations(x, y, theta):
-		"""
-		Apply a 2D rotation matrix to a 2D coordinate by theta degrees.
-		Args:
-			x: An int that represents the x dimension of the coordinate.
-			y: An int that represents the y dimension of the coordinate.
-		"""
-		x_result = int((x*math.cos(theta)) - (y*math.sin(theta)))
-		y_result = int((x*math.sin(theta)) + (y*math.cos(theta)))
-		return x_result, y_result
-
 	def addRandomBlur(self, frame = None, sigma = None):
 		"""
 		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
@@ -450,3 +438,15 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Add perturbation vector to frame
 		frame = frame + perturb
 		return frame
+
+	@staticmethod
+	def rotation_equations(x, y, theta):
+		"""
+		Apply a 2D rotation matrix to a 2D coordinate by theta degrees.
+		Args:
+			x: An int that represents the x dimension of the coordinate.
+			y: An int that represents the y dimension of the coordinate.
+		"""
+		x_result = int((x*math.cos(theta)) - (y*math.sin(theta)))
+		y_result = int((x*math.sin(theta)) + (y*math.cos(theta)))
+		return x_result, y_result

@@ -31,7 +31,7 @@ class Images2Dataset_test(unittest.TestCase):
 
 	def test_formatDataset(self):
 		with self.assertRaises(Exception):
-			self.im2da.getFolderAndFiles(parentFolder = None)		
+			self.im2da.getFolderAndFiles(parentFolder = None)
 
 	def test_filterAllowedImageFormats(self):
 		files = ["image1.jpg", "image2.png", "image3.tiff", "mmm.hhh"] 

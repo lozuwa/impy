@@ -12,7 +12,7 @@ import cv2
 from DataAugmentation import *
 
 class DataAugmentation_test(unittest.TestCase):
-	
+
 	def setUp(self):
 		# 281x281x3
 		self.frame = cv2.imread("cv.jpg")

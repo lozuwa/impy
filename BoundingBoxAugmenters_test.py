@@ -129,24 +129,20 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 											              boundingBoxes = boundingBoxes,
 											              size = (25,25),
 											              threshold = 0.5)
-		cv2.imshow("__dropout__", frame)
-		cv2.waitKey(3000)
-		cv2.destroyAllWindows()
+		# cv2.imshow("__dropout__", frame)
+		# cv2.waitKey(3000)
+		# cv2.destroyAllWindows()
 
-	# def test_random_rotation(self):
-	# 	theta = 0
-	# 	for i in range(1):
-	# 		frame, ps = self.da.randomRotation(self.frame, 
-	# 																			self.bndbox,
-	# 																			theta)
-	# 		ix, iy, x, y = ps
-	# 		# print(ps)
-	# 		cv2.imshow("__frame__", frame)
-	# 		# print(iy, y, ix, x)
-	# 		cv2.imshow("__frameOther__", frame[iy:y, ix:x, :])
-	# 		cv2.waitKey(100)
-	# 		cv2.destroyAllWindows()
-	# 		theta += 0.5
+	def test_random_rotation(self):
+		theta = 0
+		boundingBoxes = [[70,100,120,150], [150,100,200,150]]
+		# for i in range(25):
+		# 	frame = self.augmenter.randomRotation(self.frame, 
+		# 																				boundingBoxes,
+		# 																				theta)
+		# 	theta += 0.3
+		# 	cv2.imshow("__frame__", frame)
+		# 	cv2.waitKey(250)
 
 	def test_rotation_equations(self):
 		x, y, theta = 10, 10, math.pi / 2
