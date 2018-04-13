@@ -307,7 +307,7 @@ class ImagePreprocessing(object):
 												contains the number of patches in each axis.
 		Return: 
 			A tuple containing the number of patches that fill the
-			given parameters, an int containing the number of row patches,
+			given parameters with the format(ix, iy, x, y), an int containing the number of row patches,
 			an int containing the number of column patches
 		"""
 		# Assertions
@@ -347,10 +347,10 @@ class ImagePreprocessing(object):
 			# print("numberPatchesHeight: ", numberPatchesHeight, "numberPatchesWidth: ", numberPatchesWidth)
 			for i in range(numberPatchesHeight):
 				for j in range(numberPatchesWidth):
-					patchesCoordinates.append([startPixelsHeight,\
-													startPixelsWidth,\
-													endPixelsHeight,\
-													endPixelsWidth])
+					patchesCoordinates.append([startPixelsWidth,\
+													startPixelsHeight,\
+													endPixelsWidth,\
+													endPixelsHeight])
 					# Update width with strides
 					startPixelsWidth += strideWidth
 					endPixelsWidth += strideWidth

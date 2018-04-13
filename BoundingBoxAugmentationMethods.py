@@ -8,10 +8,9 @@ labels.
 # Libraries
 from interface import Interface
 
-class BoundingBoxDataAugmentationMethods(Interface):
+class BoundingBoxAugmentationMethods(Interface):
 	
-	
-	def jitterBoxes(self, frame = None, quantity = None):
+	def jitterBoxes(self, frame = None, boundingBoxes = None, size = None, quantity = None, color = None):
 		"""
 		Creates random jitter boxes inside a bounding box cropped from its image.
 		Args:
@@ -51,36 +50,5 @@ class BoundingBoxDataAugmentationMethods(Interface):
 			frame: A tensor that contains an image.
 		Returns:
 			A tensor with a rotation of the original image.
-		"""
-		pass
-
-	def addRandomBlur(self, frame = None, sigma = None):
-		"""
-		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
-		Sigma might be between 1 and 3.
-		Args:
-			frame: A tensor that contains an image.
-		Returns:
-			A tensor with a rotation of the original image.
-		"""
-		pass
-
-	def shiftColors(self, frame = None):
-		"""
-		Shifts the colors of the frame.
-		Args:
-			frame: A tensor that contains an image.
-		Returns:
-			A tensor that has shifted the order of its colors.
-		"""
-		pass
-
-	def fancyPCA(self, frame = None):
-		"""
-		Fancy PCA implementation.
-		Args:
-			frame: A tensor that contains an image.
-		Returns:
-			A tensor that contains the altered image by fancy PCA.
 		"""
 		pass

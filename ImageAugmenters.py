@@ -51,8 +51,6 @@ Log:
 	7. Contrast
 		Multiplies the image pixels with a value C that produces a 
 		ligher or darker image.
-	8. Dropout
-		Sets pixels to zero with probability P. 
 	
 """
 # Libraries
@@ -63,20 +61,20 @@ import cv2
 import numpy as np
 
 try:
-	from .BoundingBoxDataAugmentationMethods import *
+	from .BoundingBoxAugmentersMethods import *
 except:
-	from BoundingBoxDataAugmentationMethods import *
+	from BoundingBoxAugmentersMethods import *
 
-class BoundingBoxAugmenters(implements(BoundingBoxDataAugmentationMethods)):
+class ImageAugmenters(implements(ImageAugmentersMethods)):
 	"""
-	BoundingBoxAugmenters class. This class implements a set of data augmentation
+	ImageAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.
 	IMPORTANT
 	- This class assumes input images are numpy tensors that follow the opencv
 	color format BGR.
 	"""
 	def __init__(self):
-		super(BoundingBoxAugmenters, self).__init__()
+		super(ImageAugmenters, self).__init__()
 
 	def scale(self,
 						frame = None,
