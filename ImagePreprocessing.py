@@ -7,9 +7,9 @@ for an image.
 Log:
 	August, 2017 -> Created class and added most relevant functions.
 	September, 2017 -> Created more features for the DivideIntoPatches method.
-	November, 2017 -> Refactored all the code to Google style and more OOP paradigm.
+	November, 2017 -> Refactored all the code to Google style and a more OOP paradigm approach.
 	December, 2017 -> Tested refactor to avoid breaking external code.
-	March, 2018 -> Refactored to another structure.
+	March, 2018 -> Refactored methods.
 """
 # Utils
 import numpy as np
@@ -47,7 +47,7 @@ class ImagePreprocessing(object):
 			and the new coordinates of the bounding box inside the cropped patch.
 		Example:
 			Given an image and its bounding boxes, find the boundaries that enclose
-			all the bounding boxes.
+			all the bounding boxes giving it some extra space.
 				-------------------------     	------------------------
 				|                       |      |                       |
 				|     ---               |      | (x0,y0)------         |
