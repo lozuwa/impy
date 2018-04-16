@@ -8,7 +8,7 @@ labels.
 # Libraries
 from interface import Interface
 
-class BoundingBoxAugmentationMethods(Interface):
+class BoundingBoxAugmentersMethods(Interface):
 	
 	def scale(self, frame = None, boundingBoxes = None, resizeSize = None, interpolationMethod = None):
 		"""

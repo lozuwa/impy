@@ -119,6 +119,13 @@ class ImagePreprocessing(object):
 		# Determine space on y.
 		offsetYTop = offsetY // 2
 		offsetYBottom = offsetY - offsetYTop
+		# Debug
+		# print("\n")
+		# print("Size x: {}, Size y: {}".format(RoiX, RoiY))
+		# print("xmin {}, ymin {}, xmax {}, ymax {}".format(xmin, ymin, xmax, ymax))
+		# print("Offsets x: ", offsetXLeft, offsetXRight)
+		# print("Offsets y: ", offsetYTop, offsetYBottom)
+		# print("\n")
 		# Add space on X.
 		# If there is not enough space on the left.
 		if ((xmin - offsetXLeft) < 0):
@@ -240,8 +247,7 @@ class ImagePreprocessing(object):
 																widthBoundingBox
 			# Check for y
 			if yminBoundingBoxes == "maintain":
-				# print("maintain")
-				print(bndbox[1], ymin)
+				# print("Maintain y: ", bndbox[1], ymin)
 				bndbox[1], bndbox[3] = bndbox[1], bndbox[1] + heightBoundingBox
 			elif yminBoundingBoxes == "offsetYTop":
 				# print("offsetYTop ", offsetYTop)

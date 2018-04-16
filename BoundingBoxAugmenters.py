@@ -47,16 +47,16 @@ except:
 	from ImagePreprocessing import *
 # Interface
 try:
-	from .BoundingBoxAugmentationMethods import *
+	from .BoundingBoxAugmentersMethods import *
 except:
-	from BoundingBoxAugmentationMethods import *
+	from BoundingBoxAugmentersMethods import *
 
 try:
 	from .AssertDataTypes import *
 except:
 	from AssertDataTypes import *
 
-class BoundingBoxAugmenters(implements(BoundingBoxAugmentationMethods)):
+class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 	"""
 	BoundingBoxAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.
