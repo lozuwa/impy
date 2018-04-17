@@ -63,6 +63,11 @@ except:
 	from ImageAugmentersMethods import *
 
 try:
+	from .VectorOperations import *
+except:
+	from VectorOperations import *
+
+try:
 	from .AssertDataTypes import *
 except:
 	from AssertDataTypes import *
@@ -221,7 +226,7 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		frame = cv2.flip(frame, 0)
 		return frame
 
-	def randomRotation(self,
+	def rotation(self,
 										frame = None,
 										bndbox = None,
 										theta = None):
@@ -268,10 +273,10 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		p2 = [ix, y]
 		p3 = [x, y]
 		# Compute rotations on coordinates
-		p0[0], p0[1] = ImageAugmenters.rotation_equations(p0[0], p0[1], theta)
-		p1[0], p1[1] = ImageAugmenters.rotation_equations(p1[0], p1[1], theta)
-		p2[0], p2[1] = ImageAugmenters.rotation_equations(p2[0], p2[1], theta)
-		p3[0], p3[1] = ImageAugmenters.rotation_equations(p3[0], p3[1], theta)
+		p0[0], p0[1] = VectorOperations.rotation_equations(p0[0], p0[1], theta)
+		p1[0], p1[1] = VectorOperations.rotation_equations(p1[0], p1[1], theta)
+		p2[0], p2[1] = VectorOperations.rotation_equations(p2[0], p2[1], theta)
+		p3[0], p3[1] = VectorOperations.rotation_equations(p3[0], p3[1], theta)
 		# Add centers to compensate
 		p0[0], p0[1] = p0[0] + (cols//2), rows - (p0[1] + (rows//2))
 		p1[0], p1[1] = p1[0] + (cols//2), rows - (p1[1] + (rows//2))
@@ -388,9 +393,11 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		frame = frame*coefficient
 		return frame
 
-	def randomSharpening(self,
-											frame = None):
+	def sharpening(self,
+								frame = None,
+								weight = None):
 		"""
+		Sharpens an image.
 		Args:
 			frame: A tensor that contains an image.
 		Returns:
@@ -399,11 +406,16 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
+		if (weight == None):
+			prob = np.random.rand()
+			comp = 1 - prob
+		else:
+			if (type(weight) == float):
+				prob = weight
+				comp = 1 - prob
 		# Find edges
 		edges = cv2.Laplacian(frame, cv2.CV_64F)
 		# Add edges to original frame
-		prob = np.random.rand()
-		comp = 1 - prob
 		frame = cv2.addWeighted(edges, prob, frame, comp, 0)
 		return frame
 
@@ -527,15 +539,3 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Add perturbation vector to frame
 		frame = frame + perturb
 		return frame
-
-	@staticmethod
-	def rotation_equations(x, y, theta):
-		"""
-		Apply a 2D rotation matrix to a 2D coordinate by theta degrees.
-		Args:
-			x: An int that represents the x dimension of the coordinate.
-			y: An int that represents the y dimension of the coordinate.
-		"""
-		x_result = int((x*math.cos(theta)) - (y*math.sin(theta)))
-		y_result = int((x*math.sin(theta)) + (y*math.cos(theta)))
-		return x_result, y_result

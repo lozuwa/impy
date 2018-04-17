@@ -73,7 +73,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 	def scale(self,
 						frame = None,
 						boundingBoxes = None,
-						resizeSize = None,
+						size = None,
 						interpolationMethod = None):
 		"""
 		Scales an image with its bounding boxes to another size while maintaing the 
@@ -82,7 +82,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			frame: A tensor that contains an image.
 			boundingBoxes: A list of lists that contains the coordinates of the bounding
 											boxes that are part of the image.
-			resizeSize: A tuple that contains the resizing values.
+			size: A tuple that contains the resizing values.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
 														INTER_LINEAR -> 1, 
@@ -95,15 +95,19 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Local variable assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
-		if (resizeSize == None):
-			raise ValueError("resizeSize cannot be empty.")
-		elif (type(resizeSize) != tuple):
-			raise ValueError("resizeSize has to be a tuple (width, height)")
+		if (boundingBoxes == None):
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		else:
-			if (len(resizeSize) != 2):
-				raise ValueError("resizeSize must be a tuple of size 2 (width, height)")
+			localBoundingBoxes = boundingBoxes
+		if (size == None):
+			raise ValueError("size cannot be empty.")
+		elif (type(size) != tuple):
+			raise ValueError("size has to be a tuple (width, height)")
+		else:
+			if (len(size) != 2):
+				raise ValueError("size must be a tuple of size 2 (width, height)")
 			else:
-				resizeWidth, resizeHeight = resizeSize
+				resizeWidth, resizeHeight = size
 				if (resizeWidth == 0 or resizeHeight == 0):
 					raise ValueError("Neither width nor height can be 0.")
 		if (interpolationMethod == None):
@@ -113,23 +117,23 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		reduY = height / resizeHeight
 		reduX = width / resizeWidth
 		# Scale image
-		frame = cv2.resize(frame.copy(), resizeSize, interpolationMethod)
+		frame = cv2.resize(frame.copy(), size, interpolationMethod)
 		# Fix bounding boxes
-		for i in range(len(boundingBoxes)):
+		for i in range(len(localBoundingBoxes)):
 			# Decode bounding box
-			ix, iy, x, y = boundingBoxes[i]
+			ix, iy, x, y = localBoundingBoxes[i]
 			# Update values with the resizing factor
 			ix, iy, x, y = ix // reduX, iy // reduY, x // reduX, y // reduY
 			# Check variables are not the same as the right and bottom boundaries
 			x, y = BoundingBoxAugmenters.checkBoundaries(x, y, width, height)
 			# Update list
-			boundingBoxes[i] = [i for i in map(int, [ix, iy, x, y])]
+			localBoundingBoxes[i] = [i for i in map(int, [ix, iy, x, y])]
 		# Return values
-		return frame, boundingBoxes
+		return frame, localBoundingBoxes
 
-	def randomCrop(self,
-								boundingBoxes = None,
-								size = None):
+	def crop(self,
+					boundingBoxes = None,
+					size = None):
 		"""
 		Crop a list of bounding boxes.
 		Args:
@@ -143,6 +147,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Local variables
 		if (boundingBoxes == None):
 			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		if (len(size) == 3):
 			height, width, depth = size
 		elif (len(size) == 2):
@@ -150,9 +156,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		else:
 			raise Exception("Specify a size for the crops.")
 		# Iterate
-		for i in range(len(boundingBoxes)):
+		for i in range(len(localBoundingBoxes)):
 			# Decode bndbox
-			ix, iy, x, y = boundingBoxes[i]
+			ix, iy, x, y = localBoundingBoxes[i]
 			# Compute width and height
 			widthBndbox, heightBndbox = (x - ix), (y - iy)
 			# Generate random number for the x axis
@@ -160,15 +166,15 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			# Generate random number for the y axis
 			riy = int(iy + (np.random.rand()*((y - height) - iy + 1)))
 			# Compute crop
-			boundingBoxes[i] = [rix, riy, rix + width, riy + height]
+			localBoundingBoxes[i] = [rix, riy, rix + width, riy + height]
 		# Return values
-		return boundingBoxes
+		return localBoundingBoxes
 
-	def randomPad(self,
-								frameHeight = None,
-								frameWidth = None,
-								boundingBoxes = None,
-								size = None):
+	def pad(self,
+					frameHeight = None,
+					frameWidth = None,
+					boundingBoxes = None,
+					size = None):
 		"""
 		Includes pixels from outside the bounding box as padding.
 		Args:
@@ -186,15 +192,17 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (frameWidth == None):
 			raise ValueError("Frame width cannot be empty.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		if (len(size) == 1):
 			padWidth, padHeight = size[0], 0
 		if (len(size) == 2):
 			padWidth, padHeight = size[0], size[1]
 		# Start padding
-		for i in range(len(boundingBoxes)):
+		for i in range(len(localBoundingBoxes)):
 			# Decode bounding box
-			ix, iy, x, y = boundingBoxes[i]
+			ix, iy, x, y = localBoundingBoxes[i]
 			# Determine how much space is there to pad on each side.
 			padLeft = ix
 			padRight = frameWidth - x
@@ -235,9 +243,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			else:
 				y += paddingBottom
 			# Update bounding box.
-			boundingBoxes[i] = [ix, iy, x, y]
+			localBoundingBoxes[i] = [ix, iy, x, y]
 		# Return bouding boxes.
-		return boundingBoxes
+		return localBoundingBoxes
 
 	def jitterBoxes(self, 
 									frame = None, 
@@ -262,7 +270,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		if (quantity == None):
 			quantity = 3
 		if (size == None):
@@ -275,7 +285,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		else:
 			height, width, depth = frame.shape
 		# Iterate over bounding boxes.
-		for bndbox in boundingBoxes:
+		for bndbox in localBoundingBoxes:
 			# Decode bndbox.
 			ix, iy, x, y = bndbox
 			# Draw boxes.
@@ -304,9 +314,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		# Flip only the pixels inside the bounding boxes
-		for bndbox in boundingBoxes:
+		for bndbox in localBoundingBoxes:
 			# Decode bounding box
 			ix, iy, x, y = bndbox
 			# Flip ROI
@@ -330,9 +342,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise Exception("Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		# Flip only the pixels inside the bounding boxes
-		for bndbox in boundingBoxes:
+		for bndbox in localBoundingBoxes:
 			# Decode bounding box
 			ix, iy, x, y = bndbox
 			# Flip ROI
@@ -340,10 +354,10 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			frame[iy:y, ix:x, :] = roi
 		return frame
 
-	def randomRotation(self, 
-										frame = None, 
-										boundingBoxes = None, 
-										theta = None):
+	def rotation(self,
+							frame = None,
+							boundingBoxes = None,
+							theta = None):
 		"""
 		Rotate the bounding boxes of a frame clockwise by n degrees. The degrees are
 		in the range of 20-360.
@@ -360,17 +374,19 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
-		if boundingBoxes == None:
-			raise Exception("Bnbdbox cannot be empty")
+		if (boundingBoxes == None):
+			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		if theta == None:
 			theta = (random.random() * math.pi) + math.pi / 3
 		# Local variables
 		thetaDegrees = theta * (180 / math.pi)
 		original_frame = frame.copy()
 		# Iterate over bounding boxes
-		for i in range(len(boundingBoxes)):
+		for i in range(len(localBoundingBoxes)):
 			# Decode current the bouding box.
-			ix, iy, x, y = boundingBoxes[i]
+			ix, iy, x, y = localBoundingBoxes[i]
 			# Crop bounding box from the frame.
 			frame = original_frame[iy:y, ix:x, :]
 			rows, cols, depth = frame.shape
@@ -407,6 +423,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise ValueError("Bounding boxes parameter cannot be empty.")
+		else:
+			localBoundingBoxes = boundingBoxes
 		if (size == None):
 			raise ValueError("Size parameter cannot be empty.")
 		if (threshold == None):
@@ -417,9 +435,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (color == None):
 			color = (0,0,0)
 		# Iterate over bounding boxes
-		for i in range(len(boundingBoxes)):
+		for i in range(len(localBoundingBoxes)):
 			# Decode bndbox
-			ix, iy, x, y = boundingBoxes[i]
+			ix, iy, x, y = localBoundingBoxes[i]
 			# Preprocess image
 			croppingCoordinates, _, \
 									__ = self.prep.divideIntoPatches(imageWidth = (x-ix),
@@ -434,18 +452,6 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 				if (prob > threshold):
 					frame[riy:ryc, rix:rxc, :] = color
 		return frame
-
-	@staticmethod
-	def rotation_equations(x, y, theta):
-		"""
-		Apply a 2D rotation matrix to a 2D coordinate by theta degrees.
-		Args:
-			x: An int that represents the x dimension of the coordinate.
-			y: An int that represents the y dimension of the coordinate.
-		"""
-		x_result = int((x*math.cos(theta)) - (y*math.sin(theta)))
-		y_result = int((x*math.sin(theta)) + (y*math.cos(theta)))
-		return x_result, y_result
 
 	@staticmethod
 	def checkBoundaries(x = None, y = None, width = None, height = None):

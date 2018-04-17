@@ -86,6 +86,8 @@ class ImagePreprocessing(object):
 			raise Exception("Parameter {} cannot be empty.".format("frameWidth"))
 		if (boundingBoxes == None):
 			raise Exception("Parameter {} cannot be empty.".format("bndboxes"))
+		else:
+			localBoundingBoxes = boundingBoxes
 		if (offset == None):
 			raise Exception("Parameter {} cannot be empty.".format("offset"))
 		if (frameWidth < offset):
@@ -96,7 +98,7 @@ class ImagePreprocessing(object):
 		x_coordinates = []
 		y_coordinates = []
 		# Compute the boundaries of the bounding boxes.
-		for bndbox in boundingBoxes:
+		for bndbox in localBoundingBoxes:
 			x_coordinates.append(bndbox[0])
 			x_coordinates.append(bndbox[2])
 			y_coordinates.append(bndbox[1])
@@ -228,7 +230,7 @@ class ImagePreprocessing(object):
 					pass
 
 		# Update bounding boxes
-		for bndbox in boundingBoxes:
+		for bndbox in localBoundingBoxes:
 			# Compute width and height
 			widthBoundingBox = bndbox[2] - bndbox[0]
 			heightBoundingBox = bndbox[3] - bndbox[1]
@@ -259,7 +261,7 @@ class ImagePreprocessing(object):
 																offsetYTop + offsetYBottom + (bndbox[1] - ymin) + \
 																heightBoundingBox
 		# Fix limits and check assertions.
-		for bdx in boundingBoxes:
+		for bdx in localBoundingBoxes:
 			if (bdx[2] == (RoiXMax-RoiXMin)):
 				bdx[2] -= 1
 			if (bdx[3] == (RoiYMax-RoiYMin)):
@@ -288,7 +290,7 @@ class ImagePreprocessing(object):
 			raise ValueError("Cropping frame is much smaller than offset in y {}."\
 												.format((RoiYMax-RoiYMin)))
 		# Return cropping coordinates and updated bounding boxes
-		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, boundingBoxes
+		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, localBoundingBoxes
 
 	def divideIntoPatches(self,
 												imageWidth = None,

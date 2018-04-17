@@ -10,7 +10,7 @@ from interface import Interface
 
 class BoundingBoxAugmentersMethods(Interface):
 	
-	def scale(self, frame = None, boundingBoxes = None, resizeSize = None, interpolationMethod = None):
+	def scale(self, frame = None, boundingBoxes = None, size = None, interpolationMethod = None):
 		"""
 		Scales an image with its bounding boxes to another size while maintaing the 
 		coordinates of the bounding boxes.
@@ -18,7 +18,7 @@ class BoundingBoxAugmentersMethods(Interface):
 			frame: A tensor that contains an image.
 			boundingBoxes: A list of lists that contains the coordinates of the bounding
 											boxes that are part of the image.
-			resizeSize: A tuple that contains the resizing values.
+			size: A tuple that contains the resizing values.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
 														INTER_LINEAR -> 1, 
@@ -30,7 +30,7 @@ class BoundingBoxAugmentersMethods(Interface):
 		"""
 		pass
 
-	def randomCrop(self, boundingBoxes = None, size = None):
+	def crop(self, boundingBoxes = None, size = None):
 		"""
 		Crop a list of bounding boxes.
 		Args:
@@ -43,7 +43,7 @@ class BoundingBoxAugmentersMethods(Interface):
 		"""
 		pass
 
-	def randomPad(self, frameHeight = None, frameWidth = None, boundingBoxes = None, size = None):
+	def pad(self, frameHeight = None, frameWidth = None, boundingBoxes = None, size = None):
 		"""
 		Includes pixels from outside the bounding box as padding.
 		Args:
@@ -57,7 +57,7 @@ class BoundingBoxAugmentersMethods(Interface):
 		"""
 		pass
 
-	def jitterBoxes(self, frame = None, boundingBoxes = None,size = None, quantity = None,color = None):
+	def jitterBoxes(self, frame = None, boundingBoxes = None, size = None, quantity = None, color = None):
 		"""
 		Draws random jitter boxes in the bounding boxes.
 		Args:
@@ -97,7 +97,7 @@ class BoundingBoxAugmentersMethods(Interface):
 		"""
 		pass
 
-	def randomRotation(self, frame = None, boundingBoxes = None, theta = None):
+	def rotation(self, frame = None, boundingBoxes = None, theta = None):
 		"""
 		Rotate the bounding boxes of a frame clockwise by n degrees. The degrees are
 		in the range of 20-360.

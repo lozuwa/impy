@@ -6,6 +6,7 @@ operations.
 """
 import os
 import datetime
+import json
 import numpy as np
 
 class Util(object):
@@ -70,4 +71,22 @@ class Util(object):
 		# Return string
 		return new_name
 
-
+	@staticmethod
+	def decode_json(data):
+		"""
+		Decode a json file.
+		Args:
+			data: A json file.
+		Returns:
+			A list that contains the
+		"""
+		# Assertions
+		if (not os.path.isfile(augmentations)):
+			raise Exception("Path to json file ({}) does not exist."\
+												.format(augmentations))
+		# Read json
+		data = json.load(open(augmentations))
+		augmentation_types = [i for i in data.keys()]
+		for augmentation_type in augmentation_types:
+			pass
+		return augmentation_types

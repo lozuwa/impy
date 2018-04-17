@@ -76,7 +76,7 @@ class ImageAugmentersMethods(Interface):
 		"""
 		pass
 
-	def randomRotation(self, frame = None, bndbox = None, theta = None):
+	def rotation(self, frame = None, bndbox = None, theta = None):
 		"""
 		Rotate a frame clockwise by random degrees. Random degrees
 		is a number that is between 20-360.
@@ -104,9 +104,7 @@ class ImageAugmentersMethods(Interface):
 		"""
 		pass
 
-	def histogramEqualization(self,
-														frame = None,
-														equalizationType = None):
+	def histogramEqualization(self, frame = None, equalizationType = None):
 		"""
 		Args:
 			frame: A tensor that contains an image.
@@ -117,9 +115,7 @@ class ImageAugmentersMethods(Interface):
 		"""
 		pass
 
-	def changeBrightness(self,
-											frame = None,
-											coefficient = None):
+	def changeBrightness(self, frame = None, coefficient = None):
 		"""
 		Change the brightness of a frame.
 		Args:
@@ -131,9 +127,9 @@ class ImageAugmentersMethods(Interface):
 		"""
 		pass
 
-	def randomSharpening(self,
-											frame = None):
+	def sharpening(self, frame = None, weight = None):
 		"""
+		Sharpens an image.
 		Args:
 			frame: A tensor that contains an image.
 		Returns:
@@ -141,9 +137,7 @@ class ImageAugmentersMethods(Interface):
 		"""
 		pass
 	
-	def addGaussianNoise(self,
-											frame = None,
-											coefficient = None):
+	def addGaussianNoise(self, frame = None, coefficient = None):
 		"""
 		Add gaussian noise to a tensor.
 		Args:

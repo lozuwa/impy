@@ -1,0 +1,74 @@
+{
+	"bounding_box_augmenters": {
+		"scale": {
+			"size": [500,500],
+			"interpolationMethod": 1 
+		},
+		"crop": {
+			"size": [25,25]
+		},
+		"pad": {
+			"size": [50,50]
+		},
+		"jitterBoxes": {
+			"size": [20,20],
+			"quantity": 5,
+			"color": [255,255,255]
+		},
+		"horizontalFlip": {
+		},
+		"verticalFlip": {
+		},
+		"rotation": {
+			"theta": 0.4
+		},
+		"dropout": {
+			"size": [10,10],
+			"threshold": 0.6,
+			"color": [125,255,0]
+		}
+	},
+	"image_augmenters": {
+		"scale": {
+			"size": [200,200],
+			"interpolationMethod": 4
+		},
+		"translate": {
+			"offset": [100,100]
+		},
+		"jitterBoxes": {
+			"size": [10,10],
+			"quantity": 10,
+			"color": [255,255,125]
+		},
+		"horizontalFlip": {
+		},
+		"verticalFlip": {
+		},
+		"rotation": {
+			"theta": 0.2
+		},
+		"invertColor": {
+			"CSpace": [true, true, true]
+		},
+		"histogramEqualization": {
+			"equalizationType": 0
+		},
+		"changeBrightness": {
+			"coefficient": 1.2
+		},
+		"sharpening": {
+			"weight": 0.5
+		},
+		"addGaussianNoise" : {
+			"coefficient": 0.5
+		},
+		"gaussianBlur": {
+			"sigma": 2
+		},
+		"shiftColors": {
+		},
+		"fancyPCA": {
+		}
+	}
+}
