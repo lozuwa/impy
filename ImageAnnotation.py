@@ -9,8 +9,14 @@ from interface import implements
 import xml.etree.ElementTree as ET
 
 class ImageAnnotation(object):
-	def __init__(self, path):
+	def __init__(self, path = None):
 		super(ImageAnnotation, self).__init__()
+		# Assertions
+		if (path == None):
+			raise ValueError("Path parameter cannot be empty.")
+		if (not os.path.isfile(path)):
+			raise ValueError("Path parameter does not exist.")
+		# Class variables
 		self.path = path
 		self.root = self.readImageAnnotation(self.path)
 		self.size = self.getSize(self.root)

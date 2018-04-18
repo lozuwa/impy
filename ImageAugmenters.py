@@ -150,8 +150,12 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			height, width = frame.shape
 		else:
 			raise ValueError("Type of data not understood.")
+		if (offset == None):
+			raise ValueError("Offset cannot be empty.")
 		if (len(offset) == 2):
 			tx, ty = offset
+		elif (len(offset) == 1):
+			tx, ty = offset, offset
 		else:
 			raise ValueError("offset is not understood.")
 		# Translate image
@@ -227,9 +231,9 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		return frame
 
 	def rotation(self,
-										frame = None,
-										bndbox = None,
-										theta = None):
+							frame = None,
+							bndbox = None,
+							theta = None):
 		"""
 		Rotate a frame clockwise by random degrees. Random degrees
 		is a number that is between 20-360.
@@ -360,14 +364,28 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
+		if (len(frame.shape) != 3):
+			raise ValueError("Frame needs to have at least 3 channels.")
 		if (equalizationType == None):
 			equalizationType = 0
+		# Local variables
+		equ = frame.copy()
+		equChannel = []
 		# Equalize hist
 		if (equalizationType == 0):
-			equ = cv2.equalizeHist(frame)
+			for channel in range(3):
+				equChannel.append(cv2.equalizeHist(frame[:, :, channel]))
+			equ[:, :, 0] = equChannel[0]
+			equ[:, :, 1] = equChannel[1]
+			equ[:, :, 2] = equChannel[2]
 		elif (equalizationType == 1):
-			clahe = cv2.createCLAHE(clipLimit=2.0)
-			equ = clahe.apply(frame)
+			for channel in range(3):
+				clahe = cv2.createCLAHE(clipLimit=2.0)
+				equ = clahe.apply(frame[:, :, channel])
+				equChannel.append(equ)
+			equ[:, :, 0] = equChannel[0]
+			equ[:, :, 1] = equChannel[1]
+			equ[:, :, 2] = equChannel[2]
 		else:
 			raise ValueError("equalizationType not understood.")
 		return equ
@@ -388,7 +406,7 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
 		if (coefficient == None):
-			coefficient = int(np.random.rand()*2)
+			coefficient = np.random.rand()*0.75
 		# Change brightness
 		frame = frame*coefficient
 		return frame
@@ -415,9 +433,10 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 				comp = 1 - prob
 		# Find edges
 		edges = cv2.Laplacian(frame, cv2.CV_64F)
+		edges = np.array(edges, np.uint8)
 		# Add edges to original frame
-		frame = cv2.addWeighted(edges, prob, frame, comp, 0)
-		return frame
+		frameSharpened = cv2.addWeighted(edges, prob, frame, comp, 0)
+		return frameSharpened
 
 	def addGaussianNoise(self,
 											frame = None,
@@ -484,10 +503,10 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			raise Exception("Frame must have 3 dimensions")
 		# Local variables
 		colorsOriginal = [0, 1, 2]
-		colorsShuffle = colorsOriginal
+		colorsShuffle = [0, 1, 2]
 		# Shuffle list of colors
 		while(colorsOriginal == colorsShuffle):
-			shuffle(colorsShuffle)
+			np.random.shuffle(colorsShuffle)
 		# Swap color dimensions
 		frame[:, :, 0], frame[:, :, 1], \
 		frame[:, :, 2] = frame[:, :, colorsShuffle[0]], \
@@ -537,5 +556,5 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 		perturb = [int(each) for each in (pca*np.random.randn(3)*0.1).sum(axis=1)]
 		# print("Perturbation: ", perturb)
 		# Add perturbation vector to frame
-		frame = frame + perturb
-		return frame
+		framePCA = frame.copy() + perturb
+		return framePCA
