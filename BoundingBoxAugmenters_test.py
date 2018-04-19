@@ -17,8 +17,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 	
 	def setUp(self):
 		# Image
-		self.frame = cv2.imread("tests/localization/images/cv.jpg")
-		self.annotation = "tests/localization/annotations/xmls/cv.xml"
+		self.frame = cv2.imread("tests/localization/images/pedestrians.png")
+		self.annotation = "tests/localization/annotations/xmls/pedestrians.xml"
 		imgAnt = ImageAnnotation(path = self.annotation)
 		self.bndboxes = imgAnt.propertyBoundingBoxes
 		self.names = imgAnt.propertyNames
@@ -149,11 +149,10 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 	
 	def test_jitter_boxes(self):
 		if (self.visualize):
-			boundingBoxes = [[100, 100, 150, 150], [100,150,150,200]]
 			frame = self.augmenter.jitterBoxes(frame = self.frame,
-																					boundingBoxes = boundingBoxes,
-																					size = (10,10),
-																					quantity = 2)
+																					boundingBoxes = self.bndboxes,
+																					size = (20,20),
+																					quantity = 20)
 			cv2.imshow("__jitterBoxes__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()

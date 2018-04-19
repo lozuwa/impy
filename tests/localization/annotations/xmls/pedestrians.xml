@@ -1,13 +1,13 @@
 <annotation>
 	<folder>images</folder>
-	<filename>pedestrians.jpg</filename>
-	<path>/home/pfm/anaconda3/envs/tensorflow/lib/python3.6/site-packages/impy/tests/localization/images/pedestrians.jpg</path>
+	<filename>pedestrians.png</filename>
+	<path>/home/pfm/anaconda3/envs/tensorflow/lib/python3.6/site-packages/impy/tests/localization/images/pedestrians.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
 	<size>
-		<width>0</width>
-		<height>0</height>
+		<width>620</width>
+		<height>300</height>
 		<depth>3</depth>
 	</size>
 	<segmented>0</segmented>
@@ -17,9 +17,9 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>124</xmin>
+			<xmin>123</xmin>
 			<ymin>137</ymin>
-			<xmax>197</xmax>
+			<xmax>196</xmax>
 			<ymax>283</ymax>
 		</bndbox>
 	</object>

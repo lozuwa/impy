@@ -6,6 +6,7 @@ operations.
 """
 import os
 import datetime
+import re
 import json
 import numpy as np
 
@@ -24,15 +25,15 @@ class Util(object):
 		"""
 		# Assertions
 		if (folder_name == None):
-			raise ValueError("Folder name parameter cannot be emtpy.")
+			raise ValueError("ERROR: Folder name parameter cannot be emtpy.")
 		folder_name = os.path.join(os.getcwd(), folder_name)
-		if os.path.isdir(folder_name):
-			print("INFO: Folder already exists :: {}".format(os.path.split(folder_name)[1]))
+		if (os.path.isdir(folder_name)):
+			print("INFO: Folder already exists: {}".format(os.path.split(folder_name)[1]))
 		else:
 			try:
 				os.mkdir(folder_name)
 			except:
-				raise Exception("Folder could not be created")
+				raise Exception("ERROR: Folder {} could not be created.".format(folder_name))
 
 	@staticmethod
 	def create_random_name(name = None,
@@ -72,21 +73,22 @@ class Util(object):
 		return new_name
 
 	@staticmethod
-	def decode_json(data):
+	def detect_file_extension(filename):
 		"""
 		Decode a json file.
 		Args:
-			data: A json file.
+			filename: A string that contains the name of a file.
 		Returns:
-			A list that contains the
+			A string that contains the extension of the file. It 
+			returns None if there is no extension.
 		"""
 		# Assertions
-		if (not os.path.isfile(augmentations)):
-			raise Exception("Path to json file ({}) does not exist."\
-												.format(augmentations))
-		# Read json
-		data = json.load(open(augmentations))
-		augmentation_types = [i for i in data.keys()]
-		for augmentation_type in augmentation_types:
-			pass
-		return augmentation_types
+		if (filename == None):
+			raise ValueError("Filename cannot be empty.")
+		# Logic
+		if (filename.endswith(".jpg")):
+			return ".jpg"
+		elif (filename.endswith(".png")):
+			return ".png"
+		else:
+			return None

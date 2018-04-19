@@ -84,4 +84,4 @@ class ImageAnnotation(object):
 			depth = int(size[2].text)
 			return [width, height, depth]
 		else:
-			return None
+			raise Exception("No size found in {}".format(self.path))

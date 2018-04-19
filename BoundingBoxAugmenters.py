@@ -94,22 +94,22 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Local variable assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		else:
 			boundingBoxes = boundingBoxes
 		if (size == None):
-			raise ValueError("size cannot be empty.")
+			raise ValueError("ERROR: size cannot be empty.")
 		elif (type(size) != tuple):
-			raise ValueError("size has to be a tuple (width, height)")
+			raise ValueError("ERROR: size has to be a tuple (width, height)")
 		else:
 			if (len(size) != 2):
-				raise ValueError("size must be a tuple of size 2 (width, height)")
+				raise ValueError("ERROR: size must be a tuple of size 2 (width, height)")
 			else:
 				resizeWidth, resizeHeight = size
 				if (resizeWidth == 0 or resizeHeight == 0):
-					raise ValueError("Neither width nor height can be 0.")
+					raise ValueError("ERROR: Neither width nor height can be 0.")
 		if (interpolationMethod == None):
 			interpolationMethod = 2
 		# Local variables
@@ -146,15 +146,15 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Local variables.
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if (len(size) == 3):
 			height, width, depth = size
 		elif (len(size) == 2):
 			height, width = size
 		else:
-			raise Exception("Specify a valid size for the crops.")
+			raise Exception("ERROR: Specify a valid size for the crops.")
 		if ((height > 1) or (width > 1)):
-			raise ValueError("Size cannot be bigger than 1.")
+			raise ValueError("ERROR: Size cannot be bigger than 1.")
 		# Logic
 		newBoundingBoxes = []
 		for i in range(len(boundingBoxes)):
@@ -196,11 +196,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (frameHeight == None):
-			raise ValueError("Frame height cannot be empty.")
+			raise ValueError("ERROR: Frame height cannot be empty.")
 		if (frameWidth == None):
-			raise ValueError("Frame width cannot be empty.")
+			raise ValueError("ERROR: Frame width cannot be empty.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if (len(size) == 1):
 			padWidth, padHeight = size[0], size[0]
 		if (len(size) == 2):
@@ -276,13 +276,13 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if (quantity == None):
 			quantity = 3
 		if (size == None):
-			raise ValueError("Size cannot be empty.")
+			raise ValueError("ERROR: Size cannot be empty.")
 		if (color == None):
 			color = (0, 0, 0)
 		# Local variables
@@ -318,9 +318,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		# Flip only the pixels inside the bounding boxes
 		for bndbox in boundingBoxes:
 			# Decode bounding box
@@ -344,9 +344,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		# Flip only the pixels inside the bounding boxes
 		for bndbox in boundingBoxes:
 			# Decode bounding box
@@ -375,9 +375,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if theta == None:
 			theta = (random.random() * math.pi) + math.pi / 3
 		# Local variables
@@ -420,11 +420,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("Frame has to be a numpy array.")
+			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if (size == None):
-			raise ValueError("Size parameter cannot be empty.")
+			raise ValueError("ERROR: Size parameter cannot be empty.")
 		if (threshold == None):
 			threshold = 0.5
 		else:

@@ -90,10 +90,11 @@ class ImagePreprocessing(object):
 			localBoundingBoxes = boundingBoxes
 		if (offset == None):
 			raise Exception("Parameter {} cannot be empty.".format("offset"))
-		if (frameWidth < offset):
-			raise Exception("offset cannot be smaller than image's width.")
-		if (frameHeight < offset):
-			raise Exception("offset cannot be smaller than image's height.")			
+		if ((frameWidth <= offset) or (frameHeight <= offset)):
+			print("WARNING: Image's width {} or height {} is smaller than offset {}.".format(frameWidth, frameHeight, offset) +\
+						"Setting offset to current frame's smallest axis only for this image.")
+			offset = min([frameWidth, frameHeight]) - 10
+			# raise Exception("offset {} cannot be smaller than image's width {}.".format(offset, frameWidth))
 		# Local variables.
 		x_coordinates = []
 		y_coordinates = []
@@ -269,20 +270,20 @@ class ImagePreprocessing(object):
 			if (bdx[0] < 0):
 				raise ValueError("Xmin is negative")
 			if (bdx[0] > (RoiXMax-RoiXMin)):
-				print(bdx[0])
-				raise ValueError("Xmin is bigger than RoiX")
+				# print(bdx[0])
+				raise ValueError("Xmin {} is bigger than RoiX {}".format(bdx[0], (RoiXMax-RoiXMin)))
 			if (bdx[1] < 0):
 				raise ValueError("Ymin is negative")
 			if (bdx[1] > (RoiYMax-RoiYMin)):
-				raise ValueError("Ymin is bigger than RoiY")
+				raise ValueError("Ymin {} is bigger than RoiY {}.".format(bdx[1], (RoiYMax-RoiYMin)))
 			if (bdx[2] < 0):
 				raise ValueError("Xmax is negative")
 			if (bdx[2] > (RoiXMax-RoiXMin)):
-				raise ValueError("Xmax is bigger than RoiX")
+				raise ValueError("Xmax {} is bigger than RoiX {}.".format(bdx[2], (RoiXMax-RoiXMin)))
 			if (bdx[3] < 0):
 				raise ValueError("Ymax is negative")
 			if (bdx[3] > (RoiYMax-RoiYMin)):
-				raise ValueError("Ymax is bigger than RoiY")
+				raise ValueError("Ymax {} is bigger than RoiY {}.".format(bdx[3], (RoiYMax-RoiYMin)))
 		if ((RoiXMax-RoiXMin) < offset-100):
 			raise ValueError("Cropping frame is much smaller than offset in x {}."\
 												.format((RoiXMax-RoiXMin)))
@@ -319,17 +320,17 @@ class ImagePreprocessing(object):
 			an int containing the number of column patches
 		"""
 		# Assertions
-		if imageWidth == None:
+		if (imageWidth == None):
 			raise Exception("Image width cannot be empty.")
-		if imageHeight == None:
+		if (imageHeight == None):
 			raise Exception("Image height cannot be empty.")
-		if slideWindowSize == None:
+		if (slideWindowSize == None):
 			slideWindowSize = (0, 0)
-		if strideSize == None:
+		if (strideSize == None):
 			strideSize = (0, 0)
 		if padding == None:
 			padding = "VALID"
-		if numberPatches == None:
+		if (numberPatches == None):
 			numberPatches = (1, 1)
 		# Get sliding window sizes
 		slideWindowWidth, slideWindowHeight = slideWindowSize[0], slideWindowSize[1]

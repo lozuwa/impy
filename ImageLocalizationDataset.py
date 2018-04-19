@@ -31,13 +31,21 @@ try:
 	from .Util import *
 except:
 	from Util import *
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
 
 prep = ImagePreprocessing()
 bndboxAugmenter = BoundingBoxAugmenters()
+assertion = AssertDataTypes()
 
 class ImageLocalizationDataset(object):
 
-	def __init__(self, images = None, annotations = None, databaseName = None):
+	def __init__(self, 
+							images = None, 
+							annotations = None, 
+							databaseName = None):
 		super(ImageLocalizationDataset, self).__init__()
 		# Assert images and annotations
 		if (not os.path.isdir(images)):
@@ -53,8 +61,61 @@ class ImageLocalizationDataset(object):
 
 	def reduceDatasetByRois(self,
 													offset = None,
-													output_directory = None):
+													outputDirectory = None):
 		"""
+		Reduce that images of a dataset by grouping its bounding box annotations and
+		creating smaller images that contain them.
+		Args:
+			offset: An int that contains the amount of pixels in which annotations 
+							can be grouped.
+			outputDirectory: A string that contains the path to a directory.
+		Returns:
+			None
+		"""
+		# Assertions
+		if (offset == None):
+			raise ValueError("ERROR: Offset parameter cannot be empty.")
+		if (outputDirectory == None):
+			outputDirectory = os.getcwd()
+		# Create folders
+		Util.create_folder(os.path.join(outputDirectory))
+		Util.create_folder(os.path.join(outputDirectory, "images"))
+		Util.create_folder(os.path.join(outputDirectory, "annotations"))
+		Util.create_folder(os.path.join(outputDirectory, "annotations", "xmls"))
+		# Get images and annotations full paths
+		imagesPath = [os.path.join(self.images, each) for each in \
+									os.listdir(self.images)]
+		for img in tqdm(imagesPath):
+			#print(img)
+			# Get extension
+			extension = Util.detect_file_extension(filename = img)
+			if (extension == None):
+				raise Exception("ERROR: Your image extension is not valid." +\
+											   "Only jpgs and pngs are allowed.")
+			# Extract name
+			filename = os.path.split(img)[1].split(extension)[0]
+			# Create xml and img name
+			imgFullPath = os.path.join(self.images, filename + extension)
+			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			self.reduceImageDataPointByRoi(imagePath = imgFullPath, 
+																			annotationPath = xmlFullPath,
+																			offset = offset,
+																			outputDirectory = outputDirectory)
+
+	def reduceImageDataPointByRoi(self,
+																imagePath = None,
+																annotationPath = None,
+																offset = None,
+																outputDirectory = None):
+		"""
+		Group an image's bounding boxes into Rois and create smaller images.
+		Args:
+			imagePath: A string that contains the path to an image.
+			annotationPath: A string that contains the path to an annotation.
+			offset: An int that contains the offset.
+			outputDirectory: A string that contains the path to a directory.
+		Returns:
+			None
 		Example:
 			Given an image and its bounding boxes, create ROIs of size offset
 			that enclose the maximum possible amount of bounding boxes. 
@@ -79,39 +140,33 @@ class ImageLocalizationDataset(object):
 				|                               |      |                 ----Roi1      |
 				---------------------------------      ---------------------------------
 		Then, the rois are saved with their respective annotations.
-		"""
-		# Create folders
-		os.system("rm -r {}/reducedDataset".format(output_directory))
-		Util.create_folder(os.path.join(output_directory, "reducedDataset"))
-		Util.create_folder(os.path.join(output_directory, "reducedDataset", "images"))
-		Util.create_folder(os.path.join(output_directory, "reducedDataset", "annotations"))
-		Util.create_folder(os.path.join(output_directory, "reducedDataset", "annotations", "xmls"))
-		# Get images and annotations full paths
-		imgs_path = [os.path.join(self.images, each) for each in os.listdir(self.images)]
-		for img in tqdm(imgs_path):
-			#print(img)
-			# Extract name
-			file_name = os.path.split(img)[1].split(".jpg")[0]
-			# Create xml and img name
-			img_name = os.path.join(self.images, file_name + ".jpg")
-			xml_name = os.path.join(self.annotations, file_name + ".xml")
-			self.reduceImageDataPointByRoi(image = img_name, 
-																			annotation = xml_name,
-																			offset = offset,
-																			output_directory = output_directory)
-
-	def reduceImageDataPointByRoi(self,
-																image = None,
-																annotation = None,
-																offset = None,
-																output_directory = None):
-		"""
-		Args:
-			image: A string that contains the path to an image.
-			annotation: A string that contains the path to an annotation.
 		"""	
+		# Assertions
+		if (imagePath == None):
+			raise ValueError("ERROR: Path to imagePath parameter cannot be empty.")
+		if (annotationPath == None):
+			raise ValueError("ERROR: Path to annotation parameter cannot be empty.")
+		if (not os.path.isfile(imagePath)):
+			raise ValueError("ERROR: Path to image does not exist {}.".format(imagePath))
+		if (not os.path.isfile(annotationPath)):
+			raise ValueError("ERROR: Path to annotation does not exist {}.".format(annotationPath))
+		if (offset == None):
+			raise ValueError("ERROR: Offset parameter cannot be empty.")
+		if (not os.path.isdir(outputDirectory)):
+			raise ValueError("ERROR: Output directory does not exist.")
+		if (outputDirectory == None):
+			outputImageDirectory = self.images
+			outputAnnotationDirectory = self.annotations
+		else:
+			outputImageDirectory = os.path.join(outputDirectory, "images")
+			if (not os.path.isdir(outputImageDirectory)):
+				raise Exception("ERROR: path to images folder does not exist.")
+			outputAnnotationDirectory = os.path.join(outputDirectory, \
+																								"annotations", "xmls")
+			if (not os.path.isdir(outputAnnotationDirectory)):
+				raise Exception("ERROR: path to annotations folder does not exist.")
 		# Process image annotation
-		annotation = ImageAnnotation(path = annotation)
+		annotation = ImageAnnotation(path = annotationPath)
 		width, height, depth = annotation.propertySize
 		names = annotation.propertyNames
 		objects = annotation.propertyObjects
@@ -160,7 +215,8 @@ class ImageLocalizationDataset(object):
 					ix1, iy1, x1, y1 = annotations[j].propertyBndbox
 					if ((ix0 < ix1) and (iy0 < iy1)):
 						# print(annotations[j].propertyName)
-						distance = VectorOperations.euclidean_distance(v0 = [ix0, iy0], v1 = [x1, y1])
+						distance = VectorOperations.euclidean_distance(v0 = [ix0, iy0],
+																														v1 = [x1, y1])
 						if (distance < (offset-20)):
 							annotations[i].includeOtherAnnotation([ix1, iy1, x1, y1])
 							annotations[i].includeOtherAnnotationName(annotations[j].propertyName)
@@ -177,123 +233,147 @@ class ImageLocalizationDataset(object):
 				continue
 			else:
 				# Adjust image
+				# print("Adjust image: ", height, width, imagePath)
 				RoiXMin, RoiYMin, RoiXMax,\
 				RoiYMax, bdxs = prep.adjustImage(frameHeight = height,
-																				frameWidth = width,
-																				boundingBoxes = annotations[i].propertyOtherAnnotation,
-																				offset = offset)
+												frameWidth = width,
+												boundingBoxes = annotations[i].propertyOtherAnnotation,
+												offset = offset)
+				# print((RoiXMax-RoiXMin), (RoiYMax-RoiYMin))
 				# Read image
-				frame = cv2.imread(image)
+				frame = cv2.imread(imagePath)
 				# Save image
-				ImageLocalizationDataset.save_img_and_xml(frame = frame,
-																					bndboxes = bdxs,
-																					names = annotations[i].propertyOtherAnnotationName,
-																					database_name = self.databaseName,
-																					data_augmentation_type = "Unspecified",
-																					origin_information = image,
-																					output_image_directory = self.images,
-																					output_annotation_directory = self.annotations)
+				ImageLocalizationDataset.save_img_and_xml(frame = frame[RoiYMin:RoiYMax,\
+																															RoiXMin:RoiXMax, :],
+											bndboxes = bdxs,
+											names = annotations[i].propertyOtherAnnotationName,
+											database_name = self.databaseName,
+											data_augmentation_type = "Unspecified",
+											origin_information = imagePath,
+											output_image_directory = outputImageDirectory,
+											output_annotation_directory = outputAnnotationDirectory)
 
 	def applyDataAugmentation(self,
-														augmentations = None):
+														augmentations = None,
+														outputDirectory = None):
 		"""
 		Applies one or multiple data augmentation methods to the dataset.
 		Args:
-			augmenter: A string with a path to a json file.
+			augmenter: A string with a path to a json file that contains the 
+								configuration of the data augmentation methods.
+			outputDirectory: A string that contains the path to a directory.
 		Returns:
 			None
 		"""
 		# Assertions 
 		if (augmentations == None):
-			raise ValueError("Augmenter parameter cannot be empty.")
+			raise ValueError("ERROR: Augmenter parameter cannot be empty.")
 		else:
 			if (not os.path.isfile(augmentations)):
-				raise Exception("Path to json file ({}) does not exist."\
+				raise Exception("ERROR: Path to json file ({}) does not exist."\
 													.format(augmentations))
-		# Load configuration data
+		if (not os.path.isdir(outputDirectory)):
+			raise ValueError("ERROR: Output directory does not exist.")
+		if (outputDirectory == None):
+			outputDirectory = os.getcwd()
+		# Load configuration data.
 		data = json.load(open(augmentations))
 		augmentationTypes = [i for i in data.keys()]
 		if (assertSupportedAugmentationTypes(augmentationTypes)):
-			# Iterate over images
-			imgs_path = [os.path.join(self.images, each) for each in os.listdir(self.images)]
-			for img in tqdm(imgs_path):
-				# Extract name
-				file_name = os.path.split(img)[1].split(".jpg")[0]
-				# Create xml and img name
-				img_name = os.path.join(self.images, file_name + ".jpg")
-				xml_name = os.path.join(self.annotations, file_name + ".xml")
-				imgAnt = ImageAnnotation(path = xml_name)
+			# Iterate over images.
+			imagesPaths = [os.path.join(self.images, each) for each in \
+											os.listdir(self.images)]
+			for img in tqdm(imagesPaths):
+				# Get the extension
+				extension = Util.detect_file_extension(filename = img)
+				if (extension == None):
+					raise Exception("ERROR: Your image extension is not valid." +\
+												   "Only jpgs and pngs are allowed.")
+				# Extract name.
+				filename = os.path.split(img)[1].split(extension)[0]
+				# Create xml and img name.
+				imgFullPath = os.path.join(self.images, filename + extension)
+				xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+				imgAnt = ImageAnnotation(path = xmlFullPath)
 				boundingBoxes = imgAnt.propertyBoundingBoxes
 				names = imgAnt.propertyNames
-				# Apply configured augmentations
-				__applyAugmentation__(image = img_name,
+				# Apply configured augmentations.
+				__applyAugmentation__(imagePath = imgFullPath,
 															boundingBoxes = boundingBoxes,
 															names = names,
-															data = data)
+															data = data,
+															outputDirectory = outputDirectory)
 		else:
 			raise Exception("Augmentation type not supported.")	
 
 	def __applyAugmentation__(self,
-														image = None,
+														imagePath = None,
 														boundingBoxes = None,
 														names = None,
-														data = None):
+														data = None,
+														outputDirectory = None):
 		"""
 		Private method. Applies the supported data augmentation methods 
 		to a data point.
 		Args:
-			image: A string that contains a path to an image.
+			imagePath: A string that contains a path to an image.
 			boundingBoxes:  A list of lists that contains bounding boxes' 
 											coordinates.
 			names: A list of strings that contains the names of the bounding boxes.
 			data: A hashmap of hashmaps.
+			outputDirectory: A string that contains the path to a valid directory.
 		Returns:
 			None
 		"""
 		# Assertions
-		if (image == None):
-			raise ValueError("Image parameter cannot be empty.")
+		if (imagePath == None):
+			raise ValueError("ERROR: imagePath parameter cannot be empty.")
 		if (boundingBoxes == None):
-			raise ValueError("Bounding Boxes parameter cannot be empty.")
+			raise ValueError("ERROR: Bounding Boxes parameter cannot be empty.")
+		if (names == None):
+			raise ValueError("ERROR: Names parameter cannot be empty.")
 		if (data == None):
-			raise ValueError("Data parameter cannot be empty.")
+			raise ValueError("ERROR: Data parameter cannot be empty.")
+		if (outputDirectory == None):
+			raise ValueError("ERROR: Output directory cannot be empty.")
+		else:
+			outputImageDirectory = os.path.join(outputDirectory, "images")
+			outputAnnotationDirectory = os.path.join(outputDirectory, "annotations", "xmls")
 		# Local variables
-		frame = cv2.imread(image)
+		originalFrame = cv2.imread(imagePath)
 		# Apply augmentations
 		if ("bounding_box_augmenters" in augmentationTypes):
 			for bounding_box_augmentation in data["bounding_box_augmenters"]:
 				if (bounding_box_augmentation == "scale"):
 					# Apply scaling
 					parameters = data["bounding_box_augmenters"]["scale"]
-					frame, bndboxes = bndboxAugmenter.scale(frame = frame,
-																											boundingBoxes = boundingBoxes,
-																											size = parameters["size"],
-																											interpolationMethod = parameters["interpolationMethod"])
+					frame, bndboxes = bndboxAugmenter.scale(frame = originalFrame.copy(),
+												boundingBoxes = boundingBoxes,
+												size = parameters["size"],
+												interpolationMethod = parameters["interpolationMethod"])
 					# Save scaling
 					ImageLocalizationDataset.save_img_and_xml(frame = frame,
-																										bndboxes = bndboxes,
-																										names = names,
-																										database_name = self.databaseName,
-																										data_augmentation_type = "bounding_box_scale",
-																										origin_information = image,
-																										output_image_directory = self.images,
-																										output_annotation_directory = self.annotations)
+												bndboxes = bndboxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_scale",
+												origin_information = image,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "crop"):
-					# Apply scaling
+					# Apply crop
 					parameters = data["bounding_box_augmenters"]["crop"]
-					frame, bndboxes = bndboxAugmenter.scale(frame = frame,
-																									boundingBoxes = boundingBoxes,
-																									size = parameters["size"],
-																									interpolationMethod = parameters["interpolationMethod"])
-					# Save scaling
-					ImageLocalizationDataset.save_img_and_xml(frame = frame,
-																										bndboxes = bndboxes,
-																										names = names,
-																										database_name = self.databaseName,
-																										data_augmentation_type = "bounding_box_crop",
-																										origin_information = image,
-																										output_image_directory = self.images,
-																										output_annotation_directory = self.annotations)
+					bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
+												size = parameters["size"])
+					# Save cropped frame
+					ImageLocalizationDataset.save_img_and_xml(frame = originalFrame.copy(),
+												bndboxes = bndboxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_scale",
+												origin_information = image,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "pad"):
 					parameters = data["bounding_box_augmenters"]["pad"]
 				elif (bounding_box_augmentation == "jitterBoxes"):
@@ -390,8 +470,8 @@ class ImageLocalizationDataset(object):
 		# Assertions
 		if (database_name == None):
 			database_name = "Unspecified"
-		if (frame == None):
-			raise ValueError("Frame parameter cannot be empty.")
+		if (assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
 		if (bndboxes == None):
 			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (names == None):
@@ -405,9 +485,13 @@ class ImageLocalizationDataset(object):
 		if (output_annotation_directory == None):
 			raise ValueError("Output annotation directory directory parameter cannot be empty.")
 		# Local variables
+		# Check file extension
+		extension = Util.detect_file_extension(filename = origin_information)
+		if (extension == None):
+			raise Exception("Your image extension is not valid. Only jpgs and pngs are allowed.")
 		# Generate a new name.
-		new_name = Util.create_random_name(name = name, length = 4)
-		img_name = new_name + ".jpg"
+		new_name = Util.create_random_name(name = database_name, length = 4)
+		img_name = new_name + extension
 		xml_name = new_name + ".xml"
 		# Save image
 		img_save_path = os.path.join(output_image_directory, img_name)
@@ -441,8 +525,14 @@ class ImageLocalizationDataset(object):
 			path: A string that contains the path to an image.
 			database_name: A string that contains the name of a database.
 			frame_size: A tuple that contains information about the size of an image.
-			data_augmentation_type
-			coordinates: A list of lists that contains the bounding boxes annotations.
+			data_augmentation_type: A string that contains the type of augmentation that
+															is being used. Otherwise "Unspecified".
+			bounding_boxes: A list of lists that contains the bounding boxes annotations.
+			names: A list of strings that is parallel to bounding boxes. It depicts 
+						the name associated with each bounding box.
+			origin: A string that contains information about the origin of the file.
+			output_directory: A string that contains the path to a directory to save 
+												the annotation.
 		Returns:
 			None
 		"""
@@ -486,7 +576,7 @@ class ImageLocalizationDataset(object):
 		# Segmented
 		ET.SubElement(annotation, "segmented").text = "0"
 		# Objects
-		for name, coordinate in zip(names, coordinates):
+		for name, coordinate in zip(names, bounding_boxes):
 			object_ = ET.SubElement(annotation, "object")
 			ET.SubElement(object_, "name").text = str(name)
 			# ET.SubElement(object_, "pose").text = "Unspecified"
@@ -503,8 +593,25 @@ class ImageLocalizationDataset(object):
 		tree.write(os.path.join(output_directory, filename.split(".jpg")[0]+".xml"))
 
 class Annotation(object):
-	def __init__(self, index, name, bndbox, module, inUse):
+	def __init__(self, 
+							index = None,
+							name = None,
+							bndbox = None,
+							module = None,
+							inUse = None):
 		super(Annotation, self).__init__()
+		# Assertions
+		if (index == None):
+			raise ValueError("Index parameter cannot be empty.")
+		if (name == None):
+			raise ValueError("Name parameter cannot be empty.")
+		if (bndbox == None):
+			raise ValueError("Bounding box parameter cannot be empty.")
+		if (module == None):
+			module = -1
+		if (inUse == None):
+			raise ValueError("InUse parameter cannot be empty.")
+		# Class variables
 		self.index = index
 		self.name = name
 		self.bndbox = bndbox
