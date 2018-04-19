@@ -590,7 +590,10 @@ class ImageLocalizationDataset(object):
 			ET.SubElement(bndbox, "ymax").text = str(ymax)
 		# Write file
 		tree = ET.ElementTree(annotation)
-		tree.write(os.path.join(output_directory, filename.split(".jpg")[0]+".xml"))
+		extension = Util.detect_file_extension(filename)
+		if (extension == None):
+			raise Exception("Image's extension not supported {}".format(filename))
+		tree.write(os.path.join(output_directory, filename.split(extension)[0]+".xml"))
 
 class Annotation(object):
 	def __init__(self, 

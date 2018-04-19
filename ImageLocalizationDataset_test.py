@@ -6,6 +6,7 @@ Description: Testing units for ImageLocalizationDataset.
 import os
 import unittest
 from ImageLocalizationDataset import *
+from Util import *
 
 class ImageLocalizationDataset_test(unittest.TestCase):
 	
@@ -21,23 +22,32 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def tearDown(self):
 		pass
 
-	# def test_reduceDatasetByRois(self):
-	# 	# Reduce dataset by grouping ROIs into smaller frames
-	# 	self.imda.reduceDatasetByRois(offset = 1032,
-	# 		outputDirectory = os.path.join(os.getcwd(), "tests", "outputs", "localization"))
-	# 	# Assert the number of reduced images.
-	# 	# self.assertEqual()
+	def test_reduceDatasetByRois(self):
+		os.system("rm -r {}".format(os.path.join(os.getcwd(), "tests", "outputs", "localization")))
+		# Reduce dataset by grouping ROIs into smaller frames
+		self.imda.reduceDatasetByRois(offset = 1032,
+			outputDirectory = os.path.join(os.getcwd(), "tests", "outputs", "localization"))
+		# Assert the number of reduced images.
+		# self.assertEqual()
 
 	def test_reduceImageDataPointByRoi(self):
-		img_name = os.path.join(os.getcwd(), "tests", "localization", "images", "cv.jpg")
-		xml_name = os.path.join(os.getcwd(), "tests", "localization", "annotations",\
-													 "xmls", "cv.xml")
-		offset = 200
 		output_directory = os.path.join(os.getcwd(), "tests", "outputs")
-		self.imda.reduceImageDataPointByRoi(imagePath = img_name,
-																	annotationPath = xml_name,
-																	offset = offset,
-																	outputDirectory = output_directory)
+		os.system("rm {}/images/* {}/annotations/xmls/*".format(output_directory, output_directory))
+		offset = 100
+		for i in range(5):
+			for each in os.listdir(os.path.join(os.getcwd(), "tests", "localization", "images")):
+				# Get extension
+				extension = Util.detect_file_extension(each)
+				if (extension == None):
+					raise ValueError("Extension not supported.")
+				img_name = os.path.join(os.getcwd(), "tests", "localization", "images", each)
+				xml_name = os.path.join(os.getcwd(), "tests", "localization", "annotations",\
+														 "xmls", each.split(extension)[0]+".xml")
+				self.imda.reduceImageDataPointByRoi(imagePath = img_name,
+																			annotationPath = xml_name,
+																			offset = offset,
+																			outputDirectory = output_directory)
+			offset += 200
 
 	# def test_save_img_and_xml(self):
 	# 	pass
