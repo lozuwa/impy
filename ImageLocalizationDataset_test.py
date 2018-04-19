@@ -33,21 +33,22 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def test_reduceImageDataPointByRoi(self):
 		output_directory = os.path.join(os.getcwd(), "tests", "outputs")
 		os.system("rm {}/images/* {}/annotations/xmls/*".format(output_directory, output_directory))
-		offset = 100
-		for i in range(5):
+		offset = 300
+		for i in range(1):
 			for each in os.listdir(os.path.join(os.getcwd(), "tests", "localization", "images")):
-				# Get extension
-				extension = Util.detect_file_extension(each)
-				if (extension == None):
-					raise ValueError("Extension not supported.")
-				img_name = os.path.join(os.getcwd(), "tests", "localization", "images", each)
-				xml_name = os.path.join(os.getcwd(), "tests", "localization", "annotations",\
-														 "xmls", each.split(extension)[0]+".xml")
-				self.imda.reduceImageDataPointByRoi(imagePath = img_name,
-																			annotationPath = xml_name,
-																			offset = offset,
-																			outputDirectory = output_directory)
-			offset += 200
+				if True:#each.endswith(".png"):
+					# Get extension
+					extension = Util.detect_file_extension(each)
+					if (extension == None):
+						raise ValueError("Extension not supported.")
+					img_name = os.path.join(os.getcwd(), "tests", "localization", "images", each)
+					xml_name = os.path.join(os.getcwd(), "tests", "localization", "annotations",\
+															 "xmls", each.split(extension)[0]+".xml")
+					self.imda.reduceImageDataPointByRoi(imagePath = img_name,
+																				annotationPath = xml_name,
+																				offset = offset,
+																				outputDirectory = output_directory)
+				offset += 0
 
 	# def test_save_img_and_xml(self):
 	# 	pass

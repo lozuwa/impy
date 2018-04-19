@@ -165,7 +165,7 @@ class ImageLocalizationDataset(object):
 																								"annotations", "xmls")
 			if (not os.path.isdir(outputAnnotationDirectory)):
 				raise Exception("ERROR: path to annotations folder does not exist.")
-		# Process image annotation
+		# Load image annotation
 		annotation = ImageAnnotation(path = annotationPath)
 		width, height, depth = annotation.propertySize
 		names = annotation.propertyNames
@@ -223,30 +223,35 @@ class ImageLocalizationDataset(object):
 							annotations[j].propertyInUse = True
 
 		# Debug
-		# for each in annotations:
-		# 	print(each.propertyIndex, each.propertyOtherAnnotation, "\n")
-		# print("\n")
+		for each in annotations:
+			print(each.propertyName, each.propertyIndex, \
+						each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
+		print("\n")
 
 		# Save image croppings
 		for i in range(len(annotations)):
 			if (len(annotations[i].propertyOtherAnnotation) == 0):
 				continue
 			else:
-				# Adjust image
-				# print("Adjust image: ", height, width, imagePath)
-				RoiXMin, RoiYMin, RoiXMax,\
-				RoiYMax, bdxs = prep.adjustImage(frameHeight = height,
-												frameWidth = width,
-												boundingBoxes = annotations[i].propertyOtherAnnotation,
-												offset = offset)
+				# Adjust image to current annotations' bounding boxes.
+				RoiXMin, RoiYMin, \
+				RoiXMax, RoiYMax = prep.adjustImage(frameHeight = height,
+																		frameWidth = width,
+																		boundingBoxes = annotations[i].propertyOtherAnnotation,
+																		offset = offset)
+				# Include bounding boxes after adjusting the region of interest.
+				newBoundingBoxes,\
+				newNames = prep.includeBoundingBoxes(edges = [RoiXMin, RoiYMin, RoiXMax, RoiYMax],
+																						boundingBoxes = boundingBoxes,
+																						names = names)
 				# print((RoiXMax-RoiXMin), (RoiYMax-RoiYMin))
 				# Read image
 				frame = cv2.imread(imagePath)
 				# Save image
 				ImageLocalizationDataset.save_img_and_xml(frame = frame[RoiYMin:RoiYMax,\
 																															RoiXMin:RoiXMax, :],
-											bndboxes = bdxs,
-											names = annotations[i].propertyOtherAnnotationName,
+											bndboxes = newBoundingBoxes, #bdxs,
+											names = newNames, #annotations[i].propertyOtherAnnotationName,
 											database_name = self.databaseName,
 											data_augmentation_type = "Unspecified",
 											origin_information = imagePath,

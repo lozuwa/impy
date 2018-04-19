@@ -291,7 +291,49 @@ class ImagePreprocessing(object):
 			raise ValueError("Cropping frame is much smaller than offset in y {}."\
 												.format((RoiYMax-RoiYMin)))
 		# Return cropping coordinates and updated bounding boxes
-		return RoiXMin, RoiYMin, RoiXMax, RoiYMax, localBoundingBoxes
+		return RoiXMin, RoiYMin, RoiXMax, RoiYMax #, localBoundingBoxes
+
+	def includeBoundingBoxes(self,
+														edges = None,
+														boundingBoxes = None,
+														names = None):
+		"""
+		Check if there are bounding boxes included in the edges region.
+		Args:
+			edges: A tensor that contains an image.
+			boundingBoxes: A list of lists that contains coordinates of bounding boxes.
+			names: A list of strings that contains the labels of each bounding box.
+		Returns:
+			A list of lists that contains coordinates for bounding boxes and a list 
+			of strings that contains the labels of the bounding boxes.
+		"""
+		# Assertions
+		if (edges == None):
+			raise ValueError("Edges cannot be emtpy.")
+		if (boundingBoxes == None):
+			raise ValueError("Bounding boxes cannot be empty.")
+		if (names == None):
+			raise ValueError("Names cannot be empty.")
+		# Local variables
+		ix, iy, x, y = edges
+		# print(ix, iy, x, y)
+		# Logic
+		newBoundingBoxes = []
+		newNames = []
+		for i in range(len(boundingBoxes)):
+			bix, biy, bx, by = boundingBoxes[i]
+			name = names[i]
+			# If the x and y axis are contained in edges.
+			if (((bix > ix) and (bx < x)) and 
+					((biy > iy) and (by < y))):
+				# print(bix, biy, bx, by)
+				bix = bix - ix
+				bx = bx - ix
+				biy = biy - iy
+				by = by - iy
+				newBoundingBoxes.append([bix, biy, bx, by])
+				newNames.append(name)
+		return newBoundingBoxes, newNames
 
 	def divideIntoPatches(self,
 												imageWidth = None,
