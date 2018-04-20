@@ -318,10 +318,25 @@ class ImageLocalizationDataset(object):
 																					boundingBoxes = boundingBoxes,
 																					names = names,
 																					data = data,
-																					augmentationTypes = augmentationTypes,
 																					outputDirectory = outputDirectory)
 		else:
 			raise Exception("Augmentation type not supported.")	
+
+	def f(self):
+		"""
+		Decode augmentation.json file.
+		"""
+		# Get the augmentation types
+		augmentationTypes = [i for i in data.keys()]
+		# Get details
+		for i in data["bounding_box_augmenters"]:
+			if i == "Sequential":
+				for j in data["Sequential"]:
+					self.__applyBounginBoxAugmentation__(imagePath = imgFullPath,
+																					boundingBoxes = boundingBoxes,
+																					names = names,
+																					data = data,
+																					outputDirectory = outputDirectory)
 
 	def __applyBounginBoxAugmentation__(self,
 																			imagePath = None,
@@ -503,8 +518,8 @@ class ImageLocalizationDataset(object):
 					# Apply jitter boxes
 					parameters = data["image_augmenters"]["jitterBoxes"]
 					frame = imageAugmenter.jitterBoxes(frame = cv2.imread(imagePath),
-																							size = (10,10),
-																							quantity = 30)
+																							size = parameters["size"],
+																							quantity = parameters["quantity"])
 					# Save frame
 					ImageLocalizationDataset.save_img_and_xml(frame = frame,
 												bndboxes = boundingBoxes,
@@ -630,7 +645,7 @@ class ImageLocalizationDataset(object):
 				else:
 					raise Exception("ERROR: Image augmentation type not supported {}."\
 													.format(bounding_box_augmentation))
-
+		
 	@staticmethod
 	def assertSupportedAugmentationTypes(augmentationTypes = None):
 		"""
