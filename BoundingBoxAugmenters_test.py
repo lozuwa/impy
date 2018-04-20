@@ -91,7 +91,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 	def test_crop(self):
 		# Prepare data
 		boundingBoxes = [[100, 100, 150, 150]]
-		size = (0.5, 0.5)
+		size = (0.1, 0.1)
 		# Apply transformation
 		boundingBoxes = self.augmenter.crop(boundingBoxes = boundingBoxes,
 																				size = size)
@@ -108,7 +108,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		# Visual test
 		if (self.visualize):
 			localbnxboxes = self.bndboxes
-			for i in range(3):
+			for i in range(10):
 				frame = self.frame.copy()
 				bndboxes = self.augmenter.crop(boundingBoxes = localbnxboxes,
 																						size = (0.5,0.5))

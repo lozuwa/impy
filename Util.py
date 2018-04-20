@@ -26,7 +26,6 @@ class Util(object):
 		# Assertions
 		if (folder_name == None):
 			raise ValueError("ERROR: Folder name parameter cannot be emtpy.")
-		folder_name = os.path.join(os.getcwd(), folder_name)
 		if (os.path.isdir(folder_name)):
 			print("INFO: Folder already exists: {}".format(os.path.split(folder_name)[1]))
 		else:

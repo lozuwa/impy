@@ -108,15 +108,16 @@ class ImageAugmenters(implements(ImageAugmentersMethods)):
 			raise ValueError("Frame has to be a numpy array.")
 		if (size == None):
 			raise ValueError("size cannot be empty.")
-		elif (type(size) != tuple):
-			raise ValueError("size has to be a tuple (width, height)")
+		if ((type(size) == tuple) or (type(size) == list)):
+			pass
 		else:
-			if (len(size) != 2):
-				raise ValueError("size must be a tuple of size 2 (width, height)")
-			else:
-				resizeWidth, resizeHeight = size
-				if (resizeWidth == 0 or resizeHeight == 0):
-					raise ValueError("Neither width nor height can be 0.")
+			raise ValueError("size has to be either a tuple or a list (width, height)")
+		if (len(size) != 2):
+			raise ValueError("size must be a tuple of size 2 (width, height)")
+		else:
+			resizeWidth, resizeHeight = size
+			if (resizeWidth == 0 or resizeHeight == 0):
+				raise ValueError("Neither width nor height can be 0.")
 		if (interpolationMethod == None):
 			interpolationMethod = 2
 		# Local variables

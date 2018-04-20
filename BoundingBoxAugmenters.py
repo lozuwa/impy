@@ -101,15 +101,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			boundingBoxes = boundingBoxes
 		if (size == None):
 			raise ValueError("ERROR: size cannot be empty.")
-		elif (type(size) != tuple):
-			raise ValueError("ERROR: size has to be a tuple (width, height)")
+		if ((type(size) == tuple) or (type(size) == list)):
+			size = (size[0], size[1])
 		else:
-			if (len(size) != 2):
-				raise ValueError("ERROR: size must be a tuple of size 2 (width, height)")
-			else:
-				resizeWidth, resizeHeight = size
-				if (resizeWidth == 0 or resizeHeight == 0):
-					raise ValueError("ERROR: Neither width nor height can be 0.")
+			raise ValueError("ERROR: size has to be either a tuple or a list (width, height).")
+		if (len(size) != 2):
+			raise ValueError("ERROR: size must be a tuple of size 2 (width, height).")
+		else:
+			resizeWidth, resizeHeight = size
+			if (resizeWidth == 0 or resizeHeight == 0):
+				raise ValueError("ERROR: Neither width nor height can be 0.")
 		if (interpolationMethod == None):
 			interpolationMethod = 2
 		# Local variables
@@ -119,6 +120,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Scale image
 		frame = cv2.resize(frame.copy(), size, interpolationMethod)
 		# Fix bounding boxes
+		newBoundingBoxes = []
 		for i in range(len(boundingBoxes)):
 			# Decode bounding box
 			ix, iy, x, y = boundingBoxes[i]
@@ -127,9 +129,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			# Check variables are not the same as the right and bottom boundaries
 			x, y = BoundingBoxAugmenters.checkBoundaries(x, y, width, height)
 			# Update list
-			boundingBoxes[i] = [i for i in map(int, [ix, iy, x, y])]
+			newBoundingBoxes.append([i for i in map(int, [ix, iy, x, y])])
 		# Return values
-		return frame, boundingBoxes
+		return frame, newBoundingBoxes
 
 	def crop(self,
 					boundingBoxes = None,
@@ -147,14 +149,12 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Local variables.
 		if (boundingBoxes == None):
 			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
-		if (len(size) == 3):
-			height, width, depth = size
-		elif (len(size) == 2):
-			height, width = size
+		if ((type(size) == tuple) or (type(size) == list)):
+			height, width = (size[0], size[1])
 		else:
-			raise Exception("ERROR: Specify a valid size for the crops.")
+			raise ValueError("ERROR: size has to be either a tuple or a list (width, height).")
 		if ((height > 1) or (width > 1)):
-			raise ValueError("ERROR: Size cannot be bigger than 1.")
+			raise ValueError("ERROR: Size cannot be bigger than 1. ({}, {})".format(height, width))
 		# Logic
 		newBoundingBoxes = []
 		for i in range(len(boundingBoxes)):
@@ -201,9 +201,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			raise ValueError("ERROR: Frame width cannot be empty.")
 		if (boundingBoxes == None):
 			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
-		if (len(size) == 1):
-			padWidth, padHeight = size[0], size[0]
-		if (len(size) == 2):
+		if (len(size) != 2):
+			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")
+		else:
 			padWidth, padHeight = size[0], size[1]
 		# Start padding
 		newBoundingBoxes = []
@@ -290,6 +290,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			height, width = frame.shape
 		else:
 			height, width, depth = frame.shape
+		# Local variables
+		localFrame = frame[:, :]
 		# Iterate over bounding boxes.
 		for bndbox in boundingBoxes:
 			# Decode bndbox.
@@ -299,10 +301,10 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 				rix = int(ix + (np.random.rand()*((x - size[0]) - ix + 1)))
 				riy = int(iy + (np.random.rand()*((y - size[1]) - iy + 1)))
 				# Draw jitter boxes on top of the image.
-				frame = cv2.rectangle(frame, (rix, riy), (rix+size[0], riy+size[1]), \
-															color, -1)
+				localFrame = cv2.rectangle(localFrame, (rix, riy), (rix+size[0], riy+size[1]), \
+																		color, -1)
 		# Return frame
-		return frame
+		return localFrame
 
 	def horizontalFlip(self,
 										frame = None,
@@ -321,14 +323,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+		# Local variables
+		localFrame = frame[:, :, :]
 		# Flip only the pixels inside the bounding boxes
 		for bndbox in boundingBoxes:
 			# Decode bounding box
 			ix, iy, x, y = bndbox
 			# Flip ROI
-			roi = cv2.flip(frame[iy:y, ix:x, :], 1)
-			frame[iy:y, ix:x, :] = roi
-		return frame
+			roi = cv2.flip(localFrame[iy:y, ix:x, :], 1)
+			localFrame[iy:y, ix:x, :] = roi
+		return localFrame
 
 	def verticalFlip(self,
 									frame = None,
@@ -347,14 +351,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			raise ValueError("ERROR: Frame has to be a numpy array.")
 		if (boundingBoxes == None):
 			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+		# Local variables
+		localFrame = frame[:, :, :]
 		# Flip only the pixels inside the bounding boxes
 		for bndbox in boundingBoxes:
 			# Decode bounding box
 			ix, iy, x, y = bndbox
 			# Flip ROI
-			roi = cv2.flip(frame[iy:y, ix:x, :], 0)
-			frame[iy:y, ix:x, :] = roi
-		return frame
+			roi = cv2.flip(localFrame[iy:y, ix:x, :], 0)
+			localFrame[iy:y, ix:x, :] = roi
+		return localFrame
 
 	def rotation(self,
 							frame = None,
@@ -382,21 +388,21 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			theta = (random.random() * math.pi) + math.pi / 3
 		# Local variables
 		thetaDegrees = theta * (180 / math.pi)
-		original_frame = frame.copy()
+		localFrame = frame[:, :, :]
 		# Iterate over bounding boxes
 		for i in range(len(boundingBoxes)):
 			# Decode current the bouding box.
 			ix, iy, x, y = boundingBoxes[i]
 			# Crop bounding box from the frame.
-			frame = original_frame[iy:y, ix:x, :]
+			frame = localFrame[iy:y, ix:x, :]
 			rows, cols, depth = frame.shape
 			# Rotate image
 			M = cv2.getRotationMatrix2D((cols/2, rows/2), thetaDegrees, 1)
 			frame = cv2.warpAffine(frame, M, (cols, rows))
 			# Update original frame
-			original_frame[iy:y, ix:x, :] = frame
+			localFrame[iy:y, ix:x, :] = frame
 		# Return frame and coordinates
-		return original_frame
+		return localFrame
 
 	def dropout(self,
 							frame = None,
@@ -432,6 +438,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 				threshold = 0.99
 		if (color == None):
 			color = (0,0,0)
+		# Local variables
+		localFrame = frame[:, :]
 		# Iterate over bounding boxes
 		for i in range(len(boundingBoxes)):
 			# Decode bndbox
@@ -448,8 +456,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 				rix, riy, rxc, ryc = ixc+ix, iyc+iy, ixc+ix+size[0], iyc+iy+size[1]
 				prob = np.random.rand()
 				if (prob > threshold):
-					frame[riy:ryc, rix:rxc, :] = color
-		return frame
+					localFrame[riy:ryc, rix:rxc, :] = color
+		return localFrame
 
 	@staticmethod
 	def checkBoundaries(x = None, y = None, width = None, height = None):

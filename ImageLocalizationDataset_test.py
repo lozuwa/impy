@@ -50,6 +50,13 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 																				outputDirectory = output_directory)
 				offset += 0
 
+	def test_applyDataAugmentation(self):
+		outputDirectory = os.path.join(os.getcwd(), "tests", "outputs", "DatasetAugmentation")
+		os.system("rm -r {}".format(outputDirectory))
+		augmentations = os.path.join(os.getcwd(), "tests","augmentation.json")
+		self.imda.applyDataAugmentation(augmentations = augmentations,
+					outputDirectory = outputDirectory)
+
 	# def test_save_img_and_xml(self):
 	# 	pass
 	# 	# ImageLocalizationDataset.save_img_and_xml()

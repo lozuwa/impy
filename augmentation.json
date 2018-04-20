@@ -5,7 +5,7 @@
 			"interpolationMethod": 1 
 		},
 		"crop": {
-			"size": [25,25]
+			"size": [0.1,0.1]
 		},
 		"pad": {
 			"size": [50,50]

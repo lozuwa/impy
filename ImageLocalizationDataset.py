@@ -24,6 +24,10 @@ try:
 except:
 	from BoundingBoxAugmenters import *
 try:
+	from .ImageAugmenters import *
+except:
+	from ImageAugmenters import *	
+try:
 	from .ImageAnnotation import *
 except:
 	from ImageAnnotation import *
@@ -38,6 +42,7 @@ except:
 
 prep = ImagePreprocessing()
 bndboxAugmenter = BoundingBoxAugmenters()
+imageAugmenter = ImageAugmenters()
 assertion = AssertDataTypes()
 
 class ImageLocalizationDataset(object):
@@ -223,10 +228,10 @@ class ImageLocalizationDataset(object):
 							annotations[j].propertyInUse = True
 
 		# Debug
-		for each in annotations:
-			print(each.propertyName, each.propertyIndex, \
-						each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
-		print("\n")
+		# for each in annotations:
+		# 	print(each.propertyName, each.propertyIndex, \
+		# 				each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
+		# print("\n")
 
 		# Save image croppings
 		for i in range(len(annotations)):
@@ -277,15 +282,21 @@ class ImageLocalizationDataset(object):
 			if (not os.path.isfile(augmentations)):
 				raise Exception("ERROR: Path to json file ({}) does not exist."\
 													.format(augmentations))
-		if (not os.path.isdir(outputDirectory)):
-			raise ValueError("ERROR: Output directory does not exist.")
 		if (outputDirectory == None):
 			outputDirectory = os.getcwd()
+		if (not (os.path.isdir(os.path.split(outputDirectory)[0]))):
+			raise Exception("ERROR: Path to output directory does not exist." + \
+							"At least this {} has to exist.".format(os.path.split(outputDirectory)[0]))
+		# Create folders
+		Util.create_folder(os.path.join(outputDirectory))
+		Util.create_folder(os.path.join(outputDirectory, "images"))
+		Util.create_folder(os.path.join(outputDirectory, "annotations"))
+		Util.create_folder(os.path.join(outputDirectory, "annotations", "xmls"))
 		# Load configuration data.
 		data = json.load(open(augmentations))
 		augmentationTypes = [i for i in data.keys()]
-		if (assertSupportedAugmentationTypes(augmentationTypes)):
-			# Iterate over images.
+		if (self.assertSupportedAugmentationTypes(augmentationTypes)):
+			# Get full path to images.
 			imagesPaths = [os.path.join(self.images, each) for each in \
 											os.listdir(self.images)]
 			for img in tqdm(imagesPaths):
@@ -302,30 +313,32 @@ class ImageLocalizationDataset(object):
 				imgAnt = ImageAnnotation(path = xmlFullPath)
 				boundingBoxes = imgAnt.propertyBoundingBoxes
 				names = imgAnt.propertyNames
-				# Apply configured augmentations.
-				__applyAugmentation__(imagePath = imgFullPath,
-															boundingBoxes = boundingBoxes,
-															names = names,
-															data = data,
-															outputDirectory = outputDirectory)
+				# Apply bounding box augmentations.
+				self.__applyBounginBoxAugmentation__(imagePath = imgFullPath,
+																					boundingBoxes = boundingBoxes,
+																					names = names,
+																					data = data,
+																					augmentationTypes = augmentationTypes,
+																					outputDirectory = outputDirectory)
 		else:
 			raise Exception("Augmentation type not supported.")	
 
-	def __applyAugmentation__(self,
-														imagePath = None,
-														boundingBoxes = None,
-														names = None,
-														data = None,
-														outputDirectory = None):
+	def __applyBounginBoxAugmentation__(self,
+																			imagePath = None,
+																			boundingBoxes = None,
+																			names = None,
+																			data = None,
+																			augmentationTypes = None,
+																			outputDirectory = None):
 		"""
 		Private method. Applies the supported data augmentation methods 
 		to a data point.
 		Args:
 			imagePath: A string that contains a path to an image.
-			boundingBoxes:  A list of lists that contains bounding boxes' 
-											coordinates.
+			boundingBoxes:  A list of lists that contains bounding boxes' coordinates.
 			names: A list of strings that contains the names of the bounding boxes.
 			data: A hashmap of hashmaps.
+			augmentationTypes: A list with augmentation types.
 			outputDirectory: A string that contains the path to a valid directory.
 		Returns:
 			None
@@ -339,6 +352,8 @@ class ImageLocalizationDataset(object):
 			raise ValueError("ERROR: Names parameter cannot be empty.")
 		if (data == None):
 			raise ValueError("ERROR: Data parameter cannot be empty.")
+		if (augmentationTypes == None):
+			raise ValueError("ERROR: Augmentation types parameter cannot be empty.")
 		if (outputDirectory == None):
 			raise ValueError("ERROR: Output directory cannot be empty.")
 		else:
@@ -346,13 +361,14 @@ class ImageLocalizationDataset(object):
 			outputAnnotationDirectory = os.path.join(outputDirectory, "annotations", "xmls")
 		# Local variables
 		originalFrame = cv2.imread(imagePath)
+		height, width = originalFrame.shape[0], originalFrame.shape[1]
 		# Apply augmentations
 		if ("bounding_box_augmenters" in augmentationTypes):
 			for bounding_box_augmentation in data["bounding_box_augmenters"]:
 				if (bounding_box_augmentation == "scale"):
 					# Apply scaling
 					parameters = data["bounding_box_augmenters"]["scale"]
-					frame, bndboxes = bndboxAugmenter.scale(frame = originalFrame.copy(),
+					frame, bndboxes = bndboxAugmenter.scale(frame = cv2.imread(imagePath),
 												boundingBoxes = boundingBoxes,
 												size = parameters["size"],
 												interpolationMethod = parameters["interpolationMethod"])
@@ -362,7 +378,7 @@ class ImageLocalizationDataset(object):
 												names = names,
 												database_name = self.databaseName,
 												data_augmentation_type = "bounding_box_scale",
-												origin_information = image,
+												origin_information = imagePath,
 												output_image_directory = outputImageDirectory,
 												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "crop"):
@@ -371,60 +387,249 @@ class ImageLocalizationDataset(object):
 					bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
 												size = parameters["size"])
 					# Save cropped frame
-					ImageLocalizationDataset.save_img_and_xml(frame = originalFrame.copy(),
+					ImageLocalizationDataset.save_img_and_xml(frame = originalFrame,
 												bndboxes = bndboxes,
 												names = names,
 												database_name = self.databaseName,
-												data_augmentation_type = "bounding_box_scale",
-												origin_information = image,
+												data_augmentation_type = "bounding_box_crop",
+												origin_information = imagePath,
 												output_image_directory = outputImageDirectory,
 												output_annotation_directory = outputAnnotationDirectory)
+					
 				elif (bounding_box_augmentation == "pad"):
+					# Apply pad
 					parameters = data["bounding_box_augmenters"]["pad"]
+					bndboxes = bndboxAugmenter.pad(boundingBoxes = boundingBoxes,
+																				frameHeight = height,
+																				frameWidth = width,
+																				size = parameters["size"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = originalFrame,
+												bndboxes = bndboxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_pad",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					
 				elif (bounding_box_augmentation == "jitterBoxes"):
+					# Apply jitter boxes
 					parameters = data["bounding_box_augmenters"]["jitterBoxes"]
+					frame = bndboxAugmenter.jitterBoxes(frame = cv2.imread(imagePath),
+																							boundingBoxes = boundingBoxes,
+																							size = parameters["size"],
+																							quantity = parameters["quantity"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_jitterBoxes",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					frame = cv2.imread(imagePath)
 				elif (bounding_box_augmentation == "horizontalFlip"):
+					# Apply horizontal flip
 					parameters = data["bounding_box_augmenters"]["horizontalFlip"]
+					frame = bndboxAugmenter.horizontalFlip(frame = cv2.imread(imagePath),
+																								boundingBoxes = boundingBoxes)
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_horizontalFlip",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					
 				elif (bounding_box_augmentation == "verticalFlip"):
+					# Apply vertical flip
 					parameters = data["bounding_box_augmenters"]["verticalFlip"]
+					frame = bndboxAugmenter.verticalFlip(frame = cv2.imread(imagePath),
+																							boundingBoxes = boundingBoxes)
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_verticalFlip",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					
 				elif (bounding_box_augmentation == "rotation"):
+					# Apply rotation
 					parameters = data["bounding_box_augmenters"]["rotation"]
+					frame = bndboxAugmenter.rotation(frame = cv2.imread(imagePath),
+																						boundingBoxes = boundingBoxes,
+																						theta = parameters["theta"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_rotation",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					# 
 				elif (bounding_box_augmentation == "dropout"):
+					# Apply dropout
 					parameters = data["bounding_box_augmenters"]["dropout"]
+					frame = bndboxAugmenter.dropout(frame = cv2.imread(imagePath),
+													              boundingBoxes = boundingBoxes,
+													              size = parameters["size"],
+													              threshold = parameters["threshold"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_dropout",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
+					
 				else:
-					pass
+					raise Exception("ERROR: Bounding box augmentation type not supported {}."\
+													.format(bounding_box_augmentation))
+		# Apply augmentations
 		if ("image_augmenters" in augmentationTypes):
 			for bounding_box_augmentation in data["image_augmenters"]:
-				if (bounding_box_augmentation == "scale"):
-					parameters = data["image_augmenters"]["scale"]
-				elif (bounding_box_augmentation == "translate"):
-					parameters = data["image_augmenters"]["translate"]
-				elif (bounding_box_augmentation == "jitterBoxes"):
+				if (bounding_box_augmentation == "jitterBoxes"):
+					# Apply jitter boxes
 					parameters = data["image_augmenters"]["jitterBoxes"]
-				elif (bounding_box_augmentation == "horizontalFlip"):
-					parameters = data["image_augmenters"]["horizontalFlip"]
-				elif (bounding_box_augmentation == "verticalFlip"):
-					parameters = data["image_augmenters"]["verticalFlip"]
-				elif (bounding_box_augmentation == "rotation"):
-					parameters = data["image_augmenters"]["rotation"]
+					frame = imageAugmenter.jitterBoxes(frame = cv2.imread(imagePath),
+																							size = (10,10),
+																							quantity = 30)
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_fancyPCA",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "invertColor"):
+					# Apply invert color
 					parameters = data["image_augmenters"]["invertColor"]
+					frame = imageAugmenter.invertColor(frame = cv2.imread(imagePath),
+																					CSpace = parameters["CSpace"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_CSpace",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "histogramEqualization"):
+					# Apply histogram equalization
 					parameters = data["image_augmenters"]["histogramEqualization"]
+					frame = imageAugmenter.histogramEqualization(frame = cv2.imread(imagePath),
+															equalizationType = parameters["equalizationType"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_histogramEqualization",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "changeBrightness"):
+					# Apply change brightness
 					parameters = data["image_augmenters"]["changeBrightness"]
+					frame = imageAugmenter.changeBrightness(frame = cv2.imread(imagePath),
+																							coefficient = parameters["coefficient"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_changeBrightness",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "sharpening"):
+					# Apply sharpening
 					parameters = data["image_augmenters"]["sharpening"]
+					frame = imageAugmenter.sharpening(frame = cv2.imread(imagePath),
+																					weight = parameters["weight"])
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_sharpening",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "addGaussianNoise"):
+					# Apply add gaussian noise
 					parameters = data["image_augmenters"]["addGaussianNoise"]
+					frame = imageAugmenter.addGaussianNoise(frame = cv2.imread(imagePath),
+																				coefficient = parameters["coefficient"])
+					# Save frame
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_addGaussianNoise",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "gaussianBlur"):
+					# Apply gaussian blur
 					parameters = data["image_augmenters"]["gaussianBlur"]
+					frame = imageAugmenter.gaussianBlur(frame = cv2.imread(imagePath),
+																					sigma = parameters["sigma"])
+					# Save frame
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_gaussianBlur",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "shiftColors"):
+					# Apply shift colors
 					parameters = data["image_augmenters"]["shiftColors"]
+					frame = imageAugmenter.shiftColors(frame = cv2.imread(imagePath))
+					# Save frame
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_shiftColors",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				elif (bounding_box_augmentation == "fancyPCA"):
+					# Apply fancy pca
 					parameters = data["image_augmenters"]["fancyPCA"]
+					frame = imageAugmenter.fancyPCA(frame = cv2.imread(imagePath))					
+					# Save frame
+					ImageLocalizationDataset.save_img_and_xml(frame = frame,
+												bndboxes = boundingBoxes,
+												names = names,
+												database_name = self.databaseName,
+												data_augmentation_type = "bounding_box_fancyPCA",
+												origin_information = imagePath,
+												output_image_directory = outputImageDirectory,
+												output_annotation_directory = outputAnnotationDirectory)
 				else:
-					pass
+					raise Exception("ERROR: Image augmentation type not supported {}."\
+													.format(bounding_box_augmentation))
 
 	@staticmethod
 	def assertSupportedAugmentationTypes(augmentationTypes = None):
