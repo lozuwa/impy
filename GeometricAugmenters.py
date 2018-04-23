@@ -17,7 +17,7 @@ Log:
 	Space dimension
 	---------------
 	1. Scaling
-		Resize the image to (h' x w').
+		Resize image to (h' x w').
 	2. Translate
 		Translate an image.
 	3. Jitter boxes
@@ -28,27 +28,6 @@ Log:
 		Flip the image vertically.
 	6. Rotation
 		Randomly rotates the bounding boxes.
-
-	---------------
-	Color dimension
-	---------------
-	1. Invert color
-		Invert the color space of the image.
-	2. Histogram equalization
-		Equalize the contrast of an image.
-	3. Change brightness
-		Change the brightness of an image.
-	4. Random sharpening
-		Randomly add sharpening to an image.
-	5. Add gaussian noise
-		Add normal noise to an image.
-	6. Gaussian blur 
-		Convolves the image with a Gaussian filter.
-	7. Shift colors
-		Swap the color spaces of an image.
-	8. Fancy PCA
-		Add a color perturbation based on the computation
-		of color's space PCA.
 """
 # Libraries
 from interface import implements

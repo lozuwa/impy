@@ -376,12 +376,23 @@ class ImagePreprocessing(object):
 			numberPatches = (1, 1)
 		# Get sliding window sizes
 		slideWindowWidth, slideWindowHeight = slideWindowSize[0], slideWindowSize[1]
-		if (slideWindowHeight > imageHeight) or (slideWindowWidth > imageWidth):
-			raise Exception("Slide window size is too big.")
+		if (slideWindowHeight > imageHeight):
+			print("WARNING: Slide window for height is too big. Setting it to image's height.")
+			slideWindowHeight = imageHeight - 1
+			# raise Exception("Slide window size is too big.")
+		if (slideWindowWidth > imageWidth):
+			print("WARNING: Slide window for width is too big. Setting it to image's width.")
+			# raise Exception("Slide window size is too big.")
+			slideWindowWidth = imageWidth - 1
 		# Get strides sizes
 		strideWidth, strideHeight = strideSize[0], strideSize[1]
-		if (strideHeight > imageHeight) or (strideWidth > imageWidth):
-			raise Exception("Stride size is too big.")
+		if (strideHeight > imageHeight):
+			print("WARNING: Stride height is too big. Setting it to image's height.")
+			strideHeight = imageHeight - 1
+			#  raise Exception("Stride size is too big.")
+		if (strideWidth > imageWidth):
+			print("WARNING: Stride width is too big. Setting it to image's width.")
+			strideWidth = imageWidth - 1
 		# Start padding operation
 		if padding == "VALID":
 			startPixelsHeight = 0

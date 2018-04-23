@@ -53,7 +53,7 @@ except:
 
 prep = ImagePreprocessing()
 bndboxAugmenter = BoundingBoxAugmenters()
-imageAugmenter = ColorAugmenters()
+colorAugmenter = ColorAugmenters()
 dataAssertion = AssertDataTypes()
 
 class ImageLocalizationDataset(object):
@@ -312,7 +312,9 @@ class ImageLocalizationDataset(object):
 			raise Exception("ERROR: Path to output annotation directory does not exist. {}"\
 											.format(outputAnnotationDirectory))
 		# Load configuration data.
-		data = json.load(open(configurationFile))
+		f = open(configurationFile)
+		data = json.load(f)
+		f.close()
 		# Iterate over the images.
 		for img in tqdm(os.listdir(self.images)):
 			# Get the extension
@@ -332,35 +334,48 @@ class ImageLocalizationDataset(object):
 			if (typeAugmentation == 0):
 				for i in data["bounding_box_augmenters"]:
 					if (i == "Sequential"):
+						# Prepare data for sequence
 						frame = cv2.imread(imgFullPath)
-						for j in data["bounding_box_augmenters"][i]:
-							parameters = data["bounding_box_augmenters"][i][j]
+						bndboxes = boundingBoxes
+						# Read elements of vector
+						assert type(data["bounding_box_augmenters"][i]) == list, "Not list"
+						for k in range(len(data["bounding_box_augmenters"][i])):
+							# Extract information
+							augmentationType = list(data["bounding_box_augmenters"][i][k].keys())[0]
+							parameters = data["bounding_box_augmenters"][i][k][augmentationType]
+							# Save?
+							saveParameter = self.extractSavingParameter(parameters = parameters)
 							frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
-																						boundingBoxes = boundingBoxes,
-																						names = names,
-																						augmentationType = j,
-																						parameters = parameters,
-																						outputImageDirectory = outputImageDirectory,
-																						outputAnnotationDirectory = outputAnnotationDirectory)
-							ImageLocalizationDataset.save_img_and_xml(frame = frame,
-												bndboxes = boundingBoxes,
-												data_augmentation_type = j,
-												origin_information = imgFullPath)
+																						boundingBoxes = bndboxes,
+																						augmentationType = augmentationType, #j,
+																						parameters = parameters)
+							if (saveParameter == True):
+								ImageLocalizationDataset.save_img_and_xml(frame = frame,
+														bndboxes = bndboxes,
+														names = names,
+														database_name = self.databaseName,
+														data_augmentation_type = i,
+														origin_information = imgFullPath,
+														output_image_directory = outputImageDirectory,
+														output_annotation_directory = outputAnnotationDirectory)
 					else:
 						parameters = data["bounding_box_augmenters"][i]
+						# Save?
+						saveParameter = self.extractSavingParameter(parameters = parameters)
 						frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = cv2.imread(imgFullPath),
 																						boundingBoxes = boundingBoxes,
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
-						ImageLocalizationDataset.save_img_and_xml(frame = frame,
-													bndboxes = bndboxes,
-													names = names,
-													database_name = self.databaseName,
-													data_augmentation_type = i,
-													origin_information = imgFullPath,
-													output_image_directory = outputImageDirectory,
-													output_annotation_directory = outputAnnotationDirectory)
+						if (saveParameter == True):
+							ImageLocalizationDataset.save_img_and_xml(frame = frame,
+														bndboxes = bndboxes,
+														names = names,
+														database_name = self.databaseName,
+														data_augmentation_type = i,
+														origin_information = imgFullPath,
+														output_image_directory = outputImageDirectory,
+														output_annotation_directory = outputAnnotationDirectory)
 			elif (typeAugmentation == 1):
 				# Geometric data augmentations
 				raise ValueError("Image geometric data augmentations are not " +\
@@ -368,9 +383,88 @@ class ImageLocalizationDataset(object):
 													"augmentation types.")
 			elif (typeAugmentation == 2):
 				# Color data augmentations
-				pass
+				for i in data["image_color_augmenters"]:
+					if (i == "Sequential"):
+						# Prepare data for sequence
+						frame = cv2.imread(imgFullPath)
+						# Read elements of vector
+						assert type(data["image_color_augmenters"][i]) == list, "Not list"
+						for k in range(len(data["image_color_augmenters"][i])):
+							# Extract information
+							augmentationType = list(data["image_color_augmenters"][i][k].keys())[0]
+							parameters = data["image_color_augmenters"][i][k][augmentationType]
+							# Save?
+							saveParameter = self.extractSavingParameter(parameters = parameters)
+							frame = self.__applyColorAugmentation__(frame = frame,
+																						augmentationType = augmentationType, #j,
+																						parameters = parameters)
+							if (saveParameter == True):
+								ImageLocalizationDataset.save_img_and_xml(frame = frame,
+														bndboxes = boundingBoxes,
+														names = names,
+														database_name = self.databaseName,
+														data_augmentation_type = i,
+														origin_information = imgFullPath,
+														output_image_directory = outputImageDirectory,
+														output_annotation_directory = outputAnnotationDirectory)
+					else:
+						parameters = data["image_color_augmenters"][i]
+						# Save?
+						saveParameter = self.extractSavingParameter(parameters = parameters)
+						frame = self.__applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+																						augmentationType = i,
+																						parameters = parameters)
+						# Save frame
+						if (saveParameter == True):
+							ImageLocalizationDataset.save_img_and_xml(frame = frame,
+														bndboxes = boundingBoxes,
+														names = names,
+														database_name = self.databaseName,
+														data_augmentation_type = i,
+														origin_information = imgFullPath,
+														output_image_directory = outputImageDirectory,
+														output_annotation_directory = outputAnnotationDirectory)
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
+
+	def extractSavingParameter(self, parameters = None):
+		"""
+		Extract the "save" parameter from a dictionary.
+		Args:
+			A dictionary.
+		Returns:
+			A boolean that contains the response of "save".
+		"""
+		if ("save" in parameters):			
+			return parameters["save"]
+		else:
+			return False
+
+	def __applyColorAugmentation__(self,
+																	frame = None,
+																	augmentationType = None,
+																	parameters = None):
+		# Logic
+		if (augmentationType == "invertColor"):
+			frame = colorAugmenter.invertColor(frame = frame, CSpace = parameters["CSpace"])
+		elif (augmentationType == "histogramEqualization"):
+			frame = colorAugmenter.histogramEqualization(frame = frame, equalizationType = parameters["equalizationType"])
+		elif (augmentationType == "changeBrightness"):
+			frame = colorAugmenter.changeBrightness(frame = frame, coefficient = parameters["coefficient"])
+		elif (augmentationType == "sharpening"):
+			frame = colorAugmenter.sharpening(frame = frame, weight = parameters["weight"])
+		elif (augmentationType == "addGaussianNoise"):
+			frame = colorAugmenter.addGaussianNoise(frame = frame, coefficient = parameters["coefficient"])
+		elif (augmentationType == "gaussianBlur"):
+			frame = colorAugmenter.gaussianBlur(frame = frame, sigma = parameters["sigma"])
+		elif (augmentationType == "shiftColors"):
+			frame = colorAugmenter.shiftColors(frame = frame)
+		elif (augmentationType == "fancyPCA"):
+			frame = colorAugmenter.fancyPCA(frame = frame)
+		else:
+			raise Exception("Color augmentation type not supported: {}".format(augmentationType))
+		# Return result
+		return frame
 
 	def __applyBoundingBoxAugmentation__(self,
 																				frame = None,

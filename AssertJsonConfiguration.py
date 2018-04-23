@@ -17,16 +17,20 @@ class AssertJsonConfiguration():
 		if (not (os.path.isfile(file))):
 			raise Exception("ERROR: Path to {} does not exist.".format(file))
 		# Class variables
-		self.file = json.load(open(file))
+		f = open(file)
+		self.file = json.load(f)
+		f.close()
 
 	def runAllAssertions(self):
 		# Get keys
 		keys = [i for i in self.file.keys()]
+		print(keys)
 		# Run assertions
 		self.isValidConfFile(keys = keys)
 		rBndbx = self.isBndBxAugConfFile(keys = keys)
 		rGeometric = self.isGeometricConfFile(keys = keys)
 		rColor = self.isColorConfFile(keys = keys)
+		# Return type of augmentation
 		if (rBndbx):
 			return 0
 		elif (rGeometric):
@@ -34,7 +38,8 @@ class AssertJsonConfiguration():
 		elif (rColor):
 			return 2
 		else:
-			raise Exception("No configuration found.")
+			raise Exception("The configuration is not valid: {}.".format(keys) +\
+							"bndbx: {} geometric: {} color: {}".format(rBndbx, rGeometric, rColor))
 
 	def isValidConfFile(self, keys = None):
 		# Check len of keys
