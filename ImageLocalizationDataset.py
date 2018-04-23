@@ -354,7 +354,7 @@ class ImageLocalizationDataset(object):
 														bndboxes = bndboxes,
 														names = names,
 														database_name = self.databaseName,
-														data_augmentation_type = i,
+														data_augmentation_type = augmentationType,
 														origin_information = imgFullPath,
 														output_image_directory = outputImageDirectory,
 														output_annotation_directory = outputAnnotationDirectory)
@@ -403,7 +403,7 @@ class ImageLocalizationDataset(object):
 														bndboxes = boundingBoxes,
 														names = names,
 														database_name = self.databaseName,
-														data_augmentation_type = i,
+														data_augmentation_type = augmentationType,
 														origin_information = imgFullPath,
 														output_image_directory = outputImageDirectory,
 														output_annotation_directory = outputAnnotationDirectory)

@@ -171,6 +171,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		Sharpens an image.
 		Args:
 			frame: A tensor that contains an image.
+			weight: A float that contains the weight coefficient.
 		Returns:
 			A sharpened tensor.
 		"""
@@ -186,8 +187,11 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 				comp = 1 - prob
 		# Find edges
 		edges = cv2.Laplacian(frame, cv2.CV_64F)
-		edges = np.array(edges, np.uint8)
+		edges = edges.astype(np.uint8)
+		frame = frame.astype(np.uint8)
 		# Add edges to original frame
+		# print("DEBUG: ", edges.shape, frame.shape)
+		# print("DEBUG: ", edges.dtype, frame.dtype)
 		frameSharpened = cv2.addWeighted(edges, prob, frame, comp, 0)
 		return frameSharpened
 
@@ -215,6 +219,9 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Reshape noise
 		gaussianNoise = np.array([int(i) for i in gaussianNoise], np.uint8)
 		gaussianNoise = gaussianNoise.reshape([height, width, depth])
+		# Cast types
+		gaussianNoise = gaussianNoise.astype(np.uint8)
+		frame = frame.astype(np.uint8)
 		# Add noise to frame
 		frame = cv2.addWeighted(frame, 1-coefficient, gaussianNoise, coefficient, 0)
 		return frame
@@ -305,7 +312,10 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Apply PCA
 		cov = np.cov(matrix.T)
 		eigvals, eigvects = np.linalg.eigh(cov)
-		pca = np.sqrt(eigvals)*eigvects
+		# pca = np.dot(np.sqrt(eigvals), eigvects)
+		pca = np.sqrt(eigvals) * eigvects
+		# print(frame.shape, cov.shape)
+		# print(eigvects.shape, eigvals.shape)
 		perturb = [int(each) for each in (pca*np.random.randn(3)*0.1).sum(axis=1)]
 		# print("Perturbation: ", perturb)
 		# Add perturbation vector to frame
