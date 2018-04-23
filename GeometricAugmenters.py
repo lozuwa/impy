@@ -58,9 +58,9 @@ import cv2
 import numpy as np
 
 try:
-	from .ImageAugmentersMethods import *
+	from .GeometricAugmentersMethods import *
 except:
-	from ImageAugmentersMethods import *
+	from GeometricAugmentersMethods import *
 
 try:
 	from .VectorOperations import *
@@ -72,16 +72,18 @@ try:
 except:
 	from AssertDataTypes import *
 
-class ImageAugmenters(implements(ImageAugmentersMethods)):
+
+
+class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 	"""
-	ImageAugmenters class. This class implements a set of data augmentation
+	GeometricAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.
 	IMPORTANT
 	- This class assumes input images are numpy tensors that follow the opencv
 	color format BGR.
 	"""
 	def __init__(self):
-		super(ImageAugmenters, self).__init__()
+		super(GeometricAugmenters, self).__init__()
 		self.assertion = AssertDataTypes()
 
 	def scale(self,

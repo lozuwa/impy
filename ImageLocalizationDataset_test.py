@@ -11,28 +11,29 @@ from Util import *
 class ImageLocalizationDataset_test(unittest.TestCase):
 	
 	def setUp(self):
-		self.imda = ImageLocalizationDataset(images = os.path.join(os.getcwd(), \
-																									"tests", "localization", \
-																									"images"),
-																				annotations = os.path.join(os.getcwd(), \
-																										"tests", "localization", \
-																										"annotations", "xmls"),
+		imgs = os.path.join(os.getcwd(), "tests", "localization", "images")
+		annts = os.path.join(os.getcwd(), "tests", "localization", "annotations")
+		self.imda = ImageLocalizationDataset(images = imgs,
+																				annotations = annts,
 																				databaseName = "unit_test")
 
 	def tearDown(self):
 		pass
 
 	def test_reduceDatasetByRois(self):
-		os.system("rm -r {}".format(os.path.join(os.getcwd(), "tests", "outputs", "localization")))
-		# Reduce dataset by grouping ROIs into smaller frames
+		imgs = os.path.join(os.getcwd(), "tests", "outputs", "reduceByRois", "images")
+		annts = os.path.join(os.getcwd(), "tests", "outputs", "reduceByRois", "annotations")
+		os.system("rm {}/*".format(imgs))
+		os.system("rm {}/*".format(annts))
+		# Reduce dataset by grouping ROIs into smaller frames.
 		self.imda.reduceDatasetByRois(offset = 1032,
-			outputDirectory = os.path.join(os.getcwd(), "tests", "outputs", "localization"))
-		# Assert the number of reduced images.
-		# self.assertEqual()
+																	outputImageDirectory = imgs,
+																	outputAnnotationDirectory = annts)
 
 	def test_reduceImageDataPointByRoi(self):
-		output_directory = os.path.join(os.getcwd(), "tests", "outputs")
-		os.system("rm {}/images/* {}/annotations/xmls/*".format(output_directory, output_directory))
+		outputImageDirectory = os.path.join(os.getcwd(), "tests", "outputs", "images")
+		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "outputs", "annotations")
+		os.system("rm {}/* {}/*".format(outputImageDirectory, outputAnnotationDirectory))
 		offset = 300
 		for i in range(1):
 			for each in os.listdir(os.path.join(os.getcwd(), "tests", "localization", "images")):
@@ -43,19 +44,28 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 						raise ValueError("Extension not supported.")
 					img_name = os.path.join(os.getcwd(), "tests", "localization", "images", each)
 					xml_name = os.path.join(os.getcwd(), "tests", "localization", "annotations",\
-															 "xmls", each.split(extension)[0]+".xml")
+																 each.split(extension)[0]+".xml")
 					self.imda.reduceImageDataPointByRoi(imagePath = img_name,
 																				annotationPath = xml_name,
 																				offset = offset,
-																				outputDirectory = output_directory)
+																				outputImageDirectory = outputImageDirectory,
+																				outputAnnotationDirectory = outputAnnotationDirectory)
 				offset += 0
 
 	def test_applyDataAugmentation(self):
-		outputDirectory = os.path.join(os.getcwd(), "tests", "outputs", "DatasetAugmentation")
-		os.system("rm -r {}".format(outputDirectory))
-		augmentations = os.path.join(os.getcwd(), "tests","augmentation.json")
-		self.imda.applyDataAugmentation(augmentations = augmentations,
-					outputDirectory = outputDirectory)
+		imgs = os.path.join(os.getcwd(), "tests", "outputs", "DatasetAugmentation", "images")
+		annts = os.path.join(os.getcwd(), "tests", "outputs", "DatasetAugmentation", "annotations")
+		os.system("rm {}/*".format(imgs))
+		os.system("rm {}/*".format(annts))
+		aug_confs = [os.path.join("tests", i) for i in os.listdir(os.path.join(os.getcwd(), "tests")) if i.endswith(".json")]
+		self.imda.applyDataAugmentation(configurationFile = aug_confs[0],
+																outputImageDirectory = imgs,
+																outputAnnotationDirectory = annts)
+		# for each in aug_confs[:1]:
+		# 	print(each)
+		# 	self.imda.applyDataAugmentation(configurationFile = each,
+		# 																	outputImageDirectory = imgs,
+		# 																	outputAnnotationDirectory = annts)
 
 	# def test_save_img_and_xml(self):
 	# 	pass
