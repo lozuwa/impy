@@ -61,7 +61,7 @@ class ImageProcessing_test(unittest.TestCase):
 		# print("Bounding boxes before: ", bndboxes)
 		# print("Cropping box: ", min_x, min_y, max_x, max_y)
 		RoiXMin, RoiYMin, RoiXMax,\
-		RoiYMax, bndboxes = self.prep.adjustImage(frameHeight = frameHeight,
+		RoiYMax = self.prep.adjustImage(frameHeight = frameHeight,
 																					frameWidth = frameWidth,
 																					boundingBoxes = bndboxes,
 																					offset = offset)
@@ -73,11 +73,11 @@ class ImageProcessing_test(unittest.TestCase):
 																														"much smaller than offset.")
 		self.assertGreaterEqual((RoiYMax-RoiYMin), offset-100, "Cropping frame is " + \
 																														"much smaller than offset.")
-		for bdx in bndboxes:
-			self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")
-			self.assertGreaterEqual(bdx[1], 0, "Ymin is negative")
-			self.assertLessEqual(bdx[2], frameWidth, "Xmax is negative")
-			self.assertLessEqual(bdx[3], frameHeight, "Ymax is negative")
+		# for bdx in bndboxes:
+		# 	self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")
+		# 	self.assertGreaterEqual(bdx[1], 0, "Ymin is negative")
+		# 	self.assertLessEqual(bdx[2], frameWidth, "Xmax is negative")
+		# 	self.assertLessEqual(bdx[3], frameHeight, "Ymax is negative")
 
 if __name__ == "__main__":
 	unittest.main()

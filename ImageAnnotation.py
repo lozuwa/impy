@@ -40,30 +40,26 @@ class ImageAnnotation(object):
 	def propertyBoundingBoxes(self):
 		return self.boundingBoxes
 
-	def readImageAnnotation(self, 
-													path):
+	def readImageAnnotation(self, path = None):
 		tree = ET.parse(path)
 		root = tree.getroot()
 		return root
 
-	def getObjects(self, 
-								root):
+	def getObjects(self, root = None):
 		if (root.find("object")):
 			objects = root.findall("object")
 			return objects
 		else:
 			print("WARNING: No objects found.")
-			return None
+			return []
 
-	def getNames(self, 
-								objects):
+	def getNames(self, objects = None):
 		names = []
 		for obj in objects:
 			names.append(obj.find("name").text)
 		return names
 
-	def getBoundingBoxes(self, 
-												objects):
+	def getBoundingBoxes(self, objects = None):
 		boundingBoxes = []
 		for i in range(len(objects)):
 			# Find bndbox
@@ -76,7 +72,7 @@ class ImageAnnotation(object):
 			boundingBoxes.append([xmin, ymin, xmax, ymax])
 		return boundingBoxes
 
-	def getSize(self, root):
+	def getSize(self, root = None):
 		if (root.find("size")):
 			size = root.find("size")
 			width = int(size[0].text)

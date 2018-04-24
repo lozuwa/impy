@@ -18,7 +18,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 	def setUp(self):
 		# Image
 		self.frame = cv2.imread("tests/localization/images/pedestrians.png")
-		self.annotation = "tests/localization/annotations/xmls/pedestrians.xml"
+		self.annotation = "tests/localization/annotations/pedestrians.xml"
 		imgAnt = ImageAnnotation(path = self.annotation)
 		self.bndboxes = imgAnt.propertyBoundingBoxes
 		self.names = imgAnt.propertyNames

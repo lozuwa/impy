@@ -13,8 +13,8 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def setUp(self):
 		imgs = os.path.join(os.getcwd(), "tests", "localization", "images")
 		annts = os.path.join(os.getcwd(), "tests", "localization", "annotations")
-		self.imda = ImageLocalizationDataset(images = imgs,
-																				annotations = annts,
+		self.imda = ImageLocalizationDataset(imagesDirectory = imgs,
+																				annotationsDirectory = annts,
 																				databaseName = "unit_test")
 
 	def tearDown(self):

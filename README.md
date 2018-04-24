@@ -4,7 +4,7 @@
   <li><strong>Email: </strong>lozuwaucb@gmail.com</li>
   <li><strong>Bug reports: </strong>https://github.com/lozuwa/impy/issues</li>
 </ul>
-It provides:
+<p>It provides:</p>
 <ul>
   <li>Data augmentation methods for images with bounding boxes (the bounding boxes are also affected by the transformation so you don't have to label again.)</li>
   <li>Fast image preprocessing methods useful in a deep learning context. E.g: if your image is too big you need to divide it into patches.</li>
@@ -14,7 +14,8 @@ It provides:
 
 <ol>
   <li>Go to your package path. E.g: for anaconda go to ../Anaconda3/envs/YOUR_ENVIRONMENT/lib/pythonVERSION_OF_YOUR_PYTHON/site-packages/</li>
-  <li>Clone the library git clone  https://github.com/lozuwa/impy.git</li>
+  <li>Clone the library with the following command git clone  https://github.com/lozuwa/impy.git</li>
+  <li>Test the library by working on one of the tutorials.</li>
 </ol>
 
 <h1> Tutorial </h1>
@@ -23,13 +24,15 @@ while working on Deep learning for computer vision. </p>
 <p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and 
 pedestrians in the images.</p>
 
-<img src"tests/cars_dataset/images/cars1.png"></img>
+<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
 
 <h2>Object localization</h2>
 <p>In this section we are going to solve problems related with object localization.</p>
 <h3>Images are too big</h3>
 <p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
-<img src="tests/cars_dataset/images/cars1.png"></img>
+
+<img src="tests/cars_dataset/images/cars1.png" alt="cars_dataset" height="42" width="42"></img>
+
 <p>This image's size is 3840x2160. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
 <p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. But how do we do this, it involves a lot of algorithms. We are going to use Impy.</p>
 
@@ -56,10 +59,11 @@ def main():
 if __mame__ == "__main__":
  main()
 ```
+
 <p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of
 data points. Let's see the results of one of the images: </p>
 
-<img src"tests/cars_dataset/images/cars1.png"></img>
+<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
 
 <p>As you can see the annotations have been maintained and small crops of the big image are now available. Our problem is solved.</p>
 
@@ -176,5 +180,5 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
-<img src="tests/cars_dataset/images/cars0.jpg"></img>
+<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
 

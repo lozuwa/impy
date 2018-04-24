@@ -17,10 +17,10 @@ class ColorAugmenters_test(unittest.TestCase):
 		# Image
 		self.frame = cv2.imread("tests/localization/images/cv.jpg")
 		# Augmenters
-		self.augmenter = ImageAugmenters()
+		self.augmenter = ColorAugmenters()
 		# Testing options
 		self.visualize = True
-		self.waitTime = 250
+		self.waitTime = 1000
 
 	def tearDown(self):
 		pass

@@ -3,9 +3,6 @@ Author: Rodrigo Loza
 Email: lozuwaucb@gmail.com
 Description: A class that allows to load a dataset and perform 
 useful operations with it.
-TODO:
-	- Save xml and img file make sure the extension is correct. Maybe
-		images with png are added to this class.
 """
 import os
 import json
@@ -58,23 +55,158 @@ dataAssertion = AssertDataTypes()
 
 class ImageLocalizationDataset(object):
 
-	def __init__(self,
-							images = None,
-							annotations = None,
-							databaseName = None):
+	def __init__(self, imagesDirectory = None, annotationsDirectory = None, databaseName = None):
+		"""
+		A high level data structure used for image localization datasets.
+		Args:
+			imagesDirectory = None,
+			annotationsDirectory = None,
+			databaseName = None
+		Returns:
+			None
+		"""
 		super(ImageLocalizationDataset, self).__init__()
 		# Assert images and annotations
-		if (not os.path.isdir(images)):
+		if (not os.path.isdir(imagesDirectory)):
 			raise Exception("Path to images does not exist.")
-		if (not os.path.isdir(annotations)):
+		if (not os.path.isdir(annotationsDirectory)):
 			raise Exception("Path to annotations does not exist.")
 		if (databaseName == None):
 			databaseName = "Unspecified"
 		# Class variables
-		self.images = images
-		self.annotations = annotations
+		self.imagesDirectory = imagesDirectory
+		self.annotationsDirectory = annotationsDirectory
 		self.databaseName = databaseName
 
+	# Cleaning
+	def dataConsistency(self):
+		"""
+		Checks whether data is consistent. It starts analizing if there is the same amount of 
+		of images and annotations. Then it sees if the annotations and images are consistent 
+		with each other.
+		Args:
+			None
+		Returns:
+			None
+		"""
+		# Local variables.
+		images = []
+		annotations = []
+		# Preprocess images.
+		for image in os.listdir(self.imagesDirectory):
+			# Extract name.
+			extension = Util.detect_file_extension(filename = file)
+			if (extension == None):
+				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
+												 " Only jpgs and pngs are allowed.")
+			images.append(image.split(extension)[0])
+		# Preprocess annotations.
+		for annotation in os.listdir(self.annotationsDirectory):
+			if (not annotation.endswith(".xml")):
+				raise Exception("ERROR: Only xml annotations are allowed: {}".format(annotation))
+			annotations.append(annotation.split(".xml")[0])
+		# Convert lists to sets.
+		imagesSet = set(images)
+		annotationsSet = set(annotations)
+		# Check size consistency.
+		if (len(imagesSet) != len(annotationsSet)):
+			raise Exception("ERROR: The amount of images({}) and annotations({}) is not equal."\
+											.format(imagesSet, annotationsSet))
+		# Check name consistency.
+		imgToAnnt = imagesSet.difference(annotationsSet)
+		anntToImg = annotationsSet.difference(imagesSet)
+		if (len(imgToAnnt) != 0):
+			raise Exception("ERROR: There are more images than annotations: {}".format(imgToAnnt))
+		if (len(anntToImg) != 0):
+			raise Exception("ERROR: There are more annotations than images: {}".format(anntToImg))
+
+	def findEmptyAnnotations(self, removeEmpty = None):
+		"""
+		Find empty annotations in the annotation files. An empty annotation is an annotation that 
+		includes no objects.
+		Args:
+			removeEmpty: A boolean that if True removes the annotation and image that are empty.
+		Returns:
+			None
+		"""
+		# Assertions
+		if (removeEmpty == None):
+			removeEmpty = False
+		# Local variables
+		emptyAnnotations = []
+		files = os.listdir(self.imagesDirectory)
+		# Logic
+		for file in files:
+			extension = Util.detect_file_extension(filename = file)
+			if (extension == None):
+				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
+												 " Only jpgs and pngs are allowed.")
+			# Extract name
+			filename = os.path.split(img)[1].split(extension)[0]
+			# Create xml and img name
+			imgFullPath = os.path.join(self.images, filename + extension)
+			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			# Create an object of ImageAnnotation.
+			annt = ImageAnnotation(path = xmlFullPath)
+			# Check if it is empty.
+			if (len(annt.propertyBoundingBoxes) == 0):
+				emptyAnnotations.append(file)
+				print("WARNING: Annotation {} does not have any annotations.".format(xmlFullPath))
+				# Check if we need to remove this annotaion.
+				if (removeEmpty == True):
+					os.remove(imgFullPath)
+					os.remove(xmlFullPath)
+		# Return empty annotations
+		return emptyAnnotations
+
+	# Stats
+	def computeBoundingBoxStats(self, saveInDataFrame = None, directoryDataFrame = None):
+		"""
+		Compute basic stats for the bounding boxes of the dataset.
+		"""
+		# Assertions
+		if (saveInDataFrame == None):
+			saveInDataFrame = False
+		if ((saveInDataFrame != None) and (directoryDataFrame == None)):
+			raise ValueError("Parameter directory dataframe cannot be empty.")
+		# Local variables
+		files = os.listdir(self.imagesDirectory)
+		columns = ["path", "name", "width", "height", "xmin", "ymin", "xmax", "ymax"]
+		paths = []
+		names = []
+		widths = []
+		heights = []
+		boundingBoxesLists = []
+		# Logic
+		for file in files:
+			extension = Util.detect_file_extension(filename = file)
+			if (extension == None):
+				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
+												 " Only jpgs and pngs are allowed.")
+			# Extract name
+			filename = os.path.split(img)[1].split(extension)[0]
+			# Create xml and img name
+			imgFullPath = os.path.join(self.images, filename + extension)
+			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			# Create an object of ImageAnnotation.
+			annt = ImageAnnotation(path = xmlFullPath)
+			# Check if it is empty.
+			boundingBoxes = annt.propertyBoundingBoxes
+			names = annt.propertyNames
+			width, height, depth = annt.propertySize
+			for i in range(len(names)):
+				paths.append(file)
+				names.append(names[i])
+				widths.append(width)
+				heights.append(height)
+				boundingBoxesLists.append(boundingBoxes[i])
+			# Save data?
+			if (saveInDataFrame):
+				ImageLocalizationDataset.save_lists_in_dataframe(columns = columns,
+										data = [paths, names, widths, heights, boundingBoxesLists],
+										output_directory = directoryDataFrame)
+
+	# Preprocessing
 	def reduceDatasetByRois(self, offset = None, outputImageDirectory = None, outputAnnotationDirectory = None):
 		"""
 		Reduce that images of a dataset by grouping its bounding box annotations and
@@ -566,14 +698,7 @@ class ImageLocalizationDataset(object):
 		return frame, bndboxes
 
 	@staticmethod
-	def save_img_and_xml(frame = None,
-												bndboxes = None,
-												names = None,
-												database_name = None,
-												data_augmentation_type = None,
-												origin_information = None,
-												output_image_directory = None,
-												output_annotation_directory = None):
+	def save_img_and_xml(frame = None, bndboxes = None, names = None, database_name = None, data_augmentation_type = None, origin_information = None, output_image_directory = None, output_annotation_directory = None):
 		"""
 		Saves an image and its annotation.
 		Args:
@@ -631,15 +756,7 @@ class ImageLocalizationDataset(object):
 																		output_directory = output_annotation_directory)
 
 	@staticmethod
-	def to_xml(filename = None,
-							path = None,
-							database_name = None,
-							frame_size = None,
-							data_augmentation_type = None,
-							bounding_boxes = None,
-							names = None,
-							origin = None,
-							output_directory = None):
+	def to_xml(filename = None, path = None, database_name = None, frame_size = None, data_augmentation_type = None, bounding_boxes = None, names = None, origin = None, output_directory = None):
 		"""
 		Creates an XML file that contains the annotation's information of an image.
 		This file's structure is based on the VOC format.
@@ -718,13 +835,56 @@ class ImageLocalizationDataset(object):
 			raise Exception("Image's extension not supported {}".format(filename))
 		tree.write(os.path.join(output_directory, filename.split(extension)[0]+".xml"))
 
+	@staticmethod
+	def save_lists_in_dataframe(columns = None, data = None, output_directory = None):
+		"""
+		Save lists into a dataframe.
+		Args:
+			columns: A list of strings that contains the names of the columns 
+							for the dataframe.
+			data: A list of lists that contains the data for the dataframe.
+			output_directory: A string that contains the path to where save 
+												the dataframe.
+		Returns:
+			None
+		"""
+		# Assertions
+		if (columns == None):
+			raise ValueError("ERROR: Paramater columns cannot be empty.")
+		if (data == None):
+			raise ValueError("ERROR: Paramater data cannot be empty.")
+		if (output_directory == None):
+			raise ValueError("ERROR: Paramater output_directory cannot be empty.")
+		if (not os.path.isdir(output_directory)):
+			raise Exception("ERROR: Path to {} does not exist.".format(output_directory))
+		if (len(columns) != len(data)):
+			raise Exception("ERROR: The len of the columns has to be the" +\
+											" same as data. Report this problem.")
+		# Local import
+		try:
+			import pandas as pd
+		except Exception as e:
+			raise ImportError("ERROR: Pandas is not available, install it.")
+		# Logic
+		hashMap = {}
+		for i in range(columns):
+			hashMap[columns[i]] = data[i]
+		df = pd.DataFrame(hashMap)
+		df.to_excel(output_directory)
+
 class Annotation(object):
-	def __init__(self, 
-							index = None,
-							name = None,
-							bndbox = None,
-							module = None,
-							inUse = None):
+	def __init__(self,  index = None, name = None, bndbox = None, module = None, inUse = None):
+		"""
+		A class that holds parameters of a common annotation.
+		Args:
+			index: An int that represents an index.
+			name: A string that contains a name.
+			bndbox: A list of ints.
+			module: A float.
+			inUse: A boolean.
+		Returns:
+			None
+		"""
 		super(Annotation, self).__init__()
 		# Assertions
 		if (index == None):

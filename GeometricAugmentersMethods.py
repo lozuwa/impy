@@ -90,16 +90,3 @@ class GeometricAugmentersMethods(Interface):
 			A tensor that contains an image.
 		"""
 		pass
-
-	def invertColor(self, frame = None, CSpace = None):
-		"""
-		Inverts the color of an image.
-		Args:
-			frame: A tensor that contains an image.
-			CSpace: A 3-sized tuple that contains booleans (B, G, R).
-							If a boolean is set to true, then we invert that channel.
-							If the 3 booleans are false, then we invert all the image.
-		Returns:
-			A tensor that has its color inverted.
-		"""
-		pass
