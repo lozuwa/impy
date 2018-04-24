@@ -24,7 +24,6 @@ class AssertJsonConfiguration():
 	def runAllAssertions(self):
 		# Get keys
 		keys = [i for i in self.file.keys()]
-		print(keys)
 		# Run assertions
 		self.isValidConfFile(keys = keys)
 		rBndbx = self.isBndBxAugConfFile(keys = keys)

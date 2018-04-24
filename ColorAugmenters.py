@@ -12,7 +12,7 @@ Log:
 	April, 2018 -> Redesigned the methods to support multiple bounding
 								 boxes (traditional data augmentation tools.)
 	April, 2018 -> Redefined list of augmenters:
-	April, 2018 -> Separated generic image augmenters into color and space augmenters.
+	April, 2018 -> Separated generic image augmenters into color and geometric augmenters.
 
 	---------------
 	Color dimension

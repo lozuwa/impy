@@ -24,7 +24,7 @@ except:
 try:
 	from .ColorAugmenters import *
 except:
-	from ColorAugmenters import *	
+	from ColorAugmenters import * 
 
 try:
 	from .ImageAnnotation import *
@@ -58,9 +58,9 @@ dataAssertion = AssertDataTypes()
 
 class ImageLocalizationDataset(object):
 
-	def __init__(self, 
-							images = None, 
-							annotations = None, 
+	def __init__(self,
+							images = None,
+							annotations = None,
 							databaseName = None):
 		super(ImageLocalizationDataset, self).__init__()
 		# Assert images and annotations
@@ -116,7 +116,7 @@ class ImageLocalizationDataset(object):
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid." +\
-											   "Only jpgs and pngs are allowed.")
+												 "Only jpgs and pngs are allowed.")
 			# Extract name
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name
@@ -144,7 +144,7 @@ class ImageLocalizationDataset(object):
 		Example:
 			Given an image and its bounding boxes, create ROIs of size offset
 			that enclose the maximum possible amount of bounding boxes. 
-				---------------------------------     	--------------------------------
+				---------------------------------       --------------------------------
 				|                               |      |                               |
 				|     ---                       |      |    Roi0------                 |
 				|     | |                       |      |     |  |     |                |
@@ -165,7 +165,7 @@ class ImageLocalizationDataset(object):
 				|                               |      |                 ----Roi1      |
 				---------------------------------      ---------------------------------
 		Then, the rois are saved with their respective annotations.
-		"""	
+		""" 
 		# Assertions
 		if (imagePath == None):
 			raise ValueError("ERROR: Path to imagePath parameter cannot be empty.")
@@ -216,7 +216,7 @@ class ImageLocalizationDataset(object):
 
 		# Debug
 		# for each in annotations:
-		# 	print(each.propertyName, each.propertyModule, each.propertyIndex)
+		#   print(each.propertyName, each.propertyModule, each.propertyIndex)
 		# print("\n")
 
 		# Find annotations that are close to each other.
@@ -240,8 +240,8 @@ class ImageLocalizationDataset(object):
 
 		# Debug
 		# for each in annotations:
-		# 	print(each.propertyName, each.propertyIndex, \
-		# 				each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
+		#   print(each.propertyName, each.propertyIndex, \
+		#         each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
 		# print("\n")
 
 		# Save image croppings
@@ -321,7 +321,7 @@ class ImageLocalizationDataset(object):
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid." +\
-											   "Only jpgs and pngs are allowed.")
+												 "Only jpgs and pngs are allowed.")
 			# Extract name.
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name.
@@ -428,7 +428,10 @@ class ImageLocalizationDataset(object):
 			elif (typeAugmentation == 3):
 				# Multiple augmentation configurations, get a list of hash maps of all the confs.
 				list_of_augmenters_confs = data["multiple_image_augmentations"]["Sequential"]
-				print("\n*", list_of_augmenters_confs, "\n")
+				# Prepare data for sequence.
+				frame = cv2.imread(imgFullPath)
+				bndboxes = boundingBoxes
+				# print("\n*", list_of_augmenters_confs, "\n")
 				for k in range(len(list_of_augmenters_confs)):
 					# Get augmenter type ("bounding_box_augmenter" or "color_augmenter") position
 					# in the list of multiple augmentations.
@@ -436,16 +439,13 @@ class ImageLocalizationDataset(object):
 					# Get sequential information from there. This information is a list of 
 					# the types of augmenters that belong to augmentationConf.
 					list_of_augmenters_confs_types = list_of_augmenters_confs[k][augmentationConf]["Sequential"]
-					# Prepare data for sequence.
-					frame = cv2.imread(imgFullPath)
-					bndboxes = boundingBoxes
 					# Iterate over augmenters inside sequential of type.
 					for l in range(len(list_of_augmenters_confs_types)):
 						# Get augmentation type and its parameters.
 						augmentationType = list(list_of_augmenters_confs_types[l].keys())[0]
 						parameters = list_of_augmenters_confs_types[l][augmentationType]
 						# Save?
-						saveParameter = self.extractSavingParameter(parameters = parameters)						
+						saveParameter = self.extractSavingParameter(parameters = parameters)            
 						# print(augmentationType, parameters)
 						# Apply augmentation
 						if (augmentationConf == "image_color_augmenters"):
@@ -456,7 +456,7 @@ class ImageLocalizationDataset(object):
 							# Save frame
 							if (saveParameter == True):
 								ImageLocalizationDataset.save_img_and_xml(frame = frame,
-															bndboxes = boundingBoxes,
+															bndboxes = bndboxes,
 															names = names,
 															database_name = self.databaseName,
 															data_augmentation_type = augmentationType,
@@ -490,15 +490,12 @@ class ImageLocalizationDataset(object):
 		Returns:
 			A boolean that contains the response of "save".
 		"""
-		if ("save" in parameters):			
+		if ("save" in parameters):      
 			return parameters["save"]
 		else:
 			return False
 
-	def __applyColorAugmentation__(self,
-																	frame = None,
-																	augmentationType = None,
-																	parameters = None):
+	def __applyColorAugmentation__(self, frame = None, augmentationType = None, parameters = None):
 		# Logic
 		if (augmentationType == "invertColor"):
 			frame = colorAugmenter.invertColor(frame = frame, CSpace = parameters["CSpace"])
@@ -521,11 +518,7 @@ class ImageLocalizationDataset(object):
 		# Return result
 		return frame
 
-	def __applyBoundingBoxAugmentation__(self,
-																				frame = None,
-																				boundingBoxes = None,
-																				augmentationType = None,
-																				parameters = None):
+	def __applyBoundingBoxAugmentation__(self, frame = None, boundingBoxes = None, augmentationType = None, parameters = None):
 		# Local variables
 		bndboxes = boundingBoxes
 		# Logic
@@ -567,9 +560,9 @@ class ImageLocalizationDataset(object):
 		elif (augmentationType == "dropout"):
 			# Apply dropout
 			frame = bndboxAugmenter.dropout(frame = frame,
-											              boundingBoxes = boundingBoxes,
-											              size = parameters["size"],
-											              threshold = parameters["threshold"])
+																		boundingBoxes = boundingBoxes,
+																		size = parameters["size"],
+																		threshold = parameters["threshold"])
 		return frame, bndboxes
 
 	@staticmethod

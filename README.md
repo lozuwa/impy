@@ -1,4 +1,4 @@
-# Impy (Images in python)
+<h1> Impy (Images in python) </h1>
 <p>Impy is a library used for deep learning projects that make use of image datasets.</p>
 <ul>
   <li><strong>Email: </strong>lozuwaucb@gmail.com</li>
@@ -18,61 +18,100 @@ It provides:
   <li></li>
 </ol>
 
-# Tutorial
-<p>This tutorial teaches you how to use the data augmentation methods available in the library. Suppose you have an image dataset that follows the VOC format. It means
-your folders are structured in the following order.</p>
-<ul>
-  <li>
-    database/
-    <ul>
-      <li>images/</li>
-      <li>annotations/
-        <ul>
-          <li>xmls/</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-<p>Where images contains all your .jpg files, annotations contains another folder called xmls and this folder contains the .xml files.</p>
-<p>Following this structure you would write a script like the following:</p>
+<h1> Tutorial </h1>
+<p>Impy has multiple features that allow you to solve several different problems with a few lines of code. To make things clear we are going to tackle problems you might find 
+while working on Deep learning for computer vision. </p>
+<p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and 
+pedestrians in the images.</p>
 
-'''python
-# General purpose imports
-import os
-import xml.etree.ElementTree as ET
-# Import impy
-from impy.DataAugmentation import *
+<img src"tests/cars_dataset/images/cars1.png"></img>
 
-# Create an instance of the class
-da = DataAugmentation()
+<h2>Object localization</h2>
+<p>In this section we are going to solve problems related with object localization.</p>
+<h3>Images are too big</h3>
+<p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
+<img src="tests/cars_dataset/images/cars1.png"></img>
+<p>This image's size is 3840x2160. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
+<p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. But how do we do this, it involves a lot of algorithms. We are going to use Impy.</p>
 
-def process_bounding_box(img, annt):
-  tree = ET.parse(annt)
-  root = tree.getroot()
-  if root.find("object"):
-    # Find the size
-    size = root.find("size")
-    width, height, depth = [int(each) for each in get_size(size)]
-    # Find the object
-    objects = root.findall("object")
-    # Get the bounding box
-    bndboxes = get_bndbox(objects)
-    # Iterate over bounding boxes
-    for name, c
-    
+```python
+from impy.ImageLocalizationDataset import *
 
 def main():
-  # Read your images
-  images = [os.path.join("images", each) for each in os.listdir("images/")]
-  # Read your annotations
-  annotations = [os.path.join("annotations", each) for each in os.listdir("annotations/xmls/")]
-  # Iterate over both images
-  for img, annt in zip(images, annotations):
-    process_bounding_box(img, annt)
+ # Define the path to images and annotations
+ images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
+ annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+ # Define the name of the dataset
+ dbName = "CarsDataset"
+ # Create an object of ImageLocalizationDataset
+ imda = ImageLocalizationDataset(images = images_path, 
+                                 annotations = annotations_path,
+                                 databaseName = dbName)
+ # Reduce the dataset by Rois of smaller size with the shape 1032x1032
+ images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
+ annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
+ imda.reduceDatasetByRois(offset = 1032,
+                          outputImageDirectory = images_output_path,
+                          outputAnnotationDirectory = annotations_output_path)
 
-if __name__ == "__main__":
-  main()
+if __mame__ == "__main__":
+ main()
+```
+<p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of
+data points. Let's see the results of one of the images: </p>
 
-'''
+<img src"tests/cars_dataset/images/cars1.png"></img>
+
+<p>As you can see the annotations have been maintained and small crops of the big image are now available. Our problem is solved.</p>
+
+<h3>Data augmentation for bounding boxes</h3>
+<p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make
+a custom script. But with impy we can make it easier.</p>
+
+<p>First, let's create a configuration file. You can use one of the templates available in the confs folder.</p>
+
+```python
+
+```
+
+<p>Let's analize the configuration file step by step. Currently, this is the most complex type of data augmentation you can achieve with the library.</p>
+<p>Note the file starts with "multiple_image_augmentations", then a "Sequential" key follows. Inside "Sequential" we define an array.</p>
+<p>This is important, each element of the array is a type of augmenter.</p>
+<p>The first augmenter we are going to define is a "image_color_agumenters" which is going to execute a sequence of color augmentations. In this case, we have defined only one type of color augmentation which
+is sharpening with a weight of 0.2 and we choose to save it.</p>
+<p>After the color augmentation, we have defined a "bounding_box_augmenters" which is going to execute a "scale" augmentation which we choose not to save followed by a "verticalFlip" which we do choose to save.</p>
+<p>So, we want to keep going. So we define two more types of image augmenters. Another "image_color_augmenters" which applies "histogramEqualization" to the image.</p>
+<p>Finally, we define a "bounding_box_agumeneters" that applies a "horizontalFlip" and a "crop" augmentation.</p>
+<p>As you have seen we can define any type of crazy configuration and augment our images with the available methods. Get creative and define your own data augmentation pipelines.</p>
+
+<p>Once the configuration file has been created, we can apply the data augmentation pipeline with the following code.</p>
+
+```python
+from impy.ImageLocalizationDataset import *
+
+def main():
+ # Define the path to images and annotations
+ images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
+ annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+ # Define the name of the dataset
+ dbName = "CarsDataset"
+ # Create an object of ImageLocalizationDataset
+ imda = ImageLocalizationDataset(images = images_path, 
+                                 annotations = annotations_path,
+                                 databaseName = dbName)
+ # Apply data augmentation by using the following method of the ImageLocalizationDataset class.
+ configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
+ images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
+ annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
+ imda.applyDataAugmentation(configurationFile = configuration_file,
+                          outputImageDirectory = images_output_path,
+                          outputAnnotationDirectory = annotations_output_path)
+
+if __mame__ == "__main__":
+ main()
+```
+
+<p>These are the results:</p>
+
+<img src="tests/cars_dataset/images/cars0.jpg"></img>
 
