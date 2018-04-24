@@ -15,7 +15,6 @@ It provides:
 <ol>
   <li>Go to your package path. E.g: for anaconda go to ../Anaconda3/envs/YOUR_ENVIRONMENT/lib/pythonVERSION_OF_YOUR_PYTHON/site-packages/</li>
   <li>Clone the library git clone  https://github.com/lozuwa/impy.git</li>
-  <li></li>
 </ol>
 
 <h1> Tutorial </h1>
