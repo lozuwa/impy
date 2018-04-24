@@ -70,8 +70,72 @@ a custom script. But with impy we can make it easier.</p>
 
 <p>First, let's create a configuration file. You can use one of the templates available in the confs folder.</p>
 
-```python
-
+```json
+{
+	"multiple_image_augmentations": {
+		"Sequential": [
+			{
+				"image_color_augmenters": {
+					"Sequential": [
+						{
+							"sharpening": {
+								"weight": 0.2,
+								"save": true
+							}
+						},
+					]
+				}
+			},
+			{
+				"bounding_box_augmenters": {
+					"Sequential": [
+						{
+							"scale": {
+								"size": [500, 500],
+								"interpolationMethod": 1,
+								"save": false
+							}
+						},
+						{
+							"verticalFlip": {
+								"save": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"image_color_augmenters": {
+					"Sequential": [
+						{
+							"histogramEqualization":{
+								"equalizationType": 1,
+								"save": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"bounding_box_augmenters": {
+					"Sequential": [
+						{
+							"horizontalFlip": {
+								"save": true
+							}
+						},
+						{
+							"crop": {
+								"size": [0.7, 0.9],
+								"save": true
+							}
+						}
+					]
+				}
+			},
+		]
+	}
+}
 ```
 
 <p>Let's analize the configuration file step by step. Currently, this is the most complex type of data augmentation you can achieve with the library.</p>
