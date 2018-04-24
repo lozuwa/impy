@@ -316,7 +316,7 @@ class ImageLocalizationDataset(object):
 		data = json.load(f)
 		f.close()
 		# Iterate over the images.
-		for img in tqdm(os.listdir(self.images)):
+		for img in tqdm(os.listdir(self.images)[:1]):
 			# Get the extension
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
@@ -395,6 +395,7 @@ class ImageLocalizationDataset(object):
 							parameters = data["image_color_augmenters"][i][k][augmentationType]
 							# Save?
 							saveParameter = self.extractSavingParameter(parameters = parameters)
+							# Apply augmentation
 							frame = self.__applyColorAugmentation__(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
@@ -424,6 +425,60 @@ class ImageLocalizationDataset(object):
 														origin_information = imgFullPath,
 														output_image_directory = outputImageDirectory,
 														output_annotation_directory = outputAnnotationDirectory)
+			elif (typeAugmentation == 3):
+				# Multiple augmentation configurations, get a list of hash maps of all the confs.
+				list_of_augmenters_confs = data["multiple_image_augmentations"]["Sequential"]
+				print("\n*", list_of_augmenters_confs, "\n")
+				for k in range(len(list_of_augmenters_confs)):
+					# Get augmenter type ("bounding_box_augmenter" or "color_augmenter") position
+					# in the list of multiple augmentations.
+					augmentationConf = list(list_of_augmenters_confs[k].keys())[0]
+					# Get sequential information from there. This information is a list of 
+					# the types of augmenters that belong to augmentationConf.
+					list_of_augmenters_confs_types = list_of_augmenters_confs[k][augmentationConf]["Sequential"]
+					# Prepare data for sequence.
+					frame = cv2.imread(imgFullPath)
+					bndboxes = boundingBoxes
+					# Iterate over augmenters inside sequential of type.
+					for l in range(len(list_of_augmenters_confs_types)):
+						# Get augmentation type and its parameters.
+						augmentationType = list(list_of_augmenters_confs_types[l].keys())[0]
+						parameters = list_of_augmenters_confs_types[l][augmentationType]
+						# Save?
+						saveParameter = self.extractSavingParameter(parameters = parameters)						
+						# print(augmentationType, parameters)
+						# Apply augmentation
+						if (augmentationConf == "image_color_augmenters"):
+							# print(augmentationConf, augmentationType, parameters)
+							frame = self.__applyColorAugmentation__(frame = frame,
+																					augmentationType = augmentationType,
+																					parameters = parameters)
+							# Save frame
+							if (saveParameter == True):
+								ImageLocalizationDataset.save_img_and_xml(frame = frame,
+															bndboxes = boundingBoxes,
+															names = names,
+															database_name = self.databaseName,
+															data_augmentation_type = augmentationType,
+															origin_information = imgFullPath,
+															output_image_directory = outputImageDirectory,
+															output_annotation_directory = outputAnnotationDirectory)
+						elif (augmentationConf == "bounding_box_augmenters"):
+							# print(augmentationConf, augmentationType, parameters)
+							frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
+																					boundingBoxes = bndboxes,
+																					augmentationType = augmentationType, #j,
+																					parameters = parameters)
+							# Save frame
+							if (saveParameter == True):
+								ImageLocalizationDataset.save_img_and_xml(frame = frame,
+															bndboxes = bndboxes,
+															names = names,
+															database_name = self.databaseName,
+															data_augmentation_type = augmentationType,
+															origin_information = imgFullPath,
+															output_image_directory = outputImageDirectory,
+															output_annotation_directory = outputAnnotationDirectory)
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
 

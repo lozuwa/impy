@@ -8,11 +8,16 @@ class SupportedDataAugmentationConfigurations(object):
 		self.confAugBndbxs = "bounding_box_augmenters"
 		self.confAugGeometric = "image_geometric_augmenters"
 		self.confAugColor = "image_color_augmenters"
-		self.supportedDataAugmentationTypes = [self.confAugBndbxs, self.confAugGeometric, self.confAugColor]
+		self.confAugMultiple = "multiple_image_augmentations"
+		self.supportedDataAugmentationTypes = [self.confAugMultiple, self.confAugBndbxs, self.confAugGeometric, self.confAugColor]
 
 	@property
 	def dataAugTypes(self):
 		return self.supportedDataAugmentationTypes
+
+	@property
+	def confMultiple(self):
+		return self.confAugMultiple
 
 	@property
 	def confBndbxs(self):

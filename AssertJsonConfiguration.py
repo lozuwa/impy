@@ -30,6 +30,7 @@ class AssertJsonConfiguration():
 		rBndbx = self.isBndBxAugConfFile(keys = keys)
 		rGeometric = self.isGeometricConfFile(keys = keys)
 		rColor = self.isColorConfFile(keys = keys)
+		rMultiple = self.isMultipleConfFile(keys = keys)
 		# Return type of augmentation
 		if (rBndbx):
 			return 0
@@ -37,6 +38,8 @@ class AssertJsonConfiguration():
 			return 1
 		elif (rColor):
 			return 2
+		elif (rMultiple):
+			return 3
 		else:
 			raise Exception("The configuration is not valid: {}.".format(keys) +\
 							"bndbx: {} geometric: {} color: {}".format(rBndbx, rGeometric, rColor))
@@ -145,6 +148,27 @@ class AssertJsonConfiguration():
 			raise ValueError("ERROR: keys should be of len > 1.")
 		# Check for type of configuration
 		if (keys[0] == confs.confColor):
+			return True
+		else:
+			return False
+
+	def isMultipleConfFile(self, keys = None):
+		"""
+		Check if file is a bounding box configuration file.
+		Args:
+			keys: A list of strings.
+		Returns:
+			A boolean that is true if the conf file is color.
+		"""
+		# Assertions
+		if (keys == None):
+			raise ValueError("ERROR: Keys parameter cannot be empty.")
+		if (type(keys) != list):
+			raise ValueError("ERROR: keys should be a list.")
+		if (len(keys) != 1):
+			raise ValueError("ERROR: keys should be of len > 1.")
+		# Check for type of configuration
+		if (keys[0] == confs.confMultiple):
 			return True
 		else:
 			return False
