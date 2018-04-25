@@ -88,7 +88,7 @@ class ImagePreprocessing(object):
 			raise Exception("Parameter {} cannot be empty.".format("offset"))
 		if ((frameWidth <= offset) or (frameHeight <= offset)):
 			print("WARNING: Image's width {} or height {} is smaller than offset {}.".format(frameWidth, frameHeight, offset) +\
-						"Setting offset to current frame's smallest axis only for this image.")
+						" Setting offset to current frame's smallest axis only for this image.")
 			offset = min([frameWidth, frameHeight]) - 10
 			# raise Exception("offset {} cannot be smaller than image's width {}.".format(offset, frameWidth))
 		# Local variables.
@@ -130,8 +130,6 @@ class ImagePreprocessing(object):
 		if ((xmin - offsetXLeft) < 0):
 			# Crop at origin. 
 			RoiXMin = 0
-			# Xmin bounding boxes is maintained.
-			xminBoundingBoxes = "maintain"
 			# Determine if there is space on the right to compensate.
 			if ((xmax + offsetXLeft + offsetXRight) < frameWidth):
 				RoiXMax = xmax + offsetXLeft + offsetXRight
@@ -154,8 +152,6 @@ class ImagePreprocessing(object):
 		else:
 			# Compute RoiXMin.
 			RoiXMin = xmin - offsetXLeft
-			# Xmin bounding boxes is set to offsetXLeft
-			xminBoundingBoxes = "offsetXLeft"
 			# Check if there is space on the right.
 			if ((xmax + offsetXRight) < frameWidth):
 				RoiXMax = xmax + offsetXRight
@@ -167,12 +163,8 @@ class ImagePreprocessing(object):
 				# Check if we can compensate on the left.
 				if ((xmin - offsetXLeft - offsetXRight) > 0):
 					RoiXMin = xmin - offsetXLeft - offsetXRight
-					# Xmin bounding boxes is set to offsetXLeft
-					xminBoundingBoxes = "offsetXLeftandoffsetXRight"
 				elif ((xmin - offsetXLeft - offsetXRight) == 0):
 					RoiXMin = 0
-					# Xmin bounding boxes is set to offsetXLeft
-					xminBoundingBoxes = "offsetXLeftandoffsetXRight"
 				# If we cannot compensate then leave it.
 				else:
 					pass
@@ -182,8 +174,6 @@ class ImagePreprocessing(object):
 		if ((ymin - offsetYTop) < 0):
 			# Crop at origin.
 			RoiYMin = 0
-			# Ymin bounding boxes is maintained.
-			yminBoundingBoxes = "maintain"
 			# Determine if there is space in the bottom to compensate.
 			if ((ymax + offsetYTop + offsetYBottom) < frameHeight):
 				RoiYMax = ymax + offsetYTop + offsetYBottom
@@ -205,8 +195,6 @@ class ImagePreprocessing(object):
 		# If there is space in the top.
 		else:
 			RoiYMin = ymin - offsetYTop
-			# Ymin bounding boxes is set to be the offsetYTop
-			yminBoundingBoxes = "offsetYTop"
 			# Check space in the bottom.
 			if ((ymax + offsetYBottom) < frameHeight):
 				RoiYMax = ymax + offsetYTop
@@ -218,76 +206,21 @@ class ImagePreprocessing(object):
 				# Check if we can compensate in the top.
 				if ((ymin - offsetYTop - offsetYBottom) > 0):
 					RoiYMin = ymin - offsetYTop - offsetYBottom
-					yminBoundingBoxes = "offsetYTopandoffsetYBottom"
 				elif ((ymin - offsetYTop - offsetYBottom) == 0):
 					RoiYMin = 0
-					yminBoundingBoxes = "offsetYTopandoffsetYBottom"
 				# If there is not enough space, then leave it.
 				else:
 					pass
 
-		# Update bounding boxes
-		for bndbox in localBoundingBoxes:
-			# Compute width and height
-			widthBoundingBox = bndbox[2] - bndbox[0]
-			heightBoundingBox = bndbox[3] - bndbox[1]
-			# Check for x
-			if xminBoundingBoxes == "maintain":
-				# print("maintain")
-				bndbox[0], bndbox[2] = bndbox[0], bndbox[0] + widthBoundingBox
-			elif xminBoundingBoxes == "offsetXLeft":
-				# print("offsetXLeft ", offsetXLeft)
-				bndbox[0], bndbox[2] = offsetXLeft + (bndbox[0] - xmin), \
-															offsetXLeft + (bndbox[0] - xmin) + widthBoundingBox
-			elif xminBoundingBoxes == "offsetXLeftandoffsetXRight":
-				# print("offsetXLeftandoffsetXRight", offsetXLeft, offsetXRight)
-				bndbox[0], bndbox[2] = offsetXLeft + offsetXRight + (bndbox[0] - xmin), \
-																offsetXLeft + offsetXRight + (bndbox[0] - xmin) + \
-																widthBoundingBox
-			# Check for y
-			if yminBoundingBoxes == "maintain":
-				# print("Maintain y: ", bndbox[1], ymin)
-				bndbox[1], bndbox[3] = bndbox[1], bndbox[1] + heightBoundingBox
-			elif yminBoundingBoxes == "offsetYTop":
-				# print("offsetYTop ", offsetYTop)
-				bndbox[1], bndbox[3] = offsetYTop + (bndbox[1] - ymin), \
-																offsetYTop + (bndbox[1] - ymin) + heightBoundingBox
-			elif yminBoundingBoxes == "offsetYTopandoffsetYBottom":
-				# print("offsetYTopandoffsetYBottom ", offsetYTop, offsetYBottom)
-				bndbox[1], bndbox[3] = offsetYTop + offsetYBottom + (bndbox[1] - ymin), \
-																offsetYTop + offsetYBottom + (bndbox[1] - ymin) + \
-																heightBoundingBox
-		# Fix limits and check assertions.
-		for bdx in localBoundingBoxes:
-			if (bdx[2] == (RoiXMax-RoiXMin)):
-				bdx[2] -= 1
-			if (bdx[3] == (RoiYMax-RoiYMin)):
-				bdx[3] -= 1
-			if (bdx[0] < 0):
-				raise ValueError("Xmin is negative")
-			if (bdx[0] > (RoiXMax-RoiXMin)):
-				# print(bdx[0])
-				raise ValueError("Xmin {} is bigger than RoiX {}".format(bdx[0], (RoiXMax-RoiXMin)))
-			if (bdx[1] < 0):
-				raise ValueError("Ymin is negative")
-			if (bdx[1] > (RoiYMax-RoiYMin)):
-				raise ValueError("Ymin {} is bigger than RoiY {}.".format(bdx[1], (RoiYMax-RoiYMin)))
-			if (bdx[2] < 0):
-				raise ValueError("Xmax is negative")
-			if (bdx[2] > (RoiXMax-RoiXMin)):
-				raise ValueError("Xmax {} is bigger than RoiX {}.".format(bdx[2], (RoiXMax-RoiXMin)))
-			if (bdx[3] < 0):
-				raise ValueError("Ymax is negative")
-			if (bdx[3] > (RoiYMax-RoiYMin)):
-				raise ValueError("Ymax {} is bigger than RoiY {}.".format(bdx[3], (RoiYMax-RoiYMin)))
-		if ((RoiXMax-RoiXMin) < offset-100):
-			raise ValueError("Cropping frame is much smaller than offset in x {}."\
-												.format((RoiXMax-RoiXMin)))
-		if ((RoiYMax-RoiYMin) < offset-100):
-			raise ValueError("Cropping frame is much smaller than offset in y {}."\
-												.format((RoiYMax-RoiYMin)))
+		# Assertions.
+		# if ((RoiXMax-RoiXMin) < offset-100):
+		# 	raise ValueError("Cropping frame {} is much smaller than offset {} in x."\
+		# 										.format((RoiXMax-RoiXMin), offset-100))
+		# if ((RoiYMax-RoiYMin) < offset-100):
+		# 	raise ValueError("Cropping frame {} is much smaller than offset {} in y."\
+		# 										.format((RoiYMax-RoiYMin), offset-100))
 		# Return cropping coordinates and updated bounding boxes
-		return RoiXMin, RoiYMin, RoiXMax, RoiYMax #, localBoundingBoxes
+		return RoiXMin, RoiYMin, RoiXMax, RoiYMax
 
 	def includeBoundingBoxes(self, edges = None, boundingBoxes = None, names = None):
 		"""

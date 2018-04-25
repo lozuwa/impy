@@ -69,9 +69,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		super(ColorAugmenters, self).__init__()
 		self.assertion = AssertDataTypes()
 
-	def invertColor(self,
-									frame = None,
-									CSpace = None):
+	def invertColor(self, frame = None, CSpace = None):
 		"""
 		Inverts the color of an image.
 		Args:
@@ -87,6 +85,11 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Frame has to be a numpy array.")
 		if (CSpace == None):
 			CSpace = [True, True, True]
+		if ((type(CSpace) == tuple) or (type(CSpace) == list)):
+			pass
+		else:
+			raise TypeError("ERROR: CSpace parameter has to be either a tuple or a list: {}"\
+											.format(type(CSpace)))
 		# Check CSpace
 		if (CSpace[0] == True):
 			frame[:, :, 0] = cv2.bitwise_not(frame[:, :, 0])
@@ -100,12 +103,13 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			frame[:, :, 2] = cv2.bitwise_not(frame[:, :, 2])
 		else:
 			pass
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)
 		# Return tensor
 		return frame
 
-	def histogramEqualization(self,
-														frame = None,
-														equalizationType = None):
+	def histogramEqualization(self, frame = None, equalizationType = None):
 		"""
 		Args:
 			frame: A tensor that contains an image.
@@ -121,6 +125,8 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Frame needs to have at least 3 channels.")
 		if (equalizationType == None):
 			equalizationType = 0
+		if (type(equalizationType) != int):
+			raise TypeError("ERROR: equalizationType has to be of type int.")
 		# Local variables
 		equ = np.zeros(frame.shape, np.uint8)
 		# Equalize hist
@@ -133,11 +139,12 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 				equ[:, :, channel] = clahe.apply(frame[:, :, channel])
 		else:
 			raise ValueError("ERROR: equalizationType not understood.")
+		if (not (equ.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			equ = equ.astype(np.uint8)
 		return equ
 
-	def changeBrightness(self,
-											frame = None,
-											coefficient = None):
+	def changeBrightness(self, frame = None, coefficient = None):
 		"""
 		Change the brightness of a frame.
 		Args:
@@ -152,13 +159,16 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Frame has to be a numpy array.")
 		if (coefficient == None):
 			coefficient = np.random.rand()*0.75
+		if (type(coefficient) != float):
+			raise TypeError("ERROR: Coefficient parameter has to be of type float.")
 		# Change brightness
 		frame = frame*coefficient
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)
 		return frame
 
-	def sharpening(self,
-								frame = None,
-								weight = None):
+	def sharpening(self, frame = None, weight = None):
 		"""
 		Sharpens an image.
 		Args:
@@ -173,23 +183,25 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		if (weight == None):
 			prob = np.random.rand()
 			comp = 1 - prob
+		if (type(weight) != float):
+			raise TypeError("ERROR: ")
 		else:
-			if (type(weight) == float):
 				prob = weight
 				comp = 1 - prob
 		# Find edges
 		edges = cv2.Laplacian(frame, cv2.CV_64F)
 		edges = edges.astype(np.uint8)
-		frame = frame.astype(np.uint8)
+		# frame = frame.astype(np.uint8)
 		# Add edges to original frame
 		# print("DEBUG: ", edges.shape, frame.shape)
 		# print("DEBUG: ", edges.dtype, frame.dtype)
 		frameSharpened = cv2.addWeighted(edges, prob, frame, comp, 0)
+		if (not (frameSharpened.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frameSharpened = frameSharpened.astype(np.uint8)
 		return frameSharpened
 
-	def addGaussianNoise(self,
-											frame = None,
-											coefficient = None):
+	def addGaussianNoise(self, frame = None, coefficient = None):
 		"""
 		Add gaussian noise to a tensor.
 		Args:
@@ -204,6 +216,8 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Frame has to be a numpy array.")
 		if (coefficient == None):
 			coefficient = 0.2
+		if (type(coefficient) != float):
+			raise TypeError("ERROR: Coefficient parameter has to be of type float.")
 		# Local variables
 		height, width, depth = frame.shape
 		# Create random noise
@@ -216,11 +230,12 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		frame = frame.astype(np.uint8)
 		# Add noise to frame
 		frame = cv2.addWeighted(frame, 1-coefficient, gaussianNoise, coefficient, 0)
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)
 		return frame
 
-	def gaussianBlur(self,
-										frame = None,
-										sigma = None):
+	def gaussianBlur(self, frame = None, sigma = None):
 		"""
 		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
 		Sigma's default value is between 1 and 3.
@@ -233,14 +248,18 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
-		if sigma == None:
+		if (sigma == None):
 			sigma = float(random.random()*3) + 1
+		if (type(sigma) != float):
+			raise TypeError("ERROR: Sigma parameter has to be of type float.")
 		# Apply gaussian filter
 		frame = cv2.GaussianBlur(frame, (5, 5), sigma)
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)
 		return frame
 
-	def shiftColors(self,
-									frame = None):
+	def shiftColors(self, frame = None):
 		"""
 		Shifts the colors of the frame.
 		Args:
@@ -264,10 +283,12 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		frame[:, :, 2] = frame[:, :, colorsShuffle[0]], \
 										frame[:, :, colorsShuffle[1]], \
 										frame[:, :, colorsShuffle[2]]
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)
 		return frame
 
-	def fancyPCA(self,
-							frame = None):
+	def fancyPCA(self, frame = None):
 		"""
 		Fancy PCA implementation.
 		Args:
@@ -312,4 +333,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# print("Perturbation: ", perturb)
 		# Add perturbation vector to frame
 		framePCA = frame.copy() + perturb
+		if (not (frame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			frame = frame.astype(np.uint8)		
 		return framePCA

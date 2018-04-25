@@ -95,7 +95,7 @@ class ImageLocalizationDataset(object):
 		# Preprocess images.
 		for image in os.listdir(self.imagesDirectory):
 			# Extract name.
-			extension = Util.detect_file_extension(filename = file)
+			extension = Util.detect_file_extension(filename = image)
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
 												 " Only jpgs and pngs are allowed.")
@@ -120,10 +120,12 @@ class ImageLocalizationDataset(object):
 		if (len(anntToImg) != 0):
 			raise Exception("ERROR: There are more annotations than images: {}".format(anntToImg))
 
-	def findEmptyAnnotations(self, removeEmpty = None):
+	def findEmptyOrWrongAnnotations(self, removeEmpty = None):
 		"""
-		Find empty annotations in the annotation files. An empty annotation is an annotation that 
-		includes no objects.
+		Find empty or irregular annotations in the annotation files. An empty 
+		annotation is an annotation that includes no objects. And a irregular 
+		annotation is an annotation that has a bounding box with coordinates that
+		are off the image's boundaries.
 		Args:
 			removeEmpty: A boolean that if True removes the annotation and image that are empty.
 		Returns:
@@ -142,7 +144,7 @@ class ImageLocalizationDataset(object):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
 												 " Only jpgs and pngs are allowed.")
 			# Extract name
-			filename = os.path.split(img)[1].split(extension)[0]
+			filename = os.path.split(file)[1].split(extension)[0]
 			# Create xml and img name
 			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
 			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
@@ -152,10 +154,24 @@ class ImageLocalizationDataset(object):
 			if (len(annt.propertyBoundingBoxes) == 0):
 				emptyAnnotations.append(file)
 				print("WARNING: Annotation {} does not have any annotations.".format(xmlFullPath))
-				# Check if we need to remove this annotaion.
+				# Check if we need to remove this annotation.
 				if (removeEmpty == True):
 					os.remove(imgFullPath)
 					os.remove(xmlFullPath)
+			# Check if it is irregular
+			height, width, depth = annt.propertySize
+			for each in annt.propertyBoundingBoxes:
+				ix, iy, x, y = each
+				if (ix < 0):
+					raise ValueError("ERROR: Negative coordinate found in {}".format(file))
+				if (iy < 0):
+					raise ValueError("ERROR: Negative coordinate found in {}".format(file))
+				if (x > width):
+					raise ValueError("ERROR: Coordinate {} bigger than width {} found in {}"\
+													.format(x, width, file))
+				if (y > height):
+					raise ValueError("ERROR: Coordinate {} bigger than height {} found in {}"\
+														.format(y, height, file))
 		# Return empty annotations
 		return emptyAnnotations
 
@@ -167,8 +183,9 @@ class ImageLocalizationDataset(object):
 		# Assertions
 		if (saveDataFrame == None):
 			saveDataFrame = False
-		if ((saveDataFrame != None) and (outputDirDataFrame == None)):
-			raise ValueError("Parameter directory dataframe cannot be empty.")
+		else:
+			if (outputDirDataFrame == None):
+				raise ValueError("Parameter directory dataframe cannot be empty.")
 		# Local variables
 		namesFrequency = {}
 		files = os.listdir(self.imagesDirectory)
@@ -185,7 +202,7 @@ class ImageLocalizationDataset(object):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
 												 " Only jpgs and pngs are allowed.")
 			# Extract name
-			filename = os.path.split(img)[1].split(extension)[0]
+			filename = os.path.split(file)[1].split(extension)[0]
 			# Create xml and img name
 			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
 			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
@@ -194,7 +211,7 @@ class ImageLocalizationDataset(object):
 			# Check if it is empty.
 			boundingBoxes = annt.propertyBoundingBoxes
 			names = annt.propertyNames
-			width, height, depth = annt.propertySize
+			height, width, depth = annt.propertySize
 			for i in range(len(names)):
 				if (not (names[i] in namesFrequency)):
 					namesFrequency[names[i]] = 0

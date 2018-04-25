@@ -20,6 +20,8 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def tearDown(self):
 		pass
 
+	def test
+
 	def test_reduceDatasetByRois(self):
 		outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
 		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
@@ -30,36 +32,36 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 																	outputImageDirectory = outputImageDirectory,
 																	outputAnnotationDirectory = outputAnnotationDirectory)
 
-	# def test_reduceImageDataPointByRoi(self):
-	# 	outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced_single")
-	# 	outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced_single", "xmls")
-	# 	os.system("rm {}/* {}/*".format(outputImageDirectory, outputAnnotationDirectory))
-	# 	offset = 300
-	# 	for i in range(3):
-	# 		for each in os.listdir(self.imgs):
-	# 			if True:#each.endswith(".png"):
-	# 				# Get extension
-	# 				extension = Util.detect_file_extension(each)
-	# 				if (extension == None):
-	# 					raise ValueError("Extension not supported.")
-	# 				img_name = os.path.join(self.imgs, each)
-	# 				xml_name = os.path.join(self.annts, each.split(extension)[0]+".xml")
-	# 				self.imda.reduceImageDataPointByRoi(imagePath = img_name,
-	# 																			annotationPath = xml_name,
-	# 																			offset = offset,
-	# 																			outputImageDirectory = outputImageDirectory,
-	# 																			outputAnnotationDirectory = outputAnnotationDirectory)
-	# 			offset += 250
+	def test_reduceImageDataPointByRoi(self):
+		outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced_single")
+		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced_single", "xmls")
+		os.system("rm {}/* {}/*".format(outputImageDirectory, outputAnnotationDirectory))
+		offset = 300
+		for i in range(3):
+			for each in os.listdir(self.imgs):
+				if True:#each.endswith(".png"):
+					# Get extension
+					extension = Util.detect_file_extension(each)
+					if (extension == None):
+						raise ValueError("Extension not supported.")
+					img_name = os.path.join(self.imgs, each)
+					xml_name = os.path.join(self.annts, each.split(extension)[0]+".xml")
+					self.imda.reduceImageDataPointByRoi(imagePath = img_name,
+																				annotationPath = xml_name,
+																				offset = offset,
+																				outputImageDirectory = outputImageDirectory,
+																				outputAnnotationDirectory = outputAnnotationDirectory)
+			offset += 250
 
-	# def test_applyDataAugmentation(self):
-	# 	outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
-	# 	outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
-	# 	os.system("rm {}/*".format(outputImageDirectory))
-	# 	os.system("rm {}/*".format(outputAnnotationDirectory))
-	# 	aug_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "aug_configuration_cars.json")
-	# 	self.imda.applyDataAugmentation(configurationFile = aug_file,
-	# 															outputImageDirectory = outputImageDirectory,
-	# 															outputAnnotationDirectory = outputAnnotationDirectory)
+	def test_applyDataAugmentation(self):
+		outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
+		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
+		os.system("rm {}/*".format(outputImageDirectory))
+		os.system("rm {}/*".format(outputAnnotationDirectory))
+		aug_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "aug_configuration_cars.json")
+		self.imda.applyDataAugmentation(configurationFile = aug_file,
+																outputImageDirectory = outputImageDirectory,
+																outputAnnotationDirectory = outputAnnotationDirectory)
 
 	# def test_save_img_and_xml(self):
 	# 	pass
