@@ -26,11 +26,7 @@ class ImagePreprocessing(object):
 		"""
 		super(ImagePreprocessing, self).__init__()
 	
-	def adjustImage(self,
-								frameHeight = None,
-								frameWidth = None,
-								boundingBoxes = None,
-								offset = None):
+	def adjustImage(self, frameHeight = None, frameWidth = None, boundingBoxes = None, offset = None):
 		"""
 		Given an image and its bounding boxes, this method creates an image with 
 		a size specified by the offset. The bounding boxes are centered and the missing
@@ -293,10 +289,7 @@ class ImagePreprocessing(object):
 		# Return cropping coordinates and updated bounding boxes
 		return RoiXMin, RoiYMin, RoiXMax, RoiYMax #, localBoundingBoxes
 
-	def includeBoundingBoxes(self,
-														edges = None,
-														boundingBoxes = None,
-														names = None):
+	def includeBoundingBoxes(self, edges = None, boundingBoxes = None, names = None):
 		"""
 		Check if there are bounding boxes included in the edges region.
 		Args:
@@ -324,13 +317,22 @@ class ImagePreprocessing(object):
 			bix, biy, bx, by = boundingBoxes[i]
 			name = names[i]
 			# If the x and y axis are contained in edges.
-			if (((bix > ix) and (bx < x)) and 
-					((biy > iy) and (by < y))):
+			if (((bix >= ix) and (bx <= x)) and 
+					((biy >= iy) and (by <= y))):
 				# print(bix, biy, bx, by)
 				bix = bix - ix
 				bx = bx - ix
 				biy = biy - iy
 				by = by - iy
+				# Make sure the bounding boxes are not negative or
+				# are not the edges of the frame.
+				if ((bix < 0) or (biy < 0)):
+					raise Exception("ERROR: One of the bounding boxes is negative. Report this problem.")
+				if (bx == (x - ix)):
+					bx -= 1
+				if (by == (y - iy)):
+					by -= 1
+				# Save new bounding boxes.
 				newBoundingBoxes.append([bix, biy, bx, by])
 				newNames.append(name)
 		return newBoundingBoxes, newNames

@@ -122,25 +122,17 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		if (equalizationType == None):
 			equalizationType = 0
 		# Local variables
-		equ = frame.copy()
-		equChannel = []
+		equ = np.zeros(frame.shape, np.uint8)
 		# Equalize hist
 		if (equalizationType == 0):
 			for channel in range(3):
-				equChannel.append(cv2.equalizeHist(frame[:, :, channel]))
-			equ[:, :, 0] = equChannel[0]
-			equ[:, :, 1] = equChannel[1]
-			equ[:, :, 2] = equChannel[2]
+				equ[:, :, channel] = cv2.equalizeHist(frame[:, :, channel])
 		elif (equalizationType == 1):
+			clahe = cv2.createCLAHE(clipLimit=2.0)
 			for channel in range(3):
-				clahe = cv2.createCLAHE(clipLimit=2.0)
-				equ = clahe.apply(frame[:, :, channel])
-				equChannel.append(equ)
-			equ[:, :, 0] = equChannel[0]
-			equ[:, :, 1] = equChannel[1]
-			equ[:, :, 2] = equChannel[2]
+				equ[:, :, channel] = clahe.apply(frame[:, :, channel])
 		else:
-			raise ValueError("equalizationType not understood.")
+			raise ValueError("ERROR: equalizationType not understood.")
 		return equ
 
 	def changeBrightness(self,

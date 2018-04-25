@@ -91,32 +91,3 @@ class Util(object):
 			return ".png"
 		else:
 			return None
-
-	@staticmethod
-	def assert_file_extension(filename = None, extension = None):
-		"""
-		Assert the extension of a file.
-		Args:
-			filename: A string that contains the name of a file.
-			extension: A string that contains a file extension.
-		Returns:
-			A boolean that if True means the extension has been verified. 
-			Otherwise, the extension is not asserted.
-		"""
-		# Assertions
-		if (filename == None):
-			raise ValueError("Parameter filename cannot be empty.")
-		if (type(filename) == str):
-			pass
-		else:
-			raise TypeError("Parameter filename has to be string: {}".format(type(filename)))
-		if (extension == None):
-			raise ValueError("Parameter extension cannot be empty.")
-		if (type(extension) == str):
-			pass
-		else:
-			raise TypeError("Parameter extension has to be string: {}".format(type(extension))) 
-		# Logic
-		if ()
-
-

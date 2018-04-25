@@ -144,8 +144,8 @@ class ImageLocalizationDataset(object):
 			# Extract name
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name
-			imgFullPath = os.path.join(self.images, filename + extension)
-			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
+			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			# Create an object of ImageAnnotation.
 			annt = ImageAnnotation(path = xmlFullPath)
 			# Check if it is empty.
@@ -160,16 +160,17 @@ class ImageLocalizationDataset(object):
 		return emptyAnnotations
 
 	# Stats
-	def computeBoundingBoxStats(self, saveInDataFrame = None, directoryDataFrame = None):
+	def computeBoundingBoxStats(self, saveDataFrame = None, outputDirDataFrame = None):
 		"""
 		Compute basic stats for the bounding boxes of the dataset.
 		"""
 		# Assertions
-		if (saveInDataFrame == None):
-			saveInDataFrame = False
-		if ((saveInDataFrame != None) and (directoryDataFrame == None)):
+		if (saveDataFrame == None):
+			saveDataFrame = False
+		if ((saveDataFrame != None) and (outputDirDataFrame == None)):
 			raise ValueError("Parameter directory dataframe cannot be empty.")
 		# Local variables
+		namesFrequency = {}
 		files = os.listdir(self.imagesDirectory)
 		columns = ["path", "name", "width", "height", "xmin", "ymin", "xmax", "ymax"]
 		paths = []
@@ -186,8 +187,8 @@ class ImageLocalizationDataset(object):
 			# Extract name
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name
-			imgFullPath = os.path.join(self.images, filename + extension)
-			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
+			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			# Create an object of ImageAnnotation.
 			annt = ImageAnnotation(path = xmlFullPath)
 			# Check if it is empty.
@@ -195,16 +196,24 @@ class ImageLocalizationDataset(object):
 			names = annt.propertyNames
 			width, height, depth = annt.propertySize
 			for i in range(len(names)):
+				if (not (names[i] in namesFrequency)):
+					namesFrequency[names[i]] = 0
+				else:
+					namesFrequency[names[i]] += 1
 				paths.append(file)
 				names.append(names[i])
 				widths.append(width)
 				heights.append(height)
 				boundingBoxesLists.append(boundingBoxes[i])
-			# Save data?
-			if (saveInDataFrame):
-				ImageLocalizationDataset.save_lists_in_dataframe(columns = columns,
-										data = [paths, names, widths, heights, boundingBoxesLists],
-										output_directory = directoryDataFrame)
+		# Print stats
+		print("Total number of bounding boxes: {}"\
+						.format(sum([i for i in namesFrequency.values()])))
+		print("Unique classes: {}".format(namesFrequency))
+		# Save data?
+		if (saveDataFrame):
+			ImageLocalizationDataset.save_lists_in_dataframe(columns = columns,
+									data = [paths, names, widths, heights, boundingBoxesLists],
+									output_directory = outputDirDataFrame)
 
 	# Preprocessing
 	def reduceDatasetByRois(self, offset = None, outputImageDirectory = None, outputAnnotationDirectory = None):
@@ -240,8 +249,8 @@ class ImageLocalizationDataset(object):
 			raise Exception("ERROR: Path to output annotation directory does not exist. {}"\
 											.format(outputAnnotationDirectory))
 		# Get images and annotations full paths
-		imagesPath = [os.path.join(self.images, each) for each in \
-									os.listdir(self.images)]
+		imagesPath = [os.path.join(self.imagesDirectory, each) for each in \
+									os.listdir(self.imagesDirectory)]
 		for img in tqdm(imagesPath):
 			#print(img)
 			# Get extension
@@ -252,8 +261,8 @@ class ImageLocalizationDataset(object):
 			# Extract name
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name
-			imgFullPath = os.path.join(self.images, filename + extension)
-			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
+			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			self.reduceImageDataPointByRoi(imagePath = imgFullPath, 
 																			annotationPath = xmlFullPath,
 																			offset = offset,
@@ -313,13 +322,12 @@ class ImageLocalizationDataset(object):
 			raise ValueError("ERROR: Output image directory does not exist.")
 		if (not (os.path.isdir(outputAnnotationDirectory))):
 			raise ValueError("ERROR: Output annotation directory does not exist.")
-		# Load image annotation
+		# Load image annotation.
 		annotation = ImageAnnotation(path = annotationPath)
 		width, height, depth = annotation.propertySize
 		names = annotation.propertyNames
 		objects = annotation.propertyObjects
 		boundingBoxes = annotation.propertyBoundingBoxes
-
 		# Create a list of classes with the annotations.
 		annotations = []
 		index = 0
@@ -384,9 +392,9 @@ class ImageLocalizationDataset(object):
 				# Adjust image to current annotations' bounding boxes.
 				RoiXMin, RoiYMin, \
 				RoiXMax, RoiYMax = prep.adjustImage(frameHeight = height,
-																		frameWidth = width,
-																		boundingBoxes = annotations[i].propertyOtherAnnotation,
-																		offset = offset)
+																frameWidth = width,
+																boundingBoxes = annotations[i].propertyOtherAnnotation,
+																offset = offset)
 				# Include bounding boxes after adjusting the region of interest.
 				newBoundingBoxes,\
 				newNames = prep.includeBoundingBoxes(edges = [RoiXMin, RoiYMin, RoiXMax, RoiYMax],
@@ -448,7 +456,7 @@ class ImageLocalizationDataset(object):
 		data = json.load(f)
 		f.close()
 		# Iterate over the images.
-		for img in tqdm(os.listdir(self.images)[:1]):
+		for img in tqdm(os.listdir(self.imagesDirectory)[:1]):
 			# Get the extension
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
@@ -457,8 +465,8 @@ class ImageLocalizationDataset(object):
 			# Extract name.
 			filename = os.path.split(img)[1].split(extension)[0]
 			# Create xml and img name.
-			imgFullPath = os.path.join(self.images, filename + extension)
-			xmlFullPath = os.path.join(self.annotations, filename + ".xml")
+			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
+			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			imgAnt = ImageAnnotation(path = xmlFullPath)
 			boundingBoxes = imgAnt.propertyBoundingBoxes
 			names = imgAnt.propertyNames

@@ -16,9 +16,13 @@ from VectorOperations import *
 class BoundingBoxAugmenters_test(unittest.TestCase):
 	
 	def setUp(self):
+		img_path = os.path.join(os.getcwd(), "tests/cars_dataset/images/cars0.png")
+		annotation_path = os.path.join(os.getcwd(), "tests/cars_dataset/annotations/xmls/cars0.xml")
+		assert os.path.isfile(img_path)
+		assert os.path.isfile(annotation_path)
 		# Image
-		self.frame = cv2.imread("tests/localization/images/pedestrians.png")
-		self.annotation = "tests/localization/annotations/pedestrians.xml"
+		self.frame = cv2.imread(img_path)
+		self.annotation = annotation_path
 		imgAnt = ImageAnnotation(path = self.annotation)
 		self.bndboxes = imgAnt.propertyBoundingBoxes
 		self.names = imgAnt.propertyNames
@@ -27,6 +31,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		# Testing options
 		self.visualize = True
 		self.waitTime = 1000
+		self.windowSize = (800, 800)
 
 	def tearDown(self):
 		pass
@@ -84,6 +89,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			for each in bndboxes:
 				ix, iy, x, y = each
 				scaled_frame = cv2.rectangle(scaled_frame, (ix, iy), (x, y), (0,0,255), 3)
+			cv2.namedWindow("__scaled__", 0)
+			cv2.resizeWindow("__scaled__", self.windowSize);
 			cv2.imshow("__scaled__", scaled_frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -108,13 +115,15 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		# Visual test
 		if (self.visualize):
 			localbnxboxes = self.bndboxes
-			for i in range(10):
+			for i in range(2):
 				frame = self.frame.copy()
 				bndboxes = self.augmenter.crop(boundingBoxes = localbnxboxes,
 																						size = (0.5,0.5))
 				for each in bndboxes:
 					ix, iy, x, y = each
 					frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 2)
+				cv2.namedWindow("__crop__", 0)
+				cv2.resizeWindow("__crop__", self.windowSize);
 				cv2.imshow("__crop__", frame)
 				cv2.waitKey(self.waitTime)
 				cv2.destroyAllWindows()
@@ -143,6 +152,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			for each in bndboxes:
 				ix, iy, x, y = each
 				frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 2)
+			cv2.namedWindow("__padding__", 0)
+			cv2.resizeWindow("__padding__", self.windowSize);
 			cv2.imshow("__padding__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -153,6 +164,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																					boundingBoxes = self.bndboxes,
 																					size = (20,20),
 																					quantity = 20)
+			cv2.namedWindow("__jitterBoxes__", 0)
+			cv2.resizeWindow("__jitterBoxes__", self.windowSize);
 			cv2.imshow("__jitterBoxes__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -163,6 +176,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.horizontalFlip(frame = self.frame.copy(),
 																						boundingBoxes = self.bndboxes)
 			# Visualization.
+			cv2.namedWindow("__horizontalFlip__", 0)
+			cv2.resizeWindow("__horizontalFlip__", self.windowSize);
 			cv2.imshow("__horizontalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -173,6 +188,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.verticalFlip(frame = self.frame.copy(),
 																						boundingBoxes = self.bndboxes)
 			# Visualization.
+			cv2.namedWindow("__verticalFlip__", 0)
+			cv2.resizeWindow("__verticalFlip__", self.windowSize);
 			cv2.imshow("__verticalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -185,6 +202,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																					boundingBoxes = self.bndboxes,
 																					theta = theta)
 				theta += 0.3
+				cv2.namedWindow("__rotation__", 0)
+				cv2.resizeWindow("__rotation__", self.windowSize);
 				cv2.imshow("__rotation__", frame)
 				cv2.waitKey(250)
 				cv2.destroyAllWindows()
@@ -195,6 +214,8 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 												              boundingBoxes = self.bndboxes,
 												              size = (25,25),
 												              threshold = 0.5)
+			cv2.namedWindow("__dropout__", 0)
+			cv2.resizeWindow("__dropout__", self.windowSize);
 			cv2.imshow("__dropout__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
