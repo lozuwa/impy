@@ -35,7 +35,8 @@
 <h3>Images are too big</h3>
 <p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
 
-![Alt text](static/cars3.png?raw=true "Example of big image.")
+<!-- ![Alt text](static/cars3.png?raw=true "Example of big image.") -->
+<img src="static//cars3.png" alt="cars" height="600" width="800"></img>
 
 <p>This image's size is 2560x1600. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
 <p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. Let's see how to do this with impy. </p>
