@@ -212,13 +212,15 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
-![Alt text](static/cars3sharp.jpg?raw=true "Sharpened.")
+<img src="static//cars3sharp.jpg" alt="Sharpened" height="300" width="500"></img>
+<img src="static//cars3vertFlip.jpg" alt="Vertical flip" height="300" width="500"></img>
+<img src="static//cars3histEq.jpg" alt="Histogram equalization" height="300" width="500"></img>
+<img src="static//cars3horFlip.jpg" alt="Horizontal flip" height="300" width="500"></img>
+<img src="static//cars3crop.jpg" alt="Crop" height="300" width="500"></img>
 
+<!-- ![Alt text](static/cars3sharp.jpg?raw=true "Sharpened.")
 ![Alt text](static/cars3vertFlip.jpg?raw=true "Vertical flip.")
-
 ![Alt text](static/cars3histEq.jpg?raw=true "Histogram equalization.")
-
 ![Alt text](static/cars3horFlip.jpg?raw=true "Horizontal flip.")
-
 ![Alt text](static/cars3crop.jpg?raw=true "Crop.")
-
+ -->
