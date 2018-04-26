@@ -10,15 +10,20 @@
   <li>Fast image preprocessing methods useful in a deep learning context. E.g: if your image is too big you need to divide it into patches.</li>
 </ul>
 
-<p>For now the installation requires you to clone the repository. Follow the next steps:</p>
+<ol>
+	<li><a href="installation">Installation</a></li>
+	<li><a href="tutorial">Tutorial</a></li>
+</ol>
 
+<h1 id="#installation">Installation</h1>
+<p>For now the installation requires you to clone the repository. Follow the next steps:</p>
 <ol>
   <li>Go to your package path. E.g: for anaconda go to ../Anaconda3/envs/YOUR_ENVIRONMENT/lib/pythonVERSION_OF_YOUR_PYTHON/site-packages/</li>
   <li>Clone the library with the following command git clone  https://github.com/lozuwa/impy.git</li>
   <li>Test the library by working on one of the tutorials.</li>
 </ol>
 
-<h1> Tutorial </h1>
+<h1 id="#tutorial">Tutorial</h1>
 <p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to tackle problems you might find while working on Computer Vision and Deep Learning. </p>
 <p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and pedestrians in the images.</p>
 
@@ -61,9 +66,9 @@ if __mame__ == "__main__":
 
 <p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
 
-![Alt text](static/cars31.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars31.jpg?raw=true "Image reduced by ROIs.") {width: 200px; height: 200px;}
 
-![Alt text](static/cars32.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars32.jpg?raw=true "Image reduced by ROIs." =200x200)
 
 ![Alt text](static/cars33.jpg?raw=true "Image reduced by ROIs.")
 
@@ -196,12 +201,13 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
-![Alt text](static/cars3sharp.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars3sharp.jpg?raw=true "Sharpened.")
 
-![Alt text](static/cars3vertFlip.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars3vertFlip.jpg?raw=true "Vertical flip.")
 
-![Alt text](static/cars3histEq.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars3histEq.jpg?raw=true "Histogram equalization.")
 
-![Alt text](static/cars3horFlip.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars3horFlip.jpg?raw=true "Horizontal flip.")
 
-![Alt text](static/cars3crop.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars3crop.jpg?raw=true "Crop.")
+
