@@ -352,72 +352,53 @@ class ImageLocalizationDataset(object):
 			# Compute the module
 			ix, iy, x, y = boundingBox
 			module = VectorOperations.compute_module(vector = [ix, iy])
-			annotations.append(Annotation(index = index, name = name, \
-																		bndbox = boundingBox, module = module,
-																		inUse = False))
+			annotations.append(Annotation(name = name, bndbox = boundingBox, \
+																		module = module, corePoint = True))
 			index += 1
 
 		# Sort the list of Annotations by its module from lowest to highest.
 		for i in range(len(annotations)):
 			for j in range(len(annotations)-1):
-				module0 = annotations[i].propertyModule
-				module1 = annotations[j].propertyModule
-				if (module1 > module0):
-					# Update Annotation's index
-					annotations[i].propertyIndex = j
-					annotations[j].propertyIndex = i
+				module0 = annotations[j].propertyModule
+				module1 = annotations[j+1].propertyModule
+				if (module0 >= module1):
 					# Swap Annotation
-					aux = annotations[i]
-					annotations[i] = annotations[j]
+					aux = annotations[j+1]
+					annotations[j+1] = annotations[j]
 					annotations[j] = aux
 
 		# Debug
 		# for each in annotations:
-		#   print(each.propertyName, each.propertyModule, each.propertyIndex)
+		#   print(each.propertyName, each.propertyModule)
 		# print("\n")
 
-		# Find annotations that are close to each other.
+		# Work on the points.
 		for i in range(len(annotations)):
-			if (annotations[i].propertyInUse == False):
-				# print(annotations[i].propertyName)
-				ix0, iy0, x0, y0 = annotations[i].propertyBndbox
-				annotations[i].includeOtherAnnotation([ix0, iy0, x0, y0])
-				annotations[i].includeOtherAnnotationName(annotations[i].propertyName)
-				annotations[i].propertyInUse = True
-				for j in range(len(annotations)):
-					ix1, iy1, x1, y1 = annotations[j].propertyBndbox
-					if ((ix0 < ix1) and (iy0 < iy1)):
-						# print(annotations[j].propertyName)
-						distance = VectorOperations.euclidean_distance(v0 = [ix0, iy0],
-																														v1 = [x1, y1])
-						if (distance < (offset-20)):
-							annotations[i].includeOtherAnnotation([ix1, iy1, x1, y1])
-							annotations[i].includeOtherAnnotationName(annotations[j].propertyName)
-							annotations[j].propertyInUse = True
-
-		# Debug
-		# for each in annotations:
-		#   print(each.propertyName, each.propertyIndex, \
-		#         each.propertyOtherAnnotation, each.propertyOtherAnnotationName, "\n")
-		# print("\n")
-
-		# Save image croppings
-		for i in range(len(annotations)):
-			if (len(annotations[i].propertyOtherAnnotation) == 0):
-				continue
+			# Ignore non-core points.
+			if (annotations[i].propertyCorePoint == False):
+				pass
 			else:
-				# Adjust image to current annotations' bounding boxes.
+				# Center the core point in an allowed image space.
 				RoiXMin, RoiYMin, \
 				RoiXMax, RoiYMax = prep.adjustImage(frameHeight = height,
 																frameWidth = width,
-																boundingBoxes = annotations[i].propertyOtherAnnotation,
+																boundingBoxes = [annotations[i].propertyBndbox],
 																offset = offset)
-				# Include bounding boxes after adjusting the region of interest.
+				# Find the annotations that can be included in the allowed image space.
+				for j in range(len(annotations)):
+					# Get bounding box
+					ix, iy, x, y = annotations[j].propertyBndbox
+					# Check current bounding box is inside the allowed space.
+					if ((ix >= RoiXMin) and (x <= RoiXMax)) and \
+							((iy >= RoiYMin) and (y <= RoiYMax)):
+							# Disable point from being a core point. Check it is not the current point of reference.
+							if (not (annotations[i].propertyBndbox == annotations[j].propertyBndbox)):
+								annotations[j].propertyCorePoint = False
+				# Include the corresponding bounding boxes in the region of interest.
 				newBoundingBoxes,\
 				newNames = prep.includeBoundingBoxes(edges = [RoiXMin, RoiYMin, RoiXMax, RoiYMax],
 																						boundingBoxes = boundingBoxes,
 																						names = names)
-				# print((RoiXMax-RoiXMin), (RoiYMax-RoiYMin))
 				# Read image
 				frame = cv2.imread(imagePath)
 				# Save image
@@ -940,50 +921,38 @@ class ImageLocalizationDataset(object):
 		df.to_excel(output_directory)
 
 class Annotation(object):
-	def __init__(self,  index = None, name = None, bndbox = None, module = None, inUse = None):
+	def __init__(self, name = None, bndbox = None, module = None, corePoint = None):
 		"""
 		A class that holds parameters of a common annotation.
 		Args:
-			index: An int that represents an index.
 			name: A string that contains a name.
 			bndbox: A list of ints.
 			module: A float.
-			inUse: A boolean.
+			corePoint: A boolean.
 		Returns:
 			None
 		"""
 		super(Annotation, self).__init__()
 		# Assertions
-		if (index == None):
-			raise ValueError("Index parameter cannot be empty.")
 		if (name == None):
 			raise ValueError("Name parameter cannot be empty.")
 		if (bndbox == None):
 			raise ValueError("Bounding box parameter cannot be empty.")
 		if (module == None):
 			module = -1
-		if (inUse == None):
-			raise ValueError("InUse parameter cannot be empty.")
+		if (corePoint == None):
+			raise ValueError("corePoint parameter cannot be empty.")
 		# Class variables
-		self.index = index
 		self.name = name
 		self.bndbox = bndbox
 		self.module = module
-		self.inUse = inUse
+		self.corePoint = corePoint
 		self.otherAnnotations = []
 		self.otherAnnotationsName = []
 
 	@property
 	def propertyModule(self):
 		return self.module
-
-	@property
-	def propertyIndex(self):
-		return self.index
-
-	@propertyIndex.setter
-	def propertyIndex(self, index):
-		self.index = index
 
 	@property
 	def propertyName(self):
@@ -1002,12 +971,12 @@ class Annotation(object):
 		self.module = module
 
 	@property
-	def propertyInUse(self):
-		return self.inUse
+	def propertyCorePoint(self):
+		return self.corePoint
 
-	@propertyInUse.setter
-	def propertyInUse(self, inUse):
-		self.inUse = inUse
+	@propertyCorePoint.setter
+	def propertyCorePoint(self, corePoint):
+		self.corePoint = corePoint
 
 	@property
 	def propertyOtherAnnotation(self):
