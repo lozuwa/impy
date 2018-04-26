@@ -113,10 +113,14 @@ class ImagePreprocessing(object):
 			offsetX = offset - RoiX
 		# print(offsetX, offsetY)
 		# Determine space on x.
+		# Put bounding boxes in the center.
 		offsetXLeft = offsetX // 2
 		offsetXRight = offsetX - offsetXLeft
+		# Put bounding boxes in the top left corner.
+		# offsetXLeft = offsetX - 5
+		# offsetXRight = offsetX - offsetXLeft
 		# Determine space on y.
-		offsetYTop = offsetY // 2
+		offsetYTop = offsetY - offsetY //2
 		offsetYBottom = offsetY - offsetYTop
 		# Debug
 		# print("\n")
@@ -270,13 +274,7 @@ class ImagePreprocessing(object):
 				newNames.append(name)
 		return newBoundingBoxes, newNames
 
-	def divideIntoPatches(self,
-												imageWidth = None,
-												imageHeight = None,
-												slideWindowSize = None,
-												strideSize = None,
-												padding = None,
-												numberPatches = None):
+	def divideIntoPatches(self, imageWidth = None, imageHeight = None, slideWindowSize = None, strideSize = None, padding = None, numberPatches = None):
 		"""
 		Divides the image into NxM patches depending on the stride size,
 		the sliding window size and the type of padding.
@@ -448,12 +446,7 @@ class ImagePreprocessing(object):
 			raise Exception("Type of padding not understood")
 
 	@staticmethod
-	def get_valid_padding(slide_window_height,
-											 stride_height,
-											 image_height,
-											 slide_window_width,
-											 stride_width,
-											 image_width):
+	def get_valid_padding(slide_window_height = None, stride_height = None, image_height = None, slide_window_width = None, stride_width = None, image_width = None):
 		"""
 		Given the dimensions of an image, the strides of the sliding window
 		and the size of the sliding window. Find the number of patches that
@@ -492,12 +485,7 @@ class ImagePreprocessing(object):
 		return (number_patches_height, number_patches_width)
 
 	@staticmethod
-	def get_same_padding(slide_window_height,
-						 stride_height,
-						 image_height,
-						 slide_window_width,
-						 stride_width,
-						 image_width):
+	def get_same_padding(slide_window_height = None, stride_height = None, image_height = None, slide_window_width = None, stride_width = None, image_width = None):
 		""" 
 		Given the dimensions of an image, the strides of the sliding window
 		and the size of the sliding window. Find the number of zeros needed
@@ -560,10 +548,7 @@ class ImagePreprocessing(object):
 		return (zeros_h, zeros_w)
 
 	@staticmethod
-	def lazySAMEpad(frame,
-									zeros_h,
-									zeros_w,
-									padding_type = "ONE_SIDE"):
+	def lazySAMEpad(frame = None, zeros_h = None, zeros_w = None, padding_type = "ONE_SIDE"):
 		"""
 		Given an image and the number of zeros to be added in height 
 		and width dimensions, this function fills the image with the 
@@ -618,9 +603,7 @@ class ImagePreprocessing(object):
 			container[:, cols:, :] = np.zeros((rows, zeros_w, 3), np.uint8)
 			return container
 
-def drawGrid(frame,
-			patches,
-			patchesLabels):
+def drawGrid(frame = None, patches = None, patchesLabels = None):
 	"""
 	Draws the given patches on top of the input image
 	:param frame: opencv input image
@@ -651,9 +634,7 @@ def drawGrid(frame,
 		frame[patch[0]:patch[2],patch[1]:patch[3],:] = roi
 	return frame
 
-def drawBoxes(frame,
-			  patchesCoordinates,
-			  patchesLabels):
+def drawBoxes(frame = None, patchesCoordinates = None, patchesLabels = None):
 	"""
 	Draws a box or boxes over the frame
 	:param frame: input cv2 image
