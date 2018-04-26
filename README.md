@@ -19,22 +19,21 @@
 </ol>
 
 <h1> Tutorial </h1>
-<p>Impy has multiple features that allow you to solve several different problems with a few lines of code. To make things clear we are going to tackle problems you might find 
-while working on Deep learning for computer vision. </p>
-<p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and 
-pedestrians in the images.</p>
+<p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to tackle problems you might find while working on Computer Vision and Deep Learning. </p>
+<p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and pedestrians in the images.</p>
 
-<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
+<!-- <img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img> -->
+![Alt text](static/cars0.png?raw=true "Car's mini dataset")
 
 <h2>Object localization</h2>
 <p>In this section we are going to solve problems related with object localization.</p>
 <h3>Images are too big</h3>
 <p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
 
-<img src="tests/cars_dataset/images/cars1.png" alt="cars_dataset" height="42" width="42"></img>
+![Alt text](static/cars3.png?raw=true "Example of big image.")
 
-<p>This image's size is 3840x2160. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
-<p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. But how do we do this, it involves a lot of algorithms. We are going to use Impy.</p>
+<p>This image's size is 2560x1600. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
+<p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. Let's see how to do this with impy. </p>
 
 ```python
 from impy.ImageLocalizationDataset import *
@@ -60,16 +59,23 @@ if __mame__ == "__main__":
  main()
 ```
 
-<p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of
-data points. Let's see the results of one of the images: </p>
+<p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
 
-<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
+![Alt text](static/cars31.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars32.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars33.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars34.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars35.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars36.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars37.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars38.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars39.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars40.png?raw=true "Image reduced by ROIs.")
 
 <p>As you can see the annotations have been maintained and small crops of the big image are now available. Our problem is solved.</p>
 
 <h3>Data augmentation for bounding boxes</h3>
-<p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make
-a custom script. But with impy we can make it easier.</p>
+<p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make a custom script. But with impy we can make it easier.</p>
 
 <p>First, let's create a configuration file. You can use one of the templates available in the confs folder.</p>
 
@@ -85,7 +91,7 @@ a custom script. But with impy we can make it easier.</p>
 								"weight": 0.2,
 								"save": true
 							}
-						},
+						}
 					]
 				}
 			},
@@ -94,7 +100,8 @@ a custom script. But with impy we can make it easier.</p>
 					"Sequential": [
 						{
 							"scale": {
-								"size": [500, 500],
+								"size": [1.2, 1.2],
+								"zoom": true,
 								"interpolationMethod": 1,
 								"save": false
 							}
@@ -135,7 +142,7 @@ a custom script. But with impy we can make it easier.</p>
 						}
 					]
 				}
-			},
+			}
 		]
 	}
 }
@@ -180,5 +187,14 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
-<img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img>
+<!-- ![Alt text](static/cars31.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars32.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars33.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars34.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars35.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars36.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars37.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars38.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars39.png?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars40.png?raw=true "Image reduced by ROIs.") -->
 

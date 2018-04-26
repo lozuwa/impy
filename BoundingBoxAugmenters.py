@@ -70,7 +70,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		self.prep = ImagePreprocessing()
 		self.assertion = AssertDataTypes()
 
-	def scale(self, frame = None, boundingBoxes = None, size = None, interpolationMethod = None):
+	def scale(self, frame = None, boundingBoxes = None, size = None, zoom = None, interpolationMethod = None):
 		"""
 		Scales an image with its bounding boxes to another size while maintaining the 
 		size of the bounding boxes.
@@ -79,10 +79,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			boundingBoxes: A list of lists that contains the coordinates of the bounding
 											boxes that are part of the image.
 			size: A tuple or list that contains the resizing values.
+			zoom: A boolean that defines if scaling will be executed as zoom.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
-														INTER_LINEAR -> 1, 
-														INTER_CUBIC -> 2, 
+														INTER_LINEAR -> 1,
+														INTER_CUBIC -> 2,
 														INTER_LANCZOS4 -> 4)
 		Returns:
 			An image that has been scaled and a list of lists that contains the new 
@@ -97,6 +98,10 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			pass
 		else:
 			raise ValueError("ERROR: Bounding boxes has to be of type list.")
+		if (type(zoom) != bool):
+			raise TypeError("ERROR: Zoom parameter must be a boolean.")
+		if (zoom == None):
+			zoom = False
 		if (size == None):
 			raise ValueError("ERROR: size cannot be empty.")
 		if ((type(size) == tuple) or (type(size) == list)):
@@ -108,11 +113,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		else:
 			resizeWidth, resizeHeight = size[0], size[1]
 			if (resizeWidth == 0 or resizeHeight == 0):
-				raise ValueError("ERROR: Neither width nor height in size can be 0.")
+				raise ValueError("ERROR: No values of size can be 0.")
 		if (interpolationMethod == None):
 			interpolationMethod = 2
 		# Local variables
 		height, width, depth = frame.shape
+		if (zoom):
+			if ((size[0] > 2) or (size[1] > 2)):
+				raise Exception("ERROR: A maximum zoom of 2 is allowed for the scale transformation.")
+			size = (int(size[0] * width), int(size[1] * height))
+			resizeWidth, resizeHeight = size[0], size[1]
 		reduY = height / resizeHeight
 		reduX = width / resizeWidth
 		# Scale image
@@ -124,10 +134,11 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			ix, iy, x, y = boundingBoxes[i]
 			# Update values with the resizing factor
 			ix, iy, x, y = ix // reduX, iy // reduY, x // reduX, y // reduY
+			ix, iy, x, y = [i for i in map(int, [ix, iy, x, y])]
 			# Check variables are not the same as the right and bottom boundaries
 			x, y = BoundingBoxAugmenters.checkBoundaries(x, y, width, height)
 			# Update list
-			newBoundingBoxes.append([i for i in map(int, [ix, iy, x, y])])
+			newBoundingBoxes.append([ix, iy, x, y])
 		# Return values
 		return frame, newBoundingBoxes
 

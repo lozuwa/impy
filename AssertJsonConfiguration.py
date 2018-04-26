@@ -21,6 +21,44 @@ class AssertJsonConfiguration():
 		self.file = json.load(f)
 		f.close()
 
+	def isValidBoundingBoxAugmentation(self, augmentation = None):
+		"""
+		Asserts that augmentation is a valid bounding box augmentation supported by the library.
+		Args:
+			augmentation: A string that contains an augmentation type.
+		Returns:
+			A boolean that if true means the augmentation type is valid, 
+			otherwise it is false.
+		"""
+		# Assertions
+		if (augmentation == None):
+			raise ValueError("ERROR: augmentation parameter cannot be empty." +\
+											" Report this problem.")
+		# Logic
+		if (augmentation in confs.methodsBndbxs):
+			return True
+		else:
+			return False
+
+	def isValidColorAugmentation(self, augmentation = None):
+		"""
+		Asserts that augmentation is a valid color augmentation supported by the library.
+		Args:
+			augmentation: A string that contains an augmentation type.
+		Returns:
+			A boolean that if true means the augmentation type is valid, 
+			otherwise it is false.
+		"""
+		# Assertions
+		if (augmentation == None):
+			raise ValueError("ERROR: augmentation parameter cannot be empty." +\
+											" Report this problem.")
+		# Logic
+		if (augmentation in confs.methodsColor):
+			return True
+		else:
+			return False
+
 	def runAllAssertions(self):
 		# Get keys
 		keys = [i for i in self.file.keys()]
@@ -30,7 +68,7 @@ class AssertJsonConfiguration():
 		rGeometric = self.isGeometricConfFile(keys = keys)
 		rColor = self.isColorConfFile(keys = keys)
 		rMultiple = self.isMultipleConfFile(keys = keys)
-		# Return type of augmentation
+		# Return type of augmentation.
 		if (rBndbx):
 			return 0
 		elif (rGeometric):

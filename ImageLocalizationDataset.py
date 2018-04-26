@@ -473,7 +473,7 @@ class ImageLocalizationDataset(object):
 		data = json.load(f)
 		f.close()
 		# Iterate over the images.
-		for img in tqdm(os.listdir(self.imagesDirectory)[:1]):
+		for img in tqdm(os.listdir(self.imagesDirectory)):
 			# Get the extension
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
@@ -499,6 +499,8 @@ class ImageLocalizationDataset(object):
 						for k in range(len(data["bounding_box_augmenters"][i])):
 							# Extract information
 							augmentationType = list(data["bounding_box_augmenters"][i][k].keys())[0]
+							if (not jsonConf.isValidBoundingBoxAugmentation(augmentation = augmentationType)):
+								raise Exception("ERROR: {} is not valid.".format(augmentationType))
 							parameters = data["bounding_box_augmenters"][i][k][augmentationType]
 							# Save?
 							saveParameter = self.extractSavingParameter(parameters = parameters)
@@ -549,6 +551,8 @@ class ImageLocalizationDataset(object):
 						for k in range(len(data["image_color_augmenters"][i])):
 							# Extract information
 							augmentationType = list(data["image_color_augmenters"][i][k].keys())[0]
+							if (not jsonConf.isValidColorAugmentation(augmentation = augmentationType)):
+								raise Exception("ERROR: {} is not valid.".format(augmentationType))
 							parameters = data["image_color_augmenters"][i][k][augmentationType]
 							# Save?
 							saveParameter = self.extractSavingParameter(parameters = parameters)
@@ -583,8 +587,14 @@ class ImageLocalizationDataset(object):
 														output_image_directory = outputImageDirectory,
 														output_annotation_directory = outputAnnotationDirectory)
 			elif (typeAugmentation == 3):
+				# Assert sequential follows multiple_image_augmentations
+				if (not ("Sequential" in data["multiple_image_augmentations"])):
+					raise Exception("ERROR: Data after multiple_image_augmentations is not recognized.")
 				# Multiple augmentation configurations, get a list of hash maps of all the confs.
 				list_of_augmenters_confs = data["multiple_image_augmentations"]["Sequential"]
+				# Assert list_of_augmenters_confs is a list
+				if (not (type(list_of_augmenters_confs) == list)):
+					raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential] must be a list.")
 				# Prepare data for sequence.
 				frame = cv2.imread(imgFullPath)
 				bndboxes = boundingBoxes
@@ -593,13 +603,24 @@ class ImageLocalizationDataset(object):
 					# Get augmenter type ("bounding_box_augmenter" or "color_augmenter") position
 					# in the list of multiple augmentations.
 					augmentationConf = list(list_of_augmenters_confs[k].keys())[0]
+					if (not (jsonConf.isBndBxAugConfFile(keys = [augmentationConf]) or
+							jsonConf.isColorConfFile(keys = [augmentationConf]))):
+						raise Exception("ERROR: {} is not a valid configuration.".format(augmentationConf))
 					# Get sequential information from there. This information is a list of 
 					# the types of augmenters that belong to augmentationConf.
 					list_of_augmenters_confs_types = list_of_augmenters_confs[k][augmentationConf]["Sequential"]
+					# Assert list_of_augmenters_confs is a list
+					if (not (type(list_of_augmenters_confs_types) == list)):
+						raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential][{}][Sequential] must be a list."\
+														.format(augmentationConf))
 					# Iterate over augmenters inside sequential of type.
 					for l in range(len(list_of_augmenters_confs_types)):
 						# Get augmentation type and its parameters.
 						augmentationType = list(list_of_augmenters_confs_types[l].keys())[0]
+						# Assert augmentation is valid.
+						if (not (jsonConf.isValidBoundingBoxAugmentation(augmentation = augmentationType) or
+										jsonConf.isValidColorAugmentation(augmentation = augmentationType))):
+							raise Exception("ERROR: {} is not valid.".format(augmentationType))
 						parameters = list_of_augmenters_confs_types[l][augmentationType]
 						# Save?
 						saveParameter = self.extractSavingParameter(parameters = parameters)            
@@ -681,22 +702,37 @@ class ImageLocalizationDataset(object):
 		# Logic
 		if (augmentationType == "scale"):
 			# Apply scaling
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: Scale requires parameter size.")
+			if (not ("zoom" in parameters)):
+				raise Exception("ERROR: Scale requires parameter zoom.")
+			if (not ("interpolationMethod" in parameters)):
+				raise Exception("ERROR: Scale requires parameter interpolationMethod.")
 			frame, bndboxes = bndboxAugmenter.scale(frame = frame,
 										boundingBoxes = boundingBoxes,
 										size = parameters["size"],
+										zoom = parameters["zoom"],
 										interpolationMethod = parameters["interpolationMethod"])
 		elif (augmentationType == "crop"):
 			# Apply crop
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: Crop requires parameter size.")
 			bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
 										size = parameters["size"])
 		elif (augmentationType == "pad"):
 			# Apply pad
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: Pad requires parameter size.")
 			bndboxes = bndboxAugmenter.pad(boundingBoxes = boundingBoxes,
 																		frameHeight = frame.shape[0],
 																		frameWidth = frame.shape[1],
 																		size = parameters["size"])
 		elif (augmentationType == "jitterBoxes"):
 			# Apply jitter boxes
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: JitterBoxes requires parameter size.")
+			if (not ("quantity" in parameters)):
+				raise Exception("ERROR: JitterBoxes requires parameter quantity.")
 			frame = bndboxAugmenter.jitterBoxes(frame = frame,
 																					boundingBoxes = boundingBoxes,
 																					size = parameters["size"],
@@ -711,11 +747,17 @@ class ImageLocalizationDataset(object):
 																					boundingBoxes = boundingBoxes)
 		elif (augmentationType == "rotation"):
 			# Apply rotation
+			if (not ("theta" in parameters)):
+				raise Exception("ERROR: Rotation requires parameter theta.")
 			frame = bndboxAugmenter.rotation(frame = frame,
 																				boundingBoxes = boundingBoxes,
 																				theta = parameters["theta"])
 		elif (augmentationType == "dropout"):
 			# Apply dropout
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: Dropout requires parameter size.")
+			if (not ("threshold" in parameters)):
+				raise Exception("ERROR: Dropout requires parameter threshold.")
 			frame = bndboxAugmenter.dropout(frame = frame,
 																		boundingBoxes = boundingBoxes,
 																		size = parameters["size"],

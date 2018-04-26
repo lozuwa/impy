@@ -10,7 +10,7 @@ from interface import Interface
 
 class BoundingBoxAugmentersMethods(Interface):
 	
-	def scale(self, frame = None, boundingBoxes = None, size = None, interpolationMethod = None):
+	def scale(self, frame = None, boundingBoxes = None, size = None, zoom = None, interpolationMethod = None):
 		"""
 		Scales an image with its bounding boxes to another size while maintaing the 
 		coordinates of the bounding boxes.
@@ -19,6 +19,7 @@ class BoundingBoxAugmentersMethods(Interface):
 			boundingBoxes: A list of lists that contains the coordinates of the bounding
 											boxes that are part of the image.
 			size: A tuple that contains the resizing values.
+			zoom: A boolean that defines if scaling will be executed as zoom.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
 														INTER_LINEAR -> 1, 

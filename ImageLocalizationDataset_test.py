@@ -20,8 +20,6 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def tearDown(self):
 		pass
 
-	def test
-
 	def test_reduceDatasetByRois(self):
 		outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
 		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
