@@ -66,25 +66,27 @@ if __mame__ == "__main__":
 
 <p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
 
-![Alt text](static/cars31.jpg?raw=true "Image reduced by ROIs.") {width: 200px; height: 200px;}
+<img src="static//cars31.png" alt="cars" height="42" width="42"></img>
 
-![Alt text](static/cars32.jpg?raw=true "Image reduced by ROIs." =200x200)
+![Alt text](static/cars31.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars33.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars32.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars34.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars33.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars35.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars34.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars36.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars35.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars37.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars36.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars38.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars37.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars39.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars38.png?raw=true "Image reduced by ROIs.")
 
-![Alt text](static/cars40.jpg?raw=true "Image reduced by ROIs.")
+![Alt text](static/cars39.png?raw=true "Image reduced by ROIs.")
+
+![Alt text](static/cars40.png?raw=true "Image reduced by ROIs.")
 
 <p>As you can see the annotations have been maintained and small crops of the big image are now available. Our problem is solved.</p>
 
