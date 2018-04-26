@@ -111,7 +111,10 @@ class ImagePreprocessing(object):
 			offsetX = 10
 		else:
 			offsetX = offset - RoiX
-		# print(offsetX, offsetY)
+		# Debugging
+		# print("\nBunding box ROIs: ", RoiX, RoiY)
+		# print("xmin {}, ymin {}, xmax {}, ymax {}".format(xmin, ymin, xmax, ymax))
+		# print("Offsets (X, Y): ", offsetX, offsetY)
 		# Determine space on x.
 		# Put bounding boxes in the center.
 		offsetXLeft = offsetX // 2
@@ -122,18 +125,15 @@ class ImagePreprocessing(object):
 		# Determine space on y.
 		offsetYTop = offsetY - offsetY //2
 		offsetYBottom = offsetY - offsetYTop
-		# Debug
-		# print("\n")
-		# print("Size x: {}, Size y: {}".format(RoiX, RoiY))
-		# print("xmin {}, ymin {}, xmax {}, ymax {}".format(xmin, ymin, xmax, ymax))
-		# print("Offsets x: ", offsetXLeft, offsetXRight)
-		# print("Offsets y: ", offsetYTop, offsetYBottom)
-		# print("\n")
 		# Add space on X.
 		# If there is not enough space on the left.
 		if ((xmin - offsetXLeft) < 0):
 			# Crop at origin. 
 			RoiXMin = 0
+			# Space that can be used in the top.
+			availableSpaceLeft = xmin
+			# Subtract the available space from offsetXRight to maintain our size.
+			offsetXLeft = offsetXLeft - availableSpaceLeft
 			# Determine if there is space on the right to compensate.
 			if ((xmax + offsetXLeft + offsetXRight) < frameWidth):
 				RoiXMax = xmax + offsetXLeft + offsetXRight
@@ -164,6 +164,10 @@ class ImagePreprocessing(object):
 			# If there is not space on the right.
 			else:
 				RoiXMax = frameWidth
+				# Space that can be used on the right.
+				availableSpaceRight = frameWidth - xmax
+				# Subtract the available space from offsetXRight to maintain our size.
+				offsetXRight = offsetXRight - availableSpaceRight
 				# Check if we can compensate on the left.
 				if ((xmin - offsetXLeft - offsetXRight) > 0):
 					RoiXMin = xmin - offsetXLeft - offsetXRight
@@ -172,12 +176,15 @@ class ImagePreprocessing(object):
 				# If we cannot compensate then leave it.
 				else:
 					pass
-
 		# Add space on y.
 		# If there is enough not enough space in the top.
 		if ((ymin - offsetYTop) < 0):
 			# Crop at origin.
 			RoiYMin = 0
+			# Space that can be used in the top.
+			availableSpaceTop = ymin
+			# Subtract the available space from offsetYTop to maintain our size.
+			offsetYTop = offsetYTop - availableSpaceTop
 			# Determine if there is space in the bottom to compensate.
 			if ((ymax + offsetYTop + offsetYBottom) < frameHeight):
 				RoiYMax = ymax + offsetYTop + offsetYBottom
@@ -207,6 +214,10 @@ class ImagePreprocessing(object):
 			# There is not enough space in the bottom.
 			else:
 				RoiYMax = frameHeight
+				# Space that can be used on the bottom.
+				availableSpaceBottom = frameHeight - ymax
+				# Subtract the available space from offsetYBottom to maintain our size.
+				offsetYBottom = offsetYBottom - availableSpaceBottom
 				# Check if we can compensate in the top.
 				if ((ymin - offsetYTop - offsetYBottom) > 0):
 					RoiYMin = ymin - offsetYTop - offsetYBottom
@@ -215,7 +226,8 @@ class ImagePreprocessing(object):
 				# If there is not enough space, then leave it.
 				else:
 					pass
-
+		# print("Output Rois: ", RoiXMin, RoiYMin, RoiXMax, RoiYMax)
+		# print("Size (X,Y):", (RoiXMax-RoiXMin), (RoiYMax-RoiYMin), "\n")
 		# Assertions.
 		# if ((RoiXMax-RoiXMin) < offset-100):
 		# 	raise ValueError("Cropping frame {} is much smaller than offset {} in x."\
