@@ -204,9 +204,9 @@ class ImageLocalizationDataset(object):
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
 												 " Only jpgs and pngs are allowed.")
-			# Extract name
+			# Extract name.
 			filename = os.path.split(file)[1].split(extension)[0]
-			# Create xml and img name
+			# Create xml and img name.
 			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
 			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			# Create an object of ImageAnnotation.
@@ -940,8 +940,8 @@ class ImageLocalizationDataset(object):
 		for name, coordinate in zip(names, bounding_boxes):
 			object_ = ET.SubElement(annotation, "object")
 			ET.SubElement(object_, "name").text = str(name)
-			# ET.SubElement(object_, "pose").text = "Unspecified"
-			# ET.SubElement(object_, "truncated").text = "0"
+			ET.SubElement(object_, "pose").text = "Unspecified"
+			ET.SubElement(object_, "truncated").text = "0"
 			ET.SubElement(object_, "difficult").text = "0"
 			bndbox = ET.SubElement(object_, "bndbox")
 			xmin, ymin, xmax, ymax = coordinate
