@@ -25,10 +25,10 @@
 
 <h1 id="#tutorial">Tutorial</h1>
 <p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to tackle problems you might find while working on Computer Vision and Deep Learning. </p>
-<p>We are going to work with the following mini-dataset of cars and pedestrians. The images have xml annotations that contain the coordinates of the bounding boxes that enclose the cars and pedestrians in the images.</p>
+<p>We are going to work with a mini-dataset of cars and pedestrians (available at tests/cars_dataset/). This dataset has object annotations that make it suitable to solve a localization problem. </p>
 
-<!-- <img src="tests/cars_dataset/images/cars0.png" alt="cars_dataset" height="42" width="42"></img> -->
-![Alt text](static/cars0.png?raw=true "Car's mini dataset")
+<!-- ![Alt text](static/cars0.png?raw=true "Car's mini dataset") -->
+<!-- <img src="static//cars3.png" alt="cars" height="600" width="800"></img> -->
 
 <h2>Object localization</h2>
 <p>In this section we are going to solve problems related with object localization.</p>
@@ -36,10 +36,10 @@
 <p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
 
 <!-- ![Alt text](static/cars3.png?raw=true "Example of big image.") -->
-<img src="static//cars3.png" alt="cars" height="600" width="800"></img>
+<img src="static//cars1.png" alt="cars" height="600" width="800"></img>
 
-<p>This image's size is 2560x1600. It is too big for training, it will lower the size of your mini-batch hyperparameter or simply your computer will not have enough memory for it.</p>
-<p>In order to solve this problem and make training feasable, we are going to crop ROIs of the image to decrease its size. In my case, images of 1032x1032 pixels are small enough for training. Let's see how to do this with impy. </p>
+<p>The size of this image is 3840x2160. It is too big for training. Most likely, your computer will run out of memory. In order to try to solve the big image problem, we could reduce the size of the mini-batch hyperparameter. But if the image is too big it would still not work. We could also try to reduce the size of the image. But that means the image losses quality and you would need to label the image again. </p>
+<p>Instead of hacking the problem, we are going to sample crops of the image that contain bounding boxes and create smaller images. So the quality of your images will not change and you will maintain the bounding boxes. Images of 1032x1032 pixels are usually good enough. Let's see how to do this with impy. </p>
 
 ```python
 from impy.ImageLocalizationDataset import *
@@ -67,38 +67,19 @@ if __mame__ == "__main__":
 
 <p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
 
-<img src="static//cars31.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars32.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars33.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars34.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars35.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars36.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars37.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars38.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars39.png" alt="cars" height="300" width="300"></img>
-<img src="static//cars40.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars11.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars12.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars13.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars14.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars15.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars16.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars17.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars18.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars19.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars20.png" alt="cars" height="300" width="300"></img>
+<img src="static//cars21.png" alt="cars" height="300" width="300"></img>
 
-<!-- ![Alt text](static/cars31.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars32.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars33.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars34.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars35.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars36.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars37.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars38.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars39.png?raw=true "Image reduced by ROIs.")
-
-![Alt text](static/cars40.png?raw=true "Image reduced by ROIs.") -->
-
-<p>As you can see the annotations have been maintained and small crops of the big image are now available. Our problem is solved.</p>
+<p>As you can see the bounding boxes have been maintained and small crops of the big image are now available. We can use this images for training and our problem is solved.</p>
 
 <h3>Data augmentation for bounding boxes</h3>
 <p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make a custom script. But with impy we can make it easier.</p>
@@ -114,8 +95,10 @@ if __mame__ == "__main__":
 					"Sequential": [
 						{
 							"sharpening": {
-								"weight": 0.2,
-								"save": true
+								"weight": 2.0,
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
 							}
 						}
 					]
@@ -129,12 +112,16 @@ if __mame__ == "__main__":
 								"size": [1.2, 1.2],
 								"zoom": true,
 								"interpolationMethod": 1,
-								"save": false
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
 							}
 						},
 						{
 							"verticalFlip": {
-								"save": true
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": true
 							}
 						}
 					]
@@ -146,7 +133,9 @@ if __mame__ == "__main__":
 						{
 							"histogramEqualization":{
 								"equalizationType": 1,
-								"save": true
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
 							}
 						}
 					]
@@ -157,13 +146,17 @@ if __mame__ == "__main__":
 					"Sequential": [
 						{
 							"horizontalFlip": {
-								"save": true
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
 							}
 						},
 						{
 							"crop": {
 								"size": [0.7, 0.9],
-								"save": true
+								"save": true,
+								"restartFrame": true,
+								"randomEvent": false
 							}
 						}
 					]
@@ -213,15 +206,15 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
-<img src="static//cars3sharp.jpg" alt="Sharpened" height="300" width="500"></img>
-<img src="static//cars3vertFlip.jpg" alt="Vertical flip" height="300" width="500"></img>
-<img src="static//cars3histEq.jpg" alt="Histogram equalization" height="300" width="500"></img>
-<img src="static//cars3horFlip.jpg" alt="Horizontal flip" height="300" width="500"></img>
-<img src="static//cars3crop.jpg" alt="Crop" height="300" width="500"></img>
+<img src="static//carsShar.png" alt="Sharpened" height="300" width="500"></img>
 
-<!-- ![Alt text](static/cars3sharp.jpg?raw=true "Sharpened.")
-![Alt text](static/cars3vertFlip.jpg?raw=true "Vertical flip.")
-![Alt text](static/cars3histEq.jpg?raw=true "Histogram equalization.")
-![Alt text](static/cars3horFlip.jpg?raw=true "Horizontal flip.")
-![Alt text](static/cars3crop.jpg?raw=true "Crop.")
- -->
+<img src="static//carsSc.png" alt="Vertical flip" height="300" width="500"></img>
+
+<img src="static//carsVert.png" alt="Crop" height="300" width="500"></img>
+
+<img src="static//carsHist.png" alt="Histogram equalization" height="300" width="500"></img>
+
+<img src="static//carsHor.png" alt="Horizontal flip" height="300" width="500"></img>
+
+<img src="static//carsCrop.png" alt="Crop" height="300" width="500"></img>
+
