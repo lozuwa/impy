@@ -22,7 +22,7 @@ class ColorAugmenters_test(unittest.TestCase):
 		self.augmenter = ColorAugmenters()
 		# Testing options
 		self.visualize = True
-		self.waitTime = 1000
+		self.waitTime = 50000
 		self.windowSize = (800, 800)
 
 	def tearDown(self):
@@ -33,7 +33,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.invertColor(frame = self.frame,
 																					CSpace = [True, True, True])
 			cv2.namedWindow("__invertColor__", 0)
-			cv2.resizeWindow("__invertColor__", self.windowSize)
+			# cv2.resizeWindow("__invertColor__", self.windowSize)
 			cv2.imshow("__invertColor__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -44,7 +44,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.histogramEqualization(frame = self.frame,
 																									equalizationType = 0)
 			cv2.namedWindow("__equalizationType__", 0)
-			cv2.resizeWindow("__equalizationType__", self.windowSize);
+			# cv2.resizeWindow("__equalizationType__", self.windowSize);
 			cv2.imshow("__equalizationType__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -52,7 +52,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.histogramEqualization(frame = self.frame,
 																									equalizationType = 1)
 			cv2.namedWindow("__equalizationType__", 0)
-			cv2.resizeWindow("__equalizationType__", self.windowSize);
+			# cv2.resizeWindow("__equalizationType__", self.windowSize);
 			cv2.imshow("__equalizationType__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -62,7 +62,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.changeBrightness(frame = self.frame,
 																							coefficient = 0.5)
 			cv2.namedWindow("__changeBrightness__", 0)
-			cv2.resizeWindow("__changeBrightness__", self.windowSize);
+			# cv2.resizeWindow("__changeBrightness__", self.windowSize);
 			cv2.imshow("__changeBrightness__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -70,9 +70,9 @@ class ColorAugmenters_test(unittest.TestCase):
 	def test_sharpening(self):
 		if (self.visualize):
 			frame = self.augmenter.sharpening(frame = self.frame,
-																					weight = 0.3)		
+																					weight = 2.0)
 			cv2.namedWindow("__sharpening__", 0)
-			cv2.resizeWindow("__sharpening__", self.windowSize);
+			# cv2.resizeWindow("__sharpening__", self.windowSize);
 			cv2.imshow("__sharpening__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -82,7 +82,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.addGaussianNoise(frame = self.frame,
 																							coefficient = 0.5)
 			cv2.namedWindow("__addGaussianNoise__", 0)
-			cv2.resizeWindow("__addGaussianNoise__", self.windowSize);
+			# cv2.resizeWindow("__addGaussianNoise__", self.windowSize);
 			cv2.imshow("__addGaussianNoise__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -92,7 +92,7 @@ class ColorAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.gaussianBlur(frame = self.frame,
 																					sigma = 0.5)
 			cv2.namedWindow("__gaussianBlur__", 0)
-			cv2.resizeWindow("__gaussianBlur__", self.windowSize);
+			# cv2.resizeWindow("__gaussianBlur__", self.windowSize);
 			cv2.imshow("__gaussianBlur__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -101,7 +101,7 @@ class ColorAugmenters_test(unittest.TestCase):
 		if (self.visualize):
 			frame = self.augmenter.shiftColors(frame = self.frame)
 			cv2.namedWindow("__shiftColors__", 0)
-			cv2.resizeWindow("__shiftColors__", self.windowSize);
+			# cv2.resizeWindow("__shiftColors__", self.windowSize);
 			cv2.imshow("__shiftColors__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -111,7 +111,7 @@ class ColorAugmenters_test(unittest.TestCase):
 	# 		frame = self.augmenter.fancyPCA(frame = self.frame)
 	# 		# cv2.imwrite("/home/pfm/Downloads/fff.jpg", frame)
 	# 		cv2.namedWindow("__fancyPCA__", 0)
-	# 		cv2.resizeWindow("__fancyPCA__", self.windowSize);
+	# 		# cv2.resizeWindow("__fancyPCA__", self.windowSize);
 	# 		cv2.imshow("__fancyPCA__", frame)
 	# 		cv2.waitKey(self.waitTime)
 	# 		cv2.destroyAllWindows()

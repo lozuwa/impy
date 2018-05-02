@@ -7,6 +7,7 @@ useful operations with it.
 import os
 import json
 import math
+import numpy as np
 from tqdm import tqdm
 try:
 	from .ImagePreprocessing import *
@@ -93,7 +94,7 @@ class ImageLocalizationDataset(object):
 		images = []
 		annotations = []
 		# Preprocess images.
-		for image in os.listdir(self.imagesDirectory):
+		for image in tqdm(os.listdir(self.imagesDirectory)):
 			# Extract name.
 			extension = Util.detect_file_extension(filename = image)
 			if (extension == None):
@@ -101,20 +102,22 @@ class ImageLocalizationDataset(object):
 												 " Only jpgs and pngs are allowed.")
 			images.append(image.split(extension)[0])
 		# Preprocess annotations.
-		for annotation in os.listdir(self.annotationsDirectory):
+		for annotation in tqdm(os.listdir(self.annotationsDirectory)):
 			if (not annotation.endswith(".xml")):
 				raise Exception("ERROR: Only xml annotations are allowed: {}".format(annotation))
 			annotations.append(annotation.split(".xml")[0])
 		# Convert lists to sets.
 		imagesSet = set(images)
 		annotationsSet = set(annotations)
-		# Check size consistency.
-		if (len(imagesSet) != len(annotationsSet)):
-			raise Exception("ERROR: The amount of images({}) and annotations({}) is not equal."\
-											.format(imagesSet, annotationsSet))
 		# Check name consistency.
 		imgToAnnt = imagesSet.difference(annotationsSet)
 		anntToImg = annotationsSet.difference(imagesSet)
+		# Check size consistency.
+		if (len(imagesSet) != len(annotationsSet)):
+			print("Images to annotations: ", imgToAnnt)
+			print("Annotations to images: ", anntToImg)
+			raise Exception("ERROR: The amount of images({}) and annotations({}) is not equal."\
+											.format(len(imagesSet), len(annotationsSet)))
 		if (len(imgToAnnt) != 0):
 			raise Exception("ERROR: There are more images than annotations: {}".format(imgToAnnt))
 		if (len(anntToImg) != 0):
@@ -138,7 +141,7 @@ class ImageLocalizationDataset(object):
 		emptyAnnotations = []
 		files = os.listdir(self.imagesDirectory)
 		# Logic
-		for file in files:
+		for file in tqdm(files):
 			extension = Util.detect_file_extension(filename = file)
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
@@ -196,7 +199,7 @@ class ImageLocalizationDataset(object):
 		heights = []
 		boundingBoxesLists = []
 		# Logic
-		for file in files:
+		for file in tqdm(files):
 			extension = Util.detect_file_extension(filename = file)
 			if (extension == None):
 				raise Exception("ERROR: Your image extension is not valid: {}".format(extension) +\
@@ -341,7 +344,7 @@ class ImageLocalizationDataset(object):
 			raise ValueError("ERROR: Output annotation directory does not exist.")
 		# Load image annotation.
 		annotation = ImageAnnotation(path = annotationPath)
-		width, height, depth = annotation.propertySize
+		height, width, depth = annotation.propertySize
 		names = annotation.propertyNames
 		objects = annotation.propertyObjects
 		boundingBoxes = annotation.propertyBoundingBoxes
@@ -386,33 +389,38 @@ class ImageLocalizationDataset(object):
 																offset = offset)
 				# Find the annotations that can be included in the allowed image space.
 				for j in range(len(annotations)):
-					# Get bounding box
+					# Get bounding box.
 					ix, iy, x, y = annotations[j].propertyBndbox
 					# Check current bounding box is inside the allowed space.
 					if ((ix >= RoiXMin) and (x <= RoiXMax)) and \
 							((iy >= RoiYMin) and (y <= RoiYMax)):
-							# Disable point from being a core point. Check it is not the current point of reference.
+							# Disable point from being a core point. Check it is not the 
+							# current point of reference.
 							if (not (annotations[i].propertyBndbox == annotations[j].propertyBndbox)):
 								annotations[j].propertyCorePoint = False
 				# Include the corresponding bounding boxes in the region of interest.
-				newBoundingBoxes,\
+				newBoundingBoxes, \
 				newNames = prep.includeBoundingBoxes(edges = [RoiXMin, RoiYMin, RoiXMax, RoiYMax],
 																						boundingBoxes = boundingBoxes,
 																						names = names)
+				if (len(newBoundingBoxes) == 0):
+					print(boundingBoxes)
+					print(RoiXMin, RoiYMin, RoiXMax, RoiYMax)
+					raise Exception("ERROR: No bounding boxes: {}. Please report this problem.".format(imagePath))
 				# Read image
 				frame = cv2.imread(imagePath)
 				# Save image
 				ImageLocalizationDataset.save_img_and_xml(frame = frame[RoiYMin:RoiYMax,\
 																															RoiXMin:RoiXMax, :],
-											bndboxes = newBoundingBoxes, #bdxs,
-											names = newNames, #annotations[i].propertyOtherAnnotationName,
+											bndboxes = newBoundingBoxes,
+											names = newNames,
 											database_name = self.databaseName,
 											data_augmentation_type = "Unspecified",
 											origin_information = imagePath,
 											output_image_directory = outputImageDirectory,
 											output_annotation_directory = outputAnnotationDirectory)
 
-	def applyDataAugmentation(self, configurationFile = None, outputImageDirectory = None, outputAnnotationDirectory = None):
+	def applyDataAugmentation(self, configurationFile = None, outputImageDirectory = None, outputAnnotationDirectory = None, threshold = None):
 		"""
 		Applies one or multiple data augmentation methods to the dataset.
 		Args:
@@ -422,6 +430,7 @@ class ImageLocalizationDataset(object):
 														images will be saved.
 			outputAnnotationDirectory: A string that contains the path the directory where
 																annotations will be saved.
+			threshold: A float that contains a number between 0 and 1.
 		Returns:
 			None
 		"""
@@ -449,6 +458,13 @@ class ImageLocalizationDataset(object):
 		if (not (os.path.isdir(outputAnnotationDirectory))):
 			raise Exception("ERROR: Path to output annotation directory does not exist. {}"\
 											.format(outputAnnotationDirectory))
+		if (threshold == None):
+			threshold = 0.5
+		if (type(threshold) != float):
+			raise TyperError("ERROR: threshold parameter must be of type float.")
+		if ((threshold > 1) or (threshold < 0)):
+			raise ValueError("ERROR: threshold paramater should be a number between" +\
+												" 0-1.")
 		# Load configuration data.
 		f = open(configurationFile)
 		data = json.load(f)
@@ -604,40 +620,40 @@ class ImageLocalizationDataset(object):
 							raise Exception("ERROR: {} is not valid.".format(augmentationType))
 						parameters = list_of_augmenters_confs_types[l][augmentationType]
 						# Save?
-						saveParameter = self.extractSavingParameter(parameters = parameters)            
+						saveParameter = self.extractSavingParameter(parameters = parameters)
+						# Restart frame to original?
+						restartFrameParameter = self.extractRestartFrameParameter(parameters = parameters)
+						# Probability of augmentation happening.
+						randomEvent = self.randomEvent(parameters = parameters, threshold = threshold)
 						# print(augmentationType, parameters)
 						# Apply augmentation
 						if (augmentationConf == "image_color_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
-							frame = self.__applyColorAugmentation__(frame = frame,
+							if (randomEvent == True):
+								frame = self.__applyColorAugmentation__(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
-							# Save frame
-							if (saveParameter == True):
-								ImageLocalizationDataset.save_img_and_xml(frame = frame,
-															bndboxes = bndboxes,
-															names = names,
-															database_name = self.databaseName,
-															data_augmentation_type = augmentationType,
-															origin_information = imgFullPath,
-															output_image_directory = outputImageDirectory,
-															output_annotation_directory = outputAnnotationDirectory)
 						elif (augmentationConf == "bounding_box_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
-							frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
+							if (randomEvent == True):
+								frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
 																					boundingBoxes = bndboxes,
 																					augmentationType = augmentationType, #j,
 																					parameters = parameters)
-							# Save frame
-							if (saveParameter == True):
-								ImageLocalizationDataset.save_img_and_xml(frame = frame,
-															bndboxes = bndboxes,
-															names = names,
-															database_name = self.databaseName,
-															data_augmentation_type = augmentationType,
-															origin_information = imgFullPath,
-															output_image_directory = outputImageDirectory,
-															output_annotation_directory = outputAnnotationDirectory)
+						# Save?
+						if ((saveParameter == True) and (randomEvent == True)):
+							ImageLocalizationDataset.save_img_and_xml(frame = frame,
+								bndboxes = bndboxes,
+								names = names,
+								database_name = self.databaseName,
+								data_augmentation_type = augmentationType,
+								origin_information = imgFullPath,
+								output_image_directory = outputImageDirectory,
+								output_annotation_directory = outputAnnotationDirectory)
+						# Restart frame?
+						if (restartFrameParameter == True):
+							frame = cv2.imread(imgFullPath)
+							bndboxes = boundingBoxes
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
 
@@ -649,10 +665,50 @@ class ImageLocalizationDataset(object):
 		Returns:
 			A boolean that contains the response of "save".
 		"""
-		if ("save" in parameters):      
+		if ("save" in parameters):
+			if (type(parameters["save"]) != bool):
+				raise TyperError("ERROR: Save parameter must be of type bool.")
 			return parameters["save"]
 		else:
 			return False
+
+	def extractRestartFrameParameter(self, parameters = None):
+		"""
+		Extracts the "restartFrame" parameter from a dictionary.
+		Args:
+			parameters: A dictionary.
+		Returns:
+			A boolean that contains the response of "restartFrame".
+		"""
+		if ("restartFrame" in parameters):
+			if (type(parameters["restartFrame"]) != bool):
+				raise TyperError("ERROR: Restart frame must be of type bool.")
+			return parameters["restartFrame"]
+		else:
+			return False
+
+	def randomEvent(self, parameters = None, threshold = None):
+		"""
+		Extracts the "randomEvent" parameter from a dictionary.
+		Args:
+			parameters: A dictionary.
+			threshold: A float.
+		Returns:
+			A boolean that if true means the event should be executed.
+		"""
+		if ("randomEvent" in parameters):
+			# Assert type.
+			if (type(parameters["randomEvent"]) != bool):
+				raise TyperError("ERROR: Random event must be of type bool.")
+			# Check the value of randomEvent.
+			if (parameters["randomEvent"] == True):
+				activate = np.random.rand() > threshold
+				# print(activate)
+				return activate
+			else:
+				return True
+		else:
+			return True
 
 	def __applyColorAugmentation__(self, frame = None, augmentationType = None, parameters = None):
 		# Logic
@@ -729,10 +785,13 @@ class ImageLocalizationDataset(object):
 		elif (augmentationType == "rotation"):
 			# Apply rotation
 			if (not ("theta" in parameters)):
-				raise Exception("ERROR: Rotation requires parameter theta.")
+				theta = None
+				#raise Exception("ERROR: Rotation requires parameter theta.")
+			else:
+				theta = parameters["theta"]
 			frame = bndboxAugmenter.rotation(frame = frame,
 																				boundingBoxes = boundingBoxes,
-																				theta = parameters["theta"])
+																				theta = theta)
 		elif (augmentationType == "dropout"):
 			# Apply dropout
 			if (not ("size" in parameters)):
@@ -750,13 +809,13 @@ class ImageLocalizationDataset(object):
 		"""
 		Saves an image and its annotation.
 		Args:
-			database_name: A string that contains the name of the database.
-			frame_size: A numpy-tensorflow tensor that contains an image.
+			frame: A numpy/tensorflow tensor that contains an image.
 			bndboxes: A list of lists that contains the bounding boxes' coordinates.
 			names: A list of strings that contains the labels of the bounding boxes.
+			database_name: A string that contains the name of the database.
+			data_augmentation_type: A string that contains the type of data augmentation.
 			origin_information: A string that contains information about the file's 
 													origin.
-			data_augmentation_type: A string that contains the type of data augmentation.
 			output_image_directory: A string that contains the path to save the image.
 			output_annotation_directory: A string that contains the path to save the 
 																	image's annotation.
@@ -792,6 +851,8 @@ class ImageLocalizationDataset(object):
 		# Save image
 		img_save_path = os.path.join(output_image_directory, img_name)
 		cv2.imwrite(img_save_path, frame)
+		output_annotation_directory = os.path.join(output_annotation_directory, \
+																							xml_name)
 		# Create and save annotation
 		ImageLocalizationDataset.to_xml(filename = img_name,
 																		path = img_save_path,
@@ -802,6 +863,18 @@ class ImageLocalizationDataset(object):
 																		names = names,
 																		origin = origin_information,
 																		output_directory = output_annotation_directory)
+		# Assert files have been written to disk.
+		if (not os.path.isfile(output_annotation_directory)):
+			print(origin_information)
+			print(img_name)
+			print(xml_name)
+			raise Exception("ERROR: Annotation was not saved. This happens " +\
+											"sometimes when there are dozens of thousands of data " +\
+											"points. Please run the script again and report this problem.")
+		if (not os.path.isfile(img_save_path)):
+			raise Exception("ERROR: Image was not saved. This happens " +\
+								"sometimes when there are dozens of thousands of data " +\
+								"points. Please run the script again and report this problem.")
 
 	@staticmethod
 	def to_xml(filename = None, path = None, database_name = None, frame_size = None, data_augmentation_type = None, bounding_boxes = None, names = None, origin = None, output_directory = None):
@@ -881,7 +954,7 @@ class ImageLocalizationDataset(object):
 		extension = Util.detect_file_extension(filename)
 		if (extension == None):
 			raise Exception("Image's extension not supported {}".format(filename))
-		tree.write(os.path.join(output_directory, filename.split(extension)[0]+".xml"))
+		tree.write(output_directory)
 
 	@staticmethod
 	def save_lists_in_dataframe(columns = None, data = None, output_directory = None):

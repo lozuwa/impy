@@ -210,7 +210,9 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) != list):
 			raise TypeError("ERROR: Bounding box parameter has to be of type list.")
-		if ((type(size) != list) or (type(size) != tuple)):
+		if ((type(size) == list) or (type(size) == tuple)):
+			pass
+		else:
 			raise TypeError("ERROR: Size parameter has to be of type tuple or list.")
 		if (len(size) != 2):
 			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")
@@ -449,6 +451,8 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		if (size == None):
 			raise ValueError("ERROR: Size parameter cannot be empty.")
 		if ((type(size) != list) or (type(size) != tuple)):
+			pass
+		else:
 			raise TypeError("ERROR: Size parameter has to be of type tuple.")
 		if (len(size) != 2):
 			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")

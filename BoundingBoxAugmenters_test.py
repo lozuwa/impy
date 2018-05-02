@@ -90,7 +90,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 				ix, iy, x, y = each
 				scaled_frame = cv2.rectangle(scaled_frame, (ix, iy), (x, y), (0,0,255), 3)
 			cv2.namedWindow("__scaled__", 0)
-			cv2.resizeWindow("__scaled__", self.windowSize);
+			# cv2.resizeWindow("__scaled__", self.windowSize);
 			cv2.imshow("__scaled__", scaled_frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -123,7 +123,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 					ix, iy, x, y = each
 					frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 2)
 				cv2.namedWindow("__crop__", 0)
-				cv2.resizeWindow("__crop__", self.windowSize);
+				# cv2.resizeWindow("__crop__", self.windowSize);
 				cv2.imshow("__crop__", frame)
 				cv2.waitKey(self.waitTime)
 				cv2.destroyAllWindows()
@@ -153,7 +153,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 				ix, iy, x, y = each
 				frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 2)
 			cv2.namedWindow("__padding__", 0)
-			cv2.resizeWindow("__padding__", self.windowSize);
+			# cv2.resizeWindow("__padding__", self.windowSize);
 			cv2.imshow("__padding__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -165,7 +165,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																					size = (20,20),
 																					quantity = 20)
 			cv2.namedWindow("__jitterBoxes__", 0)
-			cv2.resizeWindow("__jitterBoxes__", self.windowSize);
+			# cv2.resizeWindow("__jitterBoxes__", self.windowSize);
 			cv2.imshow("__jitterBoxes__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -177,7 +177,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																						boundingBoxes = self.bndboxes)
 			# Visualization.
 			cv2.namedWindow("__horizontalFlip__", 0)
-			cv2.resizeWindow("__horizontalFlip__", self.windowSize);
+			# cv2.resizeWindow("__horizontalFlip__", self.windowSize);
 			cv2.imshow("__horizontalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -189,7 +189,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																						boundingBoxes = self.bndboxes)
 			# Visualization.
 			cv2.namedWindow("__verticalFlip__", 0)
-			cv2.resizeWindow("__verticalFlip__", self.windowSize);
+			# cv2.resizeWindow("__verticalFlip__", self.windowSize);
 			cv2.imshow("__verticalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -203,7 +203,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 																					theta = theta)
 				theta += 0.3
 				cv2.namedWindow("__rotation__", 0)
-				cv2.resizeWindow("__rotation__", self.windowSize);
+				# cv2.resizeWindow("__rotation__", self.windowSize);
 				cv2.imshow("__rotation__", frame)
 				cv2.waitKey(250)
 				cv2.destroyAllWindows()
@@ -215,7 +215,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 												              size = (25,25),
 												              threshold = 0.5)
 			cv2.namedWindow("__dropout__", 0)
-			cv2.resizeWindow("__dropout__", self.windowSize);
+			# cv2.resizeWindow("__dropout__", self.windowSize);
 			cv2.imshow("__dropout__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()

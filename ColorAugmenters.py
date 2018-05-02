@@ -157,12 +157,23 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
+		if (len(frame.shape) == 3):
+			channels = 3
+		elif (len(frame.shape) == 2):
+			channels = 1
+		else:
+			raise Exception("ERROR: Frame has to be either 1 or 3 channels.")
 		if (coefficient == None):
-			coefficient = np.random.rand()*0.75
+			coefficient = np.random.rand()*2
 		if (type(coefficient) != float):
 			raise TypeError("ERROR: Coefficient parameter has to be of type float.")
 		# Change brightness
-		frame = frame*coefficient
+		if (channels == 3):
+			for i in range(channels):
+				frame[:, :, i] = cv2.multiply(frame[:, :, i], coefficient)
+		elif (channels == 1):
+			frame[:, :] = cv2.multiply(frame[:, :], coefficient)
+		# Force cast in case of overflow
 		if (not (frame.dtype == np.uint8)):
 			print("WARNING: Image is not dtype uint8. Forcing type.")
 			frame = frame.astype(np.uint8)
@@ -170,7 +181,13 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 
 	def sharpening(self, frame = None, weight = None):
 		"""
-		Sharpens an image.
+		Sharpens an image using the following system:
+		frame = I(x, y, d)
+		gray_frame(xi, yi) = sum(I(xi, yi, d) * [0.6, 0.3, 0.1])
+		hff_kernel = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]
+		edges(x, y) = hff_kernel * gray_frame
+		weight = 2.0
+		sharpened(x, y, di) = (edges x weight) + frame(x, y, di)
 		Args:
 			frame: A tensor that contains an image.
 			weight: A float that contains the weight coefficient.
@@ -180,26 +197,34 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
-		if (weight == None):
-			prob = np.random.rand()
-			comp = 1 - prob
-		if (type(weight) != float):
-			raise TypeError("ERROR: ")
+		if (len(frame.shape) == 3):
+			channels = 3
+		elif (len(frame.shape) == 2):
+			channels = 1
 		else:
-				prob = weight
-				comp = 1 - prob
-		# Find edges
-		edges = cv2.Laplacian(frame, cv2.CV_64F)
-		edges = edges.astype(np.uint8)
-		# frame = frame.astype(np.uint8)
-		# Add edges to original frame
-		# print("DEBUG: ", edges.shape, frame.shape)
-		# print("DEBUG: ", edges.dtype, frame.dtype)
-		frameSharpened = cv2.addWeighted(edges, prob, frame, comp, 0)
-		if (not (frameSharpened.dtype == np.uint8)):
+			raise Exception("ERROR: Frame not understood.")
+		if (weight == None):
+			weight = 2.0
+		if (type(weight) != float):
+			raise TypeError("ERROR: Weight has to be a float.")
+		# Local variables
+		hff_kernel = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]])
+		# Logic
+		if (channels == 3):
+			gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+			edges = cv2.filter2D(gray_frame, -1, hff_kernel)
+			edges = cv2.multiply(edges, weight)
+			sharpened = np.zeros(frame.shape, np.uint8)
+			for i in range(channels):
+				sharpened[:, :, i] = cv2.add(frame[:, :, i], edges)
+		else:
+			edges = cv2.filter2D(frame, -1, hff_kernel)
+			edges = cv2.multiply(edges, weight)
+			sharpened[:, :] = cv2.add(frame[:, :], edges)
+		if (not (sharpened.dtype == np.uint8)):
 			print("WARNING: Image is not dtype uint8. Forcing type.")
-			frameSharpened = frameSharpened.astype(np.uint8)
-		return frameSharpened
+			sharpened = sharpened.astype(np.uint8)
+		return sharpened
 
 	def addGaussianNoise(self, frame = None, coefficient = None):
 		"""

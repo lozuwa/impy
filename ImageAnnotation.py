@@ -75,9 +75,9 @@ class ImageAnnotation(object):
 	def getSize(self, root = None):
 		if (root.find("size")):
 			size = root.find("size")
-			height = int(size[0].text)
-			width = int(size[1].text)
-			depth = int(size[2].text)
+			height = int(size.find("height").text)
+			width = int(size.find("width").text)
+			depth = int(size.find("depth").text)
 			return [height, width, depth]
 		else:
 			raise Exception("No size found in {}".format(self.path))
