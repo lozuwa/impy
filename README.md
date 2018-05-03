@@ -24,7 +24,7 @@
 </ol>
 
 <h1 id="#tutorial">Tutorial</h1>
-<p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to tackle problems you might find while working on Computer Vision and Deep Learning. </p>
+<p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to solve common problems that involve both Computer Vision and Deep Learning. </p>
 <p>We are going to work with a mini-dataset of cars and pedestrians (available at tests/cars_dataset/). This dataset has object annotations that make it suitable to solve a localization problem. </p>
 
 <!-- ![Alt text](static/cars0.png?raw=true "Car's mini dataset") -->
@@ -38,8 +38,8 @@
 <!-- ![Alt text](static/cars3.png?raw=true "Example of big image.") -->
 <img src="static//cars1.png" alt="cars" height="600" width="800"></img>
 
-<p>The size of this image is 3840x2160. It is too big for training. Most likely, your computer will run out of memory. In order to try to solve the big image problem, we could reduce the size of the mini-batch hyperparameter. But if the image is too big it would still not work. We could also try to reduce the size of the image. But that means the image losses quality and you would need to label the image again. </p>
-<p>Instead of hacking the problem, we are going to sample crops of the image that contain bounding boxes and create smaller images. So the quality of your images will not change and you will maintain the bounding boxes. Images of 1032x1032 pixels are usually good enough. Let's see how to do this with impy. </p>
+<p>The size of this image is 3840x2160. It is too big for training. Most likely, your computer will run out of memory. In order to try to solve the big image problem, we could reduce the size of the mini-batch hyperparameter. But if the image is too big it would still not work. We could also try to reduce the size of the image. But that means the image losses quality and you would need to label the smaller image again. </p>
+<p>Instead of hacking a solution, we are going to solve the problem efficiently and correctly. The best solution is to sample crops of a specific size that contain the maximum amount of bounding boxes possible. Crops of 1032x1032 pixels are usually small enough. Let's see how to do this with impy. </p>
 
 ```python
 from impy.ImageLocalizationDataset import *
@@ -54,7 +54,7 @@ def main():
  imda = ImageLocalizationDataset(images = images_path, 
                                  annotations = annotations_path,
                                  databaseName = dbName)
- # Reduce the dataset by Rois of smaller size with the shape 1032x1032
+ # Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
  annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
  imda.reduceDatasetByRois(offset = 1032,
@@ -175,9 +175,10 @@ is sharpening with a weight of 0.2 and we choose to save it.</p>
 <p>After the color augmentation, we have defined a "bounding_box_augmenters" which is going to execute a "scale" augmentation which we choose not to save followed by a "verticalFlip" which we do choose to save.</p>
 <p>So, we want to keep going. So we define two more types of image augmenters. Another "image_color_augmenters" which applies "histogramEqualization" to the image.</p>
 <p>Finally, we define a "bounding_box_agumeneters" that applies a "horizontalFlip" and a "crop" augmentation.</p>
+
 <p>As you have seen we can define any type of crazy configuration and augment our images with the available methods. Get creative and define your own data augmentation pipelines.</p>
 
-<p>Once the configuration file has been created, we can apply the data augmentation pipeline with the following code.</p>
+<p>Once the configuration file is created, we can apply the data augmentation pipeline with the following code.</p>
 
 ```python
 from impy.ImageLocalizationDataset import *
@@ -206,15 +207,21 @@ if __mame__ == "__main__":
 
 <p>These are the results:</p>
 
+<h3>Sharpening</h3>
 <img src="static//carsShar.png" alt="Sharpened" height="300" width="500"></img>
 
+<h3>Scaling (image gets a little bit bigger)</h3>
 <img src="static//carsSc.png" alt="Vertical flip" height="300" width="500"></img>
 
+<h3>Vertical flip</h3>
 <img src="static//carsVert.png" alt="Crop" height="300" width="500"></img>
 
+<h3>Histogram equalization</h3>
 <img src="static//carsHist.png" alt="Histogram equalization" height="300" width="500"></img>
 
+<h3>Horizontal flip</h3>
 <img src="static//carsHor.png" alt="Horizontal flip" height="300" width="500"></img>
 
+<h3>Crop bounding boxes</h3>
 <img src="static//carsCrop.png" alt="Crop" height="300" width="500"></img>
 
