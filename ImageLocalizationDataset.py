@@ -285,22 +285,37 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 			raise FileNotFoundError("outputDirectory's path does not exist: ".format(outputDirectory))
 		# Local variables
 		images = [os.path.join(self.imagesDirectory, i) for i in os.listdir(self.imagesDirectory)]
-		annotations = [os.path.join(self.imagesDirectory, i) for i in os.listdir(self.annotationsDirectory)]
 		# Logic
-		for img, annt in zip(images, annotations):
+		for img in images:
+			# Get extension
+			extension = Util.detect_file_extension(filename = img)
+			if (extension == None):
+				raise Exception("ERROR: Your image extension is not valid." +\
+												 "Only jpgs and pngs are allowed.")
+			# Extract name
+			filename = os.path.split(img)[1].split(extension)[0]
+			# Create xml and img name
+			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
+			xmlFullPath = os.path.join(self.annotationsDirectory, filename + ".xml")
 			# Load annotation.
-			annt = ImageAnnotation(path = annt)
+			annt = ImageAnnotation(path = xmlFullPath)
 			# Get bounding boxes.
 			boundingBoxes = annt.propertyBoundingBoxes
+			# Save image.
+			frame = cv2.imread(img)
 			# Save bounding boxes as png images.
 			for boundingBox in boundingBoxes:
 				ix, iy, x, y = boundingBox
+				# Detect extension.
+				extension = Util.detect_file_extension(filename = img)
+				if (extension == None):
+					raise Exception("Your image extension is not valid. " +\
+													"Only jpgs and pngs are allowed. {}".format(extension))
 				# Generate a new name.
 				newName = Util.create_random_name(name = self.databaseName, length = 4)
-				imgName = newName + extension
-				# Save image.
-				ImageLocalizationDataset.save_img(frame = frame, 
-																					img_name = imgName, 
+				imgName = newName + ".jpg"
+				ImageLocalizationDataset.save_img(frame = frame[iy:y, ix:x, :],
+																					img_name = imgName,
 																					output_image_directory = outputDirectory)
 
 	# Reduce and data augmentation.

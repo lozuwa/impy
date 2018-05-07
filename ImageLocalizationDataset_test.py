@@ -20,6 +20,11 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 	def tearDown(self):
 		pass
 
+	def test_bounding_boxes(self):
+		outputDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "bounding_boxes")
+		os.system("rm {}/*".format(outputDirectory))
+		self.imda.saveBoundingBoxes(outputDirectory = outputDirectory)
+
 	def test_reduceDatasetByRois(self):
 		outputImageDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
 		outputAnnotationDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")

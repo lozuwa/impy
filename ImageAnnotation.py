@@ -15,7 +15,7 @@ class ImageAnnotation(object):
 		if (path == None):
 			raise ValueError("Path parameter cannot be empty.")
 		if (not os.path.isfile(path)):
-			raise ValueError("Path parameter does not exist.")
+			raise ValueError("Path parameter does not exist: ".format(path))
 		# Class variables
 		self.path = path
 		self.root = self.readImageAnnotation(self.path)
