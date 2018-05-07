@@ -1,6 +1,6 @@
 """
-package: Images2Dataset
-class: ImagePreprocessing
+package: impy
+class: ImagePreprocess
 Author: Rodrigo Loza
 Description: Common pre-processing operations for images.
 Log:
@@ -16,15 +16,15 @@ import numpy as np
 import cv2
 import math
 
-class ImagePreprocessing(object):
+class ImagePreprocess(object):
 	"""
-	Preprocessing operations performed on an image.
+	Preprocess operations performed on an image.
 	"""
 	def __init__(self):
 		"""
 		Constructor.
 		"""
-		super(ImagePreprocessing, self).__init__()
+		super(ImagePreprocess, self).__init__()
 	
 	def adjustImage(self, frameHeight = None, frameWidth = None, boundingBoxes = None, offset = None):
 		"""
@@ -345,7 +345,7 @@ class ImagePreprocessing(object):
 			startPixelsWidth = 0
 			endPixelsWidth = slideWindowWidth
 			patchesCoordinates = []
-			numberPatchesHeight, numberPatchesWidth = ImagePreprocessing.get_valid_padding(slideWindowHeight,
+			numberPatchesHeight, numberPatchesWidth = ImagePreprocess.get_valid_padding(slideWindowHeight,
 																								 strideHeight,
 																								 imageHeight,
 																								 slideWindowWidth,
@@ -377,7 +377,7 @@ class ImagePreprocessing(object):
 			endPixelsWidth = slideWindowWidth
 			patchesCoordinates = []
 			# Modify image tensor
-			zeros_h, zeros_w = ImagePreprocessing.get_same_padding(slideWindowHeight,
+			zeros_h, zeros_w = ImagePreprocess.get_same_padding(slideWindowHeight,
 																				 strideHeight,
 																				 imageHeight,
 																				 slideWindowWidth,
@@ -386,7 +386,7 @@ class ImagePreprocessing(object):
 			imageWidth += zeros_w
 			imageHeight += zeros_h
 			# Valid padding stride should fit exactly
-			numberPatchesHeight, numberPatchesWidth = ImagePreprocessing.get_valid_padding(slideWindowHeight,
+			numberPatchesHeight, numberPatchesWidth = ImagePreprocess.get_valid_padding(slideWindowHeight,
 																		 strideHeight,
 																		 imageHeight,
 																		 slideWindowWidth,
@@ -429,7 +429,7 @@ class ImagePreprocessing(object):
 			startPixelsWidth = 0
 			endPixelsWidth = slideWindowWidth
 			patchesCoordinates = []
-			numberPatchesHeight, numberPatchesWidth = ImagePreprocessing.get_valid_padding(slideWindowHeight,
+			numberPatchesHeight, numberPatchesWidth = ImagePreprocess.get_valid_padding(slideWindowHeight,
 																		 strideHeight,
 																		 imageHeight,
 																		 slideWindowWidth,

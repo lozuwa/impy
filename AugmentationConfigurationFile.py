@@ -1,25 +1,52 @@
 import os
 import json
+import numpy as np
+from interface import implements
 
-try:
-	from .SupportedDataAugmentationConfigurations import *
-except:
-	from SupportedDataAugmentationConfigurations import *
-
-confs = SupportedDataAugmentationConfigurations()
-
-class AssertJsonConfiguration():
+class AugmentationConfigurationFile(object):
 	def __init__(self, file = None):
-		super(AssertJsonConfiguration, self).__init__()
+		super(AugmentationConfigurationFile, self).__init__()
 		# Assertions
 		if (file == None):
-			raise ValueError("ERROR: File parameter cannot be None.")
+			raise ValueError("File parameter cannot be None.")
 		if (not (os.path.isfile(file))):
-			raise Exception("ERROR: Path to {} does not exist.".format(file))
+			raise Exception("Path to {} does not exist.".format(file))
+		if (not (file.endswith("json"))):
+			raise Exception("Configuration file has to be of JSON format.")
 		# Class variables
 		f = open(file)
 		self.file = json.load(f)
 		f.close()
+		# Hardcoded configurations
+		# Types of data augmenters
+		self.confAugBndbxs = "bounding_box_augmenters"
+		self.confAugGeometric = "image_geometric_augmenters"
+		self.confAugColor = "image_color_augmenters"
+		self.confAugMultiple = "multiple_image_augmentations"
+		self.supportedDataAugmentationTypes = [self.confAugMultiple, self.confAugBndbxs, self.confAugGeometric, self.confAugColor]
+		# Augmenter methods for bounding boxes
+		self.scale = "scale"
+		self.crop = "crop"
+		self.pad = "pad"
+		self.jitterBoxes = "jitterBoxes"
+		self.horizontalFlip = "horizontalFlip"
+		self.verticalFlip = "verticalFlip"
+		self.rotation = "rotation"
+		self.dropout = "dropout"
+		self.boundingBoxesMethods = [self.scale, self.crop, self.pad, self.jitterBoxes, \
+																self.horizontalFlip, self.verticalFlip, self.rotation, \
+																self.dropout]
+		self.invertColor = "invertColor"
+		self.histogramEqualization = "histogramEqualization"
+		self.changeBrightness = "changeBrightness"
+		self.sharpening = "sharpening"
+		self.addGaussianNoise = "addGaussianNoise"
+		self.gaussianBlur = "gaussianBlur"
+		self.shiftColors = "shiftColors"
+		self.fancyPCA = "fancyPCA"
+		self.colorMethods = [self.invertColor, self.histogramEqualization, self.changeBrightness, \
+													self.sharpening, self.addGaussianNoise, self.gaussianBlur, \
+													self.shiftColors, self.fancyPCA]
 
 	def isValidBoundingBoxAugmentation(self, augmentation = None):
 		"""
@@ -35,7 +62,7 @@ class AssertJsonConfiguration():
 			raise ValueError("ERROR: augmentation parameter cannot be empty." +\
 											" Report this problem.")
 		# Logic
-		if (augmentation in confs.methodsBndbxs):
+		if (augmentation in self.boundingBoxesMethods):
 			return True
 		else:
 			return False
@@ -54,12 +81,16 @@ class AssertJsonConfiguration():
 			raise ValueError("ERROR: augmentation parameter cannot be empty." +\
 											" Report this problem.")
 		# Logic
-		if (augmentation in confs.methodsColor):
+		if (augmentation in self.colorMethods):
 			return True
 		else:
 			return False
 
 	def runAllAssertions(self):
+		"""
+		Macro function that runs multiple assertions in order to validate 
+		the configuration file.
+		"""
 		# Get keys
 		keys = [i for i in self.file.keys()]
 		# Run assertions
@@ -121,7 +152,7 @@ class AssertJsonConfiguration():
 			raise ValueError("ERROR: Keys parameter cannot be empty.")
 		if (type(keys) != list):
 			raise ValueError("ERROR: keys should be a list.")
-		if (keys[0] in confs.dataAugTypes):
+		if (keys[0] in self.supportedDataAugmentationTypes):
 			pass
 		else:
 			raise Exception("Configuration type {} not supported.".format(keys[0]))
@@ -142,7 +173,7 @@ class AssertJsonConfiguration():
 		if (len(keys) != 1):
 			raise ValueError("ERROR: keys should be of len > 1.")
 		# Check for type of configuration
-		if (keys[0] == confs.confBndbxs):
+		if (keys[0] == self.confAugBndbxs):
 			return True
 		else:
 			return False
@@ -163,7 +194,7 @@ class AssertJsonConfiguration():
 		if (len(keys) != 1):
 			raise ValueError("ERROR: keys should be of len > 1.")
 		# Check for type of configuration
-		if (keys[0] == confs.confGeometric):
+		if (keys[0] == self.confAugGeometric):
 			return True
 		else:
 			return False
@@ -184,7 +215,7 @@ class AssertJsonConfiguration():
 		if (len(keys) != 1):
 			raise ValueError("ERROR: keys should be of len > 1.")
 		# Check for type of configuration
-		if (keys[0] == confs.confColor):
+		if (keys[0] == self.confAugColor):
 			return True
 		else:
 			return False
@@ -205,7 +236,60 @@ class AssertJsonConfiguration():
 		if (len(keys) != 1):
 			raise ValueError("ERROR: keys should be of len > 1.")
 		# Check for type of configuration
-		if (keys[0] == confs.confMultiple):
+		if (keys[0] == self.confAugMultiple):
 			return True
 		else:
 			return False
+
+	def extractSavingParameter(self, parameters = None):
+		"""
+		Extract the "save" parameter from a dictionary.
+		Args:
+			A dictionary.
+		Returns:
+			A boolean that contains the response of "save".
+		"""
+		if ("save" in parameters):
+			if (type(parameters["save"]) != bool):
+				raise TyperError("ERROR: Save parameter must be of type bool.")
+			return parameters["save"]
+		else:
+			return False
+
+	def extractRestartFrameParameter(self, parameters = None):
+		"""
+		Extracts the "restartFrame" parameter from a dictionary.
+		Args:
+			parameters: A dictionary.
+		Returns:
+			A boolean that contains the response of "restartFrame".
+		"""
+		if ("restartFrame" in parameters):
+			if (type(parameters["restartFrame"]) != bool):
+				raise TyperError("ERROR: Restart frame must be of type bool.")
+			return parameters["restartFrame"]
+		else:
+			return False
+
+	def randomEvent(self, parameters = None, threshold = None):
+		"""
+		Extracts the "randomEvent" parameter from a dictionary.
+		Args:
+			parameters: A dictionary.
+			threshold: A float.
+		Returns:
+			A boolean that if true means the event should be executed.
+		"""
+		if ("randomEvent" in parameters):
+			# Assert type.
+			if (type(parameters["randomEvent"]) != bool):
+				raise TyperError("ERROR: Random event must be of type bool.")
+			# Check the value of randomEvent.
+			if (parameters["randomEvent"] == True):
+				activate = np.random.rand() > threshold
+				# print(activate)
+				return activate
+			else:
+				return True
+		else:
+			return True

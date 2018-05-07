@@ -42,9 +42,9 @@ import cv2
 import numpy as np
 # Other libraries
 try:
-	from .ImagePreprocessing import *
+	from .ImagePreprocess import *
 except:
-	from ImagePreprocessing import *
+	from ImagePreprocess import *
 # Interface
 try:
 	from .BoundingBoxAugmentersMethods import *
@@ -67,7 +67,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 	def __init__(self):
 		super(BoundingBoxAugmenters, self).__init__()
 		# Create an object of ImagePreprocessing
-		self.prep = ImagePreprocessing()
+		self.prep = ImagePreprocess()
 		self.assertion = AssertDataTypes()
 
 	def scale(self, frame = None, boundingBoxes = None, size = None, zoom = None, interpolationMethod = None):

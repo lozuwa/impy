@@ -42,5 +42,5 @@ import sys
 # 	raise ImportError("load_tensorflow_models could not be loaded")
 # Information
 __author__ = "Rodrigo Alejandro Loza Lucero / lozuwaucb@gmail.com"
-__version__ = "0.5"
-__log__ = "Refactored the whole library, I did not like it. Now everything has a more OOP approach."
+__version__ = "0.8"
+__log__ = "Re-branched from true main. This version contains usable tolf for multiple scenarios."

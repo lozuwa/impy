@@ -1,12 +1,12 @@
 import unittest
 import numpy as np
 import cv2
-from ImagePreprocessing import *
+from ImagePreprocess import *
 
-class ImageProcessing_test(unittest.TestCase):
+class ImageProcess_test(unittest.TestCase):
 
 	def setUp(self):
-		self.prep = ImagePreprocessing()
+		self.prep = ImagePreprocess()
 
 	def tearDown(self):
 		pass
