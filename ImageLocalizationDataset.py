@@ -268,11 +268,12 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 									output_directory = outputDirDataFrame)
 
 	# Save bounding boxes as files.
-	def saveBoundingBoxes(self, outputDirectory = None):
+	def saveBoundingBoxes(self, outputDirectory = None, filterClasses = None):
 		"""
 		Saves the bounding boxes as images of each image in the dataset.
 		Args:
-			outputDirectory: A string that contains the directory where the images will be saved. 
+			outputDirectory: A string that contains the directory where the images will be saved.
+			filterClasses: A list of Strings that contains names of the classes to be filtered and saved.
 		Returns:
 			None
 		"""
@@ -283,10 +284,14 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 			raise TyperError("outputDirectory must be a string.")
 		if (not (os.path.isdir(outputDirectory))):
 			raise FileNotFoundError("outputDirectory's path does not exist: ".format(outputDirectory))
+		if (filterClasses == None):
+			filterClasses = []
+		if (type(filterClasses) != list):
+			raise TyperError("filterClasses must be of type list.")
 		# Local variables
 		images = [os.path.join(self.imagesDirectory, i) for i in os.listdir(self.imagesDirectory)]
 		# Logic
-		for img in images:
+		for img in tqdm(images):
 			# Get extension
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
@@ -301,22 +306,37 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 			annt = ImageAnnotation(path = xmlFullPath)
 			# Get bounding boxes.
 			boundingBoxes = annt.propertyBoundingBoxes
+			names = annt.propertyNames
 			# Save image.
 			frame = cv2.imread(img)
 			# Save bounding boxes as png images.
-			for boundingBox in boundingBoxes:
-				ix, iy, x, y = boundingBox
-				# Detect extension.
-				extension = Util.detect_file_extension(filename = img)
-				if (extension == None):
-					raise Exception("Your image extension is not valid. " +\
-													"Only jpgs and pngs are allowed. {}".format(extension))
-				# Generate a new name.
-				newName = Util.create_random_name(name = self.databaseName, length = 4)
-				imgName = newName + ".jpg"
-				ImageLocalizationDataset.save_img(frame = frame[iy:y, ix:x, :],
-																					img_name = imgName,
-																					output_image_directory = outputDirectory)
+			for name, boundingBox in zip(names, boundingBoxes):
+				if ((len(filterClasses) == 0) or (name in filterClasses)):
+					ix, iy, x, y = boundingBox
+					# Detect extension.
+					extension = Util.detect_file_extension(filename = img)
+					if (extension == None):
+						raise Exception("Your image extension is not valid. " +\
+														"Only jpgs and pngs are allowed. {}".format(extension))
+					# Generate a new name.
+					newName = Util.create_random_name(name = self.databaseName, length = 4)
+					imgName = newName + extension
+					# Check bounding box does not get out of boundaries.
+					if (x == frame.shape[1]):
+						x -= 1
+					if (y == frame.shape[0]):
+						y -= 1
+					# Check bounding boxes are ok.
+					if (((y-iy) == 0) or ((x - ix) == 0) or \
+							((ix < 0) or (iy < 0)) or \
+							((x > frame.shape[1]) or (y > frame.shape[0]))):
+						print(img)
+						print(ix, iy, x, y)
+						raise Exception("Bounding box does not exist.")
+					# Save image.
+					ImageLocalizationDataset.save_img(frame = frame[iy:y, ix:x, :],
+																						img_name = imgName,
+																						output_image_directory = outputDirectory)
 
 	# Reduce and data augmentation.
 	def reduceDatasetByRois(self, offset = None, outputImageDirectory = None, outputAnnotationDirectory = None):

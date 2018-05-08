@@ -394,10 +394,10 @@ class ImagePreprocess(object):
 																		 imageWidth)
 			for i in range(numberPatchesHeight):
 				for j in range(numberPatchesWidth):
-					patchesCoordinates.append([startPixelsHeight,\
-													startPixelsWidth,\
-													endPixelsHeight,\
-													endPixelsWidth])
+					patchesCoordinates.append([startPixelsWidth,\
+													startPixelsHeight,\
+													endPixelsWidth,\
+													endPixelsHeight])
 					# Update width with strides
 					startPixelsWidth += strideWidth
 					endPixelsWidth += strideWidth
@@ -438,10 +438,10 @@ class ImagePreprocess(object):
 			#print("numberPatchesHeight: ", numberPatchesHeight, "numberPatchesWidth: ", numberPatchesWidth)
 			for i in range(numberPatchesHeight):
 				for j in range(numberPatchesWidth):
-					patchesCoordinates.append([startPixelsHeight,\
-													startPixelsWidth,\
-													endPixelsHeight,\
-													endPixelsWidth])
+					patchesCoordinates.append([startPixelsWidth,\
+													startPixelsHeight,\
+													endPixelsWidth,\
+													endPixelsHeight])
 					# Update width with strides
 					startPixelsWidth += strideWidth
 					endPixelsWidth += strideWidth

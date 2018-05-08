@@ -74,10 +74,10 @@ class ImageProcess_test(unittest.TestCase):
 		self.assertGreaterEqual((RoiYMax-RoiYMin), offset-100, "Cropping frame is " + \
 																														"much smaller than offset.")
 		# for bdx in bndboxes:
-		# 	self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")
-		# 	self.assertGreaterEqual(bdx[1], 0, "Ymin is negative")
-		# 	self.assertLessEqual(bdx[2], frameWidth, "Xmax is negative")
-		# 	self.assertLessEqual(bdx[3], frameHeight, "Ymax is negative")
+		#   self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")
+		#   self.assertGreaterEqual(bdx[1], 0, "Ymin is negative")
+		#   self.assertLessEqual(bdx[2], frameWidth, "Xmax is negative")
+		#   self.assertLessEqual(bdx[3], frameHeight, "Ymax is negative")
 
 if __name__ == "__main__":
 	unittest.main()
