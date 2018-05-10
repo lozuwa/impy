@@ -648,11 +648,11 @@ def drawGrid(frame = None, patches = None, patchesLabels = None):
 
 def drawBoxes(frame = None, patchesCoordinates = None, patchesLabels = None):
 	"""
-	Draws a box or boxes over the frame
-	:param frame: input cv2 image
+	Draws a box or boxes over the frame.
+	:param frame: input cv2 image.
 	:param patchesCoordinates: a list containing sublists [iy, ix, y, x]
-							  of coordinates
-	:param patchesLabels: a list containing the labels of the coordinates
+							  of coordinates.
+	:param patchesLabels: a list containing the labels of the coordinates.
 	"""
 	for coord in patchesCoordinates:
 		# Decode coordinate [iy, ix, y, x]
