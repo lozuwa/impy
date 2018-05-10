@@ -1,12 +1,12 @@
 <h1> Impy (Images in python) </h1>
-<p>Impy is a library used for deep learning projects that make use of image datasets.</p>
+<p>Impy is a library used for deep learning projects that use image datasets.</p>
 <ul>
   <li><strong>Email: </strong>lozuwaucb@gmail.com</li>
   <li><strong>Bug reports: </strong>https://github.com/lozuwa/impy/issues</li>
 </ul>
 <p>It provides:</p>
 <ul>
-  <li>Data augmentation methods for images with bounding boxes (the bounding boxes are also affected by the transformation so you don't have to label again.)</li>
+  <li>Data augmentation methods for images with bounding boxes (the bounding boxes are also affected by the transformations so you don't have to label again.)</li>
   <li>Fast image preprocessing methods useful in a deep learning context. E.g: if your image is too big you need to divide it into patches.</li>
 </ul>
 
@@ -51,15 +51,11 @@ def main():
  # Define the name of the dataset
  dbName = "CarsDataset"
  # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(images = images_path, 
-                                 annotations = annotations_path,
-                                 databaseName = dbName)
+ imda = ImageLocalizationDataset(images = images_path, annotations = annotations_path, databaseName = dbName)
  # Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
  annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
- imda.reduceDatasetByRois(offset = 1032,
-                          outputImageDirectory = images_output_path,
-                          outputAnnotationDirectory = annotations_output_path)
+ imda.reduceDatasetByRois(offset = 1032, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
 
 if __mame__ == "__main__":
  main()
@@ -80,6 +76,8 @@ if __mame__ == "__main__":
 <img src="static//cars21.png" alt="cars" height="300" width="300"></img>
 
 <p>As you can see the bounding boxes have been maintained and small crops of the big image are now available. We can use this images for training and our problem is solved.</p>
+
+<p><strong>Note</strong> that in some cases you are going to end up with an inefficient amount of crops due to overlapping crops in the clustering algorithm. I am working on this and a better solution will be released soon. Nonetheless, these results are still way more efficient than what is usually done which is crop each bounding box one by one (This leads to inefficient memory usage, repeated data points, lose of context and simpler representation.).</p>
 
 <h3>Data augmentation for bounding boxes</h3>
 <p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make a custom script. But with impy we can make it easier.</p>
@@ -168,15 +166,20 @@ if __mame__ == "__main__":
 ```
 
 <p>Let's analize the configuration file step by step. Currently, this is the most complex type of data augmentation you can achieve with the library.</p>
-<p>Note the file starts with "multiple_image_augmentations", then a "Sequential" key follows. Inside "Sequential" we define an array.</p>
-<p>This is important, each element of the array is a type of augmenter.</p>
-<p>The first augmenter we are going to define is a "image_color_agumenters" which is going to execute a sequence of color augmentations. In this case, we have defined only one type of color augmentation which
-is sharpening with a weight of 0.2 and we choose to save it.</p>
-<p>After the color augmentation, we have defined a "bounding_box_augmenters" which is going to execute a "scale" augmentation which we choose not to save followed by a "verticalFlip" which we do choose to save.</p>
-<p>So, we want to keep going. So we define two more types of image augmenters. Another "image_color_augmenters" which applies "histogramEqualization" to the image.</p>
-<p>Finally, we define a "bounding_box_agumeneters" that applies a "horizontalFlip" and a "crop" augmentation.</p>
+<p>Note the file starts with "multiple_image_augmentations", then a "Sequential" key follows. Inside "Sequential" we define an array. This is important, each element of the array is a type of augmenter.</p>
+<p>The first augmenter we are going to define is a "image_color_agumenters" which is going to execute a sequence of color augmentations. In this case, we have defined only one type of color augmentation which is sharpening with a weight of 2.0.</p>
+<p>After the color augmentation, we have defined a "bounding_box_augmenters" which is going to execute a "scale" augmentation with zoom  followed by a "verticalFlip".</p>
+<p>We want to keep going. So we define two more types of image augmenters. Another "image_color_augmenters" which applies "histogramEqualization" to the image. And another "bounding_box_agumeneters" which applies a "horizontalFlip" and a "crop" augmentation.</p>
 
-<p>As you have seen we can define any type of crazy configuration and augment our images with the available methods. Get creative and define your own data augmentation pipelines.</p>
+<p>Note there are three types of parameters in each augmenter. These are optional, but I recommend specifying them in order to fully understand your pipeline. These parameters are:</p>
+
+<ol>
+	<li><strong>"Save"</strong>: saves the current transformation if True.</li>
+	<li><strong>"Restart frame"</strong>: restarts the frame to its original space if True, otherwise maintains the augmentation applied so far.</li>
+	<li><strong>"Random event"</strong>: uses an stochastic function to randomize whether this augmentation might be applied or not.</li>
+</ol>
+
+<p>As you have seen we can define any type of crazy configuration and augment our images with the available methods while choosing whether to save each augmentation, restart the frame to its original space or randomize the event so we make things crazier. Get creative and define your own data augmentation pipelines.</p>
 
 <p>Once the configuration file is created, we can apply the data augmentation pipeline with the following code.</p>
 
@@ -190,22 +193,18 @@ def main():
  # Define the name of the dataset
  dbName = "CarsDataset"
  # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(images = images_path, 
-                                 annotations = annotations_path,
-                                 databaseName = dbName)
+ imda = ImageLocalizationDataset(images = images_path, annotations = annotations_path, databaseName = dbName)
  # Apply data augmentation by using the following method of the ImageLocalizationDataset class.
  configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
  annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
- imda.applyDataAugmentation(configurationFile = configuration_file,
-                          outputImageDirectory = images_output_path,
-                          outputAnnotationDirectory = annotations_output_path)
+ imda.applyDataAugmentation(configurationFile = configuration_file, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
 
 if __mame__ == "__main__":
  main()
 ```
 
-<p>These are the results:</p>
+<p>Next I present the results of the augmentations. Note the transformation does not alter the bounding boxes of the image which saves you a lot of time in case you want to increase the representational complexity of your data.</p>
 
 <h3>Sharpening</h3>
 <img src="static//carsShar.png" alt="Sharpened" height="300" width="500"></img>
