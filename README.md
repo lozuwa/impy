@@ -52,7 +52,7 @@ def main():
  # Define the name of the dataset
  dbName = "CarsDataset"
  # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(images = images_path, annotations = annotations_path, databaseName = dbName)
+ imda = ImageLocalizationDataset(imagesDirectory = images_path, annotationsDirectory = annotations_path, databaseName = dbName)
  # Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
  annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
@@ -194,7 +194,7 @@ def main():
  # Define the name of the dataset
  dbName = "CarsDataset"
  # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(images = images_path, annotations = annotations_path, databaseName = dbName)
+ imda = ImageLocalizationDataset(imagesDirectory = images_path, annotationsDirectory = annotations_path, databaseName = dbName)
  # Apply data augmentation by using the following method of the ImageLocalizationDataset class.
  configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
