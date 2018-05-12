@@ -311,6 +311,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Invert color</h3>
 <p>Apply a bitwise_not operation to the pixels in the image. Code example: </p>
+
 ```json
 {
 	"invertColor": {
@@ -321,6 +322,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Histogram equalization</h3>
 <p>Equalize the color space of the image. Code example: </p>
+
 ```json
 {
 	"histogramEqualization": {
@@ -331,6 +333,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Change brightness</h3>
 <p>Multiply the pixel distribution with a scalar. Code example: </p>
+
 ```json
 {
 	"changeBrightness": {
@@ -341,6 +344,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Random sharpening</h3>
 <p>Apply a sharpening system to the image. Code example: </p>
+
 ```json
 {
 	"sharpening": {
@@ -361,6 +365,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Gaussian blur</h3>
 <p>Apply a Gaussian low pass filter to the image. Code example: </p>
+
 ```json
 {
 	"gaussianBlur": {
@@ -371,6 +376,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Shift colors</h3>
 <p>Shift the colors of the image. Code example: </p>
+
 ```json
 {
 	"shiftBlur": {
@@ -388,6 +394,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 </ol>
 <h3>Scale</h3>
 <p>Scales the size of an image and maintains the location of its bounding boxes. Code example:</p>
+
 ```json
 {
 	"scale": {
@@ -400,6 +407,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Random crop</h3>
 <p>Crops the bounding boxes of an image. Code example:</p>
+
 ```json
 {
 	"crop": {
@@ -410,6 +418,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Random pad</h3>
 <p>Pads the bounding boxes of an image. i.e adds pixels from outside the bounding box. Code example:</p>
+
 ```json
 {
 	"pad": {
@@ -420,6 +429,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Flip horizontally</h3>
 <p>Flips the bounding boxes of an image in the x axis. Code example:</p>
+
 ```json
 {
 	"horizontalFlip": {
@@ -429,6 +439,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Flip vertically</h3>
 <p>Flips the bounding boxes of an image in the y axis. Code example:</p>
+
 ```json
 {
 	"verticalFlip": {
@@ -438,6 +449,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Rotation</h3>
 <p>Rotates the bounding boxes of an image anti-clockwise. Code example:</p>
+
 ```json
 {
 	"rotation": {
@@ -448,6 +460,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Jitter boxes</h3>
 <p>Draws random squares of a specific color and size in the area of the bounding box. Code example: </p>
+
 ```json
 {
 	"jitterBoxes": {
@@ -460,6 +473,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 
 <h3>Dropout</h3>
 <p>Set pixels inside the bounding box to zero depending on a probability p extracted from a normal distribution. If p > threshold, then the pixel is changed. Code example: </p>
+
 ```json
 {
 	"dropout": {
