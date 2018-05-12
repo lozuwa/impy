@@ -13,6 +13,7 @@
 <ol>
 	<li><a href="installation">Installation</a></li>
 	<li><a href="tutorial">Tutorial</a></li>
+	<li><a href="documentation">Documentation</a></li>
 </ol>
 
 <h1 id="#installation">Installation</h1>
@@ -55,7 +56,7 @@ def main():
  # Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
  images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
  annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
- imda.reduceDatasetByRois(offset = 1032, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
+ imda.reduceDatasetByRois(offset = [1032, 1032], outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
 
 if __mame__ == "__main__":
  main()
@@ -224,3 +225,247 @@ if __mame__ == "__main__":
 <h3>Crop bounding boxes</h3>
 <img src="static//carsCrop.png" alt="Crop" height="300" width="500"></img>
 
+<h1>Documentation</h1>
+<h2>Image localization dataset</h2>
+<h3>ImageLocalizationDataset class</h3>
+<p>A class that holds a detection dataset. Parameters: </p>
+<ol>
+	<li><strong>imagesDirectory:</strong> A string that contains a path to a directory of images.</li>
+	<li><strong>annotationsDirectory:</strong> A string that contains a path to a directory of xml annotations.</li>
+	<li><strong>databaseName:</strong> A string that contains a name.</li>
+</ol>
+<p>Class methods:</p>
+<h4>dataConsistency</h4>
+<p>Checks the consistency of the image files with the annotation files.</p>
+
+<h4>findEmptyOrWrongAnnotations</h4>
+Examines all the annotations in the dataset and detects if any is empty or wrong. A wrong annotation is said to contain a bounding box coordinate that is either greater than width/heigh respectively or is less than zero. 
+<ol>
+	<li><strong>removeEmpty:</strong> A boolean that if True removes the annotations that are considered to be wrong or empty.</li>
+</ol>
+
+<h4>computeBoundingBoxStats</h4>
+<ol>
+	<li><strong>saveDataFrame:</strong> A boolean that if True saves the dataframe with the stats. </li>
+	<li><strong>outputDirDataFrame:</strong> A string that contains a valid path.</li>
+</ol>
+
+<h4>saveBoundingBoxes</h4>
+<p>Saves the bounding boxes of the data set as images. Parameters:</p>
+<ol>
+	<li><strong>outputDirectory:</strong> A string that contains a path to a valid directory.</li>
+	<li><strong>filterClasses:</strong> A list of strings that contains classes that are supposed to be as labels in the dataset annotations.</li>
+</ol>
+
+<h4>reduceDatasetByRois</h4>
+<p>Iterate over images and annotations and execute redueImageDataPointByRoi for each one.</p>
+<ol>
+	<li><strong>offset:</strong> A list or tuple of ints.</li>
+	<li><strong>outputImageDirectory:</strong> A string that contains a valid path.</li>	
+	<li><strong>outputAnnotationDirectory:</strong> A string that contains a valid path.</li>	
+</ol>
+
+<h4>reduceImageDataPointByRoi</h4>
+<p></p>
+<ol>
+	<li><strong>imagePath:</strong> A string that contains the path to an image.</li>
+	<li><strong>annotationPath:</strong> A string that contains a path to a xml annotation.</li>
+	<li><strong>offset</strong> A list or tuple of ints.</li>
+	<li><strong>outputImageDirectory:</strong> A string that contains a valid path.</li>
+	<li><strong>outputAnnotationDirectory:</strong> A string that contains a valid path.</li>
+</ol>
+
+<h4>applyDataAugmentation</h4>
+<p></p>
+<ol>
+	<li><strong>configurationFile:</strong> A string that contains a path to a json file.</li>
+	<li><strong>outputImageDirectory:</strong> A string that contains a valid path.</li>
+	<li><strong>outputAnnotationDirectory:</strong> A string that contains a valid path.</li>
+	<li><strong>threshold:</strong> A float in the range [0-1].</li>
+</ol>
+
+<h4>__applyColorAugmentation__</h4>
+<p></p>
+<ol>
+	<li><strong>frame:</strong> A numpy tensor that contains an image.</li>
+	<li><strong>augmentationType:</strong> A string that contains a valid Impy augmentation type.</li>
+	<li><strong>parameters:</strong> A list of strings that contains the respective parameters for the type of augmentation.</li>
+</ol>
+
+<h4>__applyBoundingBoxAugmentation__</h4>
+<p></p>
+<ol>
+	<li><strong>frame:</strong> A numpy tensor that contains an image.</li>
+	<li><strong>boundingBoxes:</strong> A list of lists of ints that contains coordinates for a bounding box.</li>
+	<li><strong>augmentationType:</strong> A string that contains a valid Impy augmentation type.</li>
+	<li><strong>parameters:</strong> A list of strings that contains the respective parameters for the type of augmentation.</li>
+</ol>
+
+<h2>Types of color augmentations</h2>
+<p>All of the augmentations ought to implement the following parameters:</p>
+<ol>
+	<li><strong>"Save"</strong>: saves the current transformation if True.</li>
+	<li><strong>"Restart frame"</strong>: restarts the frame to its original space if True, otherwise maintains the augmentation applied so far.</li>
+	<li><strong>"Random event"</strong>: uses an stochastic function to randomize whether this augmentation might be applied or not.</li>
+</ol>
+
+<h3>Invert color</h3>
+<p>Apply a bitwise_not operation to the pixels in the image. Code example: </p>
+```json
+{
+	"invertColor": {
+		"Cspace": [True, True, True]
+	}
+}
+```
+
+<h3>Histogram equalization</h3>
+<p>Equalize the color space of the image. Code example: </p>
+```json
+{
+	"histogramEqualization": {
+		"equalizationType": 1
+	}
+}
+```
+
+<h3>Change brightness</h3>
+<p>Multiply the pixel distribution with a scalar. Code example: </p>
+```json
+{
+	"changeBrightness": {
+		"coefficient": 1.2
+	}
+}
+```
+
+<h3>Random sharpening</h3>
+<p>Apply a sharpening system to the image. Code example: </p>
+```json
+{
+	"sharpening": {
+		"weight": 0.8
+	}
+}
+```
+
+<h3>Add gaussian noise</h3>
+<p>Add gaussian noise to the image. Code example: </p>
+```json
+{
+	"addGaussianNoise": {
+		"coefficient": 0.5
+	}
+}
+```
+
+<h3>Gaussian blur</h3>
+<p>Apply a Gaussian low pass filter to the image. Code example: </p>
+```json
+{
+	"gaussianBlur": {
+		"sigma": 2
+	}
+}
+```
+
+<h3>Shift colors</h3>
+<p>Shift the colors of the image. Code example: </p>
+```json
+{
+	"shiftBlur": {
+	}
+}
+```
+
+
+<h2>Types of bounding box augmentations</h2>
+<p>All of the augmentations ought to implement the following parameters:</p>
+<ol>
+	<li><strong>"Save"</strong>: saves the current transformation if True.</li>
+	<li><strong>"Restart frame"</strong>: restarts the frame to its original space if True, otherwise maintains the augmentation applied so far.</li>
+	<li><strong>"Random event"</strong>: uses an stochastic function to randomize whether this augmentation might be applied or not.</li>
+</ol>
+<h3>Scale</h3>
+<p>Scales the size of an image and maintains the location of its bounding boxes. Code example:</p>
+```json
+{
+	"scale": {
+		"size": [1.2, 1.2],
+		"zoom": true,
+		"interpolationMethod": 1
+	}
+}
+```
+
+<h3>Random crop</h3>
+<p>Crops the bounding boxes of an image. Code example:</p>
+```json
+{
+	"crop": {
+		"size": [0.8, 0.8]
+	}
+}
+```
+
+<h3>Random pad</h3>
+<p>Pads the bounding boxes of an image. i.e adds pixels from outside the bounding box. Code example:</p>
+```json
+{
+	"pad": {
+		"size": [20, 20]
+	}
+}
+```
+
+<h3>Flip horizontally</h3>
+<p>Flips the bounding boxes of an image in the x axis. Code example:</p>
+```json
+{
+	"horizontalFlip": {
+	}
+}
+```
+
+<h3>Flip vertically</h3>
+<p>Flips the bounding boxes of an image in the y axis. Code example:</p>
+```json
+{
+	"verticalFlip": {
+	}
+}
+```
+
+<h3>Rotation</h3>
+<p>Rotates the bounding boxes of an image anti-clockwise. Code example:</p>
+```json
+{
+	"rotation": {
+		"theta": 0.5 
+	}
+}
+```
+
+<h3>Jitter boxes</h3>
+<p>Draws random squares of a specific color and size in the area of the bounding box. Code example: </p>
+```json
+{
+	"jitterBoxes": {
+		"size": [10, 10],
+		"quantity": 5,
+		"color": (255,255,255)
+	}
+}
+```
+
+<h3>Dropout</h3>
+<p>Set pixels inside the bounding box to zero depending on a probability p extracted from a normal distribution. If p > threshold, then the pixel is changed. Code example: </p>
+```json
+{
+	"dropout": {
+		"size": [5, 5],
+		"threshold": 0.8,
+		"color": (255,255,255)
+	}
+}
+```

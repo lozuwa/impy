@@ -268,7 +268,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		# Return bouding boxes.
 		return boundingBoxes
 
-	def jitterBoxes(self, frame = None, boundingBoxes = None, size = None, quantity = None,color = None):
+	def jitterBoxes(self, frame = None, boundingBoxes = None, size = None, quantity = None, color = None):
 		"""
 		Draws random jitter boxes in the bounding boxes.
 		Args:

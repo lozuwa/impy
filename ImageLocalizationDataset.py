@@ -359,13 +359,13 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 		"""
 		# Assertions
 		if (offset == None):
-			raise ValueError("ERROR: Offset parameter cannot be empty.")
+			raise ValueError("Offset parameter cannot be empty.")
 		if (outputImageDirectory == None):
 			outputImageDirectory = os.getcwd()
 			Util.create_folder(os.path.join(outputImageDirectory, "images"))
 			outputImageDirectory = os.path.join(os.getcwd(), "images")
 		if (not (os.path.isdir(outputImageDirectory))):
-			raise Exception("ERROR: Path to output directory does not exist. {}"\
+			raise Exception("Path to output directory does not exist. {}"\
 											.format(outputImageDirectory))
 		if (outputAnnotationDirectory == None):
 			outputAnnotationDirectory = os.getcwd()
@@ -373,7 +373,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 			Util.create_folder(os.path.join(outputAnnotationDirectory, "annotations", "xmls"))
 			outputAnnotationDirectory = os.path.join(os.getcwd(), "annotations", "xmls")
 		if (not (os.path.isdir(outputAnnotationDirectory))):
-			raise Exception("ERROR: Path to output annotation directory does not exist. {}"\
+			raise Exception("Path to output annotation directory does not exist. {}"\
 											.format(outputAnnotationDirectory))
 		# Get images and annotations full paths
 		imagesPath = [os.path.join(self.imagesDirectory, each) for each in \
@@ -383,7 +383,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 			# Get extension
 			extension = Util.detect_file_extension(filename = img)
 			if (extension == None):
-				raise Exception("ERROR: Your image extension is not valid." +\
+				raise Exception("Your image extension is not valid." +\
 												 "Only jpgs and pngs are allowed.")
 			# Extract name
 			filename = os.path.split(img)[1].split(extension)[0]

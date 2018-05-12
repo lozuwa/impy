@@ -254,3 +254,27 @@ class Util(object):
       hashMap[columns[i]] = data[i]
     df = pd.DataFrame(hashMap)
     df.to_excel(output_directory)
+
+# import os
+# import cv2
+# import numpy as np
+
+# images = os.listdir(".")
+# hs = []
+# ws = []
+# for each in images:
+#   frame = cv2.imread(each)
+#   h = frame.shape[0]
+#   w = frame.shape[1]
+#   hs.append(h)
+#   ws.append(w)
+
+# hs = np.array(hs)
+# ws = np.array(ws)
+
+# print(hs.mean(), ws.mean())
+
+# for each in images:
+#   frame = cv2.imread(each)
+#   cv2.imwrite(each, cv2.resize(frame, (int(ws.mean()), int(hs.mean()))))
+

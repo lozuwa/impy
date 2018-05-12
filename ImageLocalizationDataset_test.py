@@ -21,12 +21,6 @@ class ImageLocalizationDataset_test(unittest.TestCase):
   def tearDown(self):
     pass
 
-from impy.ImageLocalizationDataset import *
-imda = ImageLocalizationDataset(imagesDirectory = os.path.join(os.getcwd()),
-                                annotationsDirectory = os.path.join(os.getcwd(), "annotations"),
-                                databaseName = "SPID")
-imda.findEmptyOrWrongAnnotations(removeEmpty=True)
-
   def test_bounding_boxes(self):
     outputDirectory = os.path.join(os.getcwd(), "tests", "cars_dataset", "bounding_boxes")
     os.system("rm {}/*".format(outputDirectory))
@@ -38,7 +32,7 @@ imda.findEmptyOrWrongAnnotations(removeEmpty=True)
     os.system("rm {}/*".format(outputImageDirectory))
     os.system("rm {}/*".format(outputAnnotationDirectory))
     # Reduce dataset by grouping ROIs into smaller frames.
-    self.imda.reduceDatasetByRois(offset = 1032,
+    self.imda.reduceDatasetByRois(offset = [300, 300],
                                   outputImageDirectory = outputImageDirectory,
                                   outputAnnotationDirectory = outputAnnotationDirectory)
 

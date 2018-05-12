@@ -36,8 +36,8 @@ class ImagePreprocess(object):
 			frameWidth: An int that representst he width of the frame.
 			boundingBoxes: A list of lists that contains the coordinates of the
 												bounding boxes in the frame.
-			offset: An int that contains the amount of space to give at each side 
-							of the bounding box.
+			offset: A list or tuple of ints that contains the amount of space to give
+							at each side of the edge bounding boxes, (width, height).
 		Returns:
 			An 8-sized tuple that contains the coordinates to crop the original frame
 			and the new coordinates of the bounding box inside the cropped patch.
@@ -73,7 +73,7 @@ class ImagePreprocess(object):
 				| |                  |    |
 				|  ------------------Roi  |
 				|                         |
-				-------------------------
+				--------------------------
 		"""
 		# Local variable assertions
 		if (frameHeight == None):
@@ -86,15 +86,25 @@ class ImagePreprocess(object):
 			localBoundingBoxes = boundingBoxes
 		if (offset == None):
 			raise Exception("Parameter {} cannot be empty.".format("offset"))
-		if ((frameWidth <= offset) or (frameHeight <= offset)):
-			print("WARNING: Image's width {} or height {} is smaller than offset {}.".format(frameWidth, frameHeight, offset) +\
+		if ((type(offset) == list) or (type(offset) == tuple)):
+			if (len(offset) != 2):
+				raise ValueError("Parameter offset has to be of length 2 (width, height).")
+		else:
+			raise TypeError("Parameter offset has to be eighter a list or tuple.")
+		if ((frameWidth <= offset[0]) or (frameHeight <= offset[1])):
+			print("WARNING: Image's width {} or height {} is smaller than offset {}."\
+						.format(frameWidth, frameHeight, offset) +\
 						" Setting offset to current frame's smallest axis only for this image.")
-			offset = min([frameWidth, frameHeight]) - 10
+			smallerAxis = min([frameWidth, frameHeight]) - 10
+			offset = [smallerAxis, smallerAxis]
 			# raise Exception("offset {} cannot be smaller than image's width {}.".format(offset, frameWidth))
 		# Local variables.
+		# Decode the offset parameter.
+		widthOffset = offset[0]
+		heightOffset = offset[1]
+		# Compute the boundaries of the bounding boxes.
 		x_coordinates = []
 		y_coordinates = []
-		# Compute the boundaries of the bounding boxes.
 		for bndbox in localBoundingBoxes:
 			x_coordinates.append(bndbox[0])
 			x_coordinates.append(bndbox[2])
@@ -103,14 +113,14 @@ class ImagePreprocess(object):
 		xmin, xmax = min(x_coordinates), max(x_coordinates)
 		ymin, ymax = min(y_coordinates), max(y_coordinates)
 		RoiX, RoiY = (xmax - xmin), (ymax - ymin)
-		if (RoiY >= offset):
+		if (RoiY >= heightOffset):
 			offsetY = 10
 		else:
-			offsetY = offset - RoiY
-		if (RoiX >= offset):
+			offsetY = heightOffset - RoiY
+		if (RoiX >= widthOffset):
 			offsetX = 10
 		else:
-			offsetX = offset - RoiX
+			offsetX = widthOffset - RoiX
 		# Debugging
 		# print("\nBunding box ROIs: ", RoiX, RoiY)
 		# print("xmin {}, ymin {}, xmax {}, ymax {}".format(xmin, ymin, xmax, ymax))
@@ -455,7 +465,7 @@ class ImagePreprocess(object):
 					numberPatchesHeight,\
 					numberPatchesWidth
 		else:
-			raise Exception("Type of padding not understood")
+			raise Exception("Type of padding not understood.")
 
 	@staticmethod
 	def get_valid_padding(slide_window_height = None, stride_height = None, image_height = None, slide_window_width = None, stride_width = None, image_width = None):
@@ -651,8 +661,8 @@ def drawBoxes(frame = None, patchesCoordinates = None, patchesLabels = None):
 	Draws a box or boxes over the frame.
 	:param frame: input cv2 image.
 	:param patchesCoordinates: a list containing sublists [iy, ix, y, x]
-							  of coordinates.
-	:param patchesLabels: a list containing the labels of the coordinates.
+							  of coordinates
+	:param patchesLabels: a list containing the labels of the coordinates
 	"""
 	for coord in patchesCoordinates:
 		# Decode coordinate [iy, ix, y, x]
@@ -660,3 +670,4 @@ def drawBoxes(frame = None, patchesCoordinates = None, patchesLabels = None):
 		# Draw box
 		cv2.rectangle(frame, (ix, iy), (x, y), (255, 0, 0), 8)
 	return frame
+
