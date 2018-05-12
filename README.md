@@ -315,7 +315,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 ```json
 {
 	"invertColor": {
-		"Cspace": [True, True, True]
+		"Cspace": [true, true, true]
 	}
 }
 ```
@@ -466,7 +466,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 	"jitterBoxes": {
 		"size": [10, 10],
 		"quantity": 5,
-		"color": (255,255,255)
+		"color": [255,255,255]
 	}
 }
 ```
@@ -479,7 +479,7 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 	"dropout": {
 		"size": [5, 5],
 		"threshold": 0.8,
-		"color": (255,255,255)
+		"color": [255,255,255]
 	}
 }
 ```
