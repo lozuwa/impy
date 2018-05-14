@@ -829,14 +829,24 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 	def __applyColorAugmentation__(self, frame = None, augmentationType = None, parameters = None):
 		# Logic
 		if (augmentationType == "invertColor"):
+			if (not ("CSpace" in parameters)):
+				parameters["CSpace"] = [True, True, True]
 			frame = colorAugmenter.invertColor(frame = frame, CSpace = parameters["CSpace"])
 		elif (augmentationType == "histogramEqualization"):
+			if (not ("equalizationType" in parameters)):
+				parameters["equalizationType"] = 0
 			frame = colorAugmenter.histogramEqualization(frame = frame, equalizationType = parameters["equalizationType"])
 		elif (augmentationType == "changeBrightness"):
+			if (not ("coefficient" in parameters)):
+				raise AttributeError("coefficient for changeBrightness must be specified.")
 			frame = colorAugmenter.changeBrightness(frame = frame, coefficient = parameters["coefficient"])
 		elif (augmentationType == "sharpening"):
+			if (not ("weight" in parameters)):
+				raise AttributeError("weight for sharpening must be specified.")
 			frame = colorAugmenter.sharpening(frame = frame, weight = parameters["weight"])
 		elif (augmentationType == "addGaussianNoise"):
+			if (not ("coefficient" in parameters)):
+				raise AttributeError("coefficient for addGaussianNoise must be specified.")
 			frame = colorAugmenter.addGaussianNoise(frame = frame, coefficient = parameters["coefficient"])
 		elif (augmentationType == "gaussianBlur"):
 			frame = colorAugmenter.gaussianBlur(frame = frame, sigma = parameters["sigma"])

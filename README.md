@@ -225,7 +225,7 @@ if __mame__ == "__main__":
 <h3>Crop bounding boxes</h3>
 <img src="static//carsCrop.png" alt="Crop" height="300" width="500"></img>
 
-<h1>Documentation</h1>
+<h1 id="#documentation">Documentation</h1>
 <h2>Image localization dataset</h2>
 <h3>ImageLocalizationDataset class</h3>
 <p>A class that holds a detection dataset. Parameters: </p>

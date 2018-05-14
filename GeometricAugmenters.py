@@ -65,10 +65,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		super(GeometricAugmenters, self).__init__()
 		self.assertion = AssertDataTypes()
 
-	def scale(self,
-						frame = None,
-						size = None,
-						interpolationMethod = None):
+	def scale(self, frame = None, size = None, interpolationMethod = None):
 		"""
 		Scales an image to another size.
 		Args:
@@ -110,9 +107,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		# Return values
 		return frame
 
-	def translate(self,
-								frame = None,
-								offset = None):
+	def translate(self, frame = None, offset = None):
 		"""
 		Given an image and its bounding boxes, this method translates the bounding boxes
 		to create an alteration of the image.
@@ -145,11 +140,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		frame = cv2.warpAffine(frame, M, (width, height))
 		return frame
 
-	def jitterBoxes(self,
-									frame = None,
-									size = None,
-									quantity = None,
-									color = None):
+	def jitterBoxes(self, frame = None, size = None, quantity = None, color = None):
 		"""
 		Draws random jitter boxes in the bounding boxes.
 		Args:
@@ -180,8 +171,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		# Return frame
 		return frame
 
-	def horizontalFlip(self,
-										frame = None):
+	def horizontalFlip(self, frame = None):
 		"""
 		Flip a frame by its horizontal axis.
 		Args:
@@ -196,8 +186,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		frame = cv2.flip(frame, 1)
 		return frame
 
-	def verticalFlip(self,
-									frame = None):
+	def verticalFlip(self, frame = None):
 		"""
 		Flip a bouding box by its vertical axis.
 		Args:
@@ -212,10 +201,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		frame = cv2.flip(frame, 0)
 		return frame
 
-	def rotation(self,
-							frame = None,
-							bndbox = None,
-							theta = None):
+	def rotation(self, frame = None, bndbox = None, theta = None):
 		"""
 		Rotate a frame clockwise by random degrees. Random degrees
 		is a number that is between 20-360.

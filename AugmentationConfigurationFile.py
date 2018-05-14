@@ -24,7 +24,7 @@ class AugmentationConfigurationFile(object):
 		self.confAugColor = "image_color_augmenters"
 		self.confAugMultiple = "multiple_image_augmentations"
 		self.supportedDataAugmentationTypes = [self.confAugMultiple, self.confAugBndbxs, self.confAugGeometric, self.confAugColor]
-		# Augmenter methods for bounding boxes
+		# Augmenter methods for bounding boxes.
 		self.scale = "scale"
 		self.crop = "crop"
 		self.pad = "pad"
@@ -36,6 +36,7 @@ class AugmentationConfigurationFile(object):
 		self.boundingBoxesMethods = [self.scale, self.crop, self.pad, self.jitterBoxes, \
 																self.horizontalFlip, self.verticalFlip, self.rotation, \
 																self.dropout]
+		# Augmenter methods for color space.
 		self.invertColor = "invertColor"
 		self.histogramEqualization = "histogramEqualization"
 		self.changeBrightness = "changeBrightness"
@@ -47,6 +48,10 @@ class AugmentationConfigurationFile(object):
 		self.colorMethods = [self.invertColor, self.histogramEqualization, self.changeBrightness, \
 													self.sharpening, self.addGaussianNoise, self.gaussianBlur, \
 													self.shiftColors, self.fancyPCA]
+		# Augmenter methods for space.
+		self.geometricMethods = [self.scale, self.crop, self.pad, self.jitterBoxes, self.horizontalFlip, \
+														self.verticalFlip, self.rotation, self.dropout]
+
 
 	def isValidBoundingBoxAugmentation(self, augmentation = None):
 		"""
@@ -82,6 +87,25 @@ class AugmentationConfigurationFile(object):
 											" Report this problem.")
 		# Logic
 		if (augmentation in self.colorMethods):
+			return True
+		else:
+			return False
+
+	def isValidGeometricAugmentation(self, augmentation = None):
+		"""
+		Assertas that augmentation is a valid geometric augmentation supported by the library.
+		Args:
+			augmentation: A string that contains an augmentation type.
+		Returns:
+			A boolean that if True means the augmentation type is vlaid, 
+			otherwise it is false.
+		"""
+		# Assertions
+		if (augmentation == None):
+			raise ValueError("ERROR: augmentation parameter cannot be empty." +\
+											" Report this problem.")
+		# Logic
+		if (augmentation in self.geometricMethods):
 			return True
 		else:
 			return False
@@ -293,3 +317,4 @@ class AugmentationConfigurationFile(object):
 				return True
 		else:
 			return True
+
