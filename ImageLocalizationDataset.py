@@ -849,6 +849,8 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 				raise AttributeError("coefficient for addGaussianNoise must be specified.")
 			frame = colorAugmenter.addGaussianNoise(frame = frame, coefficient = parameters["coefficient"])
 		elif (augmentationType == "gaussianBlur"):
+			if (not ("sigma" in parameters)):
+				raise AttributeError("sigma for gaussianBlur must be specified.")
 			frame = colorAugmenter.gaussianBlur(frame = frame, sigma = parameters["sigma"])
 		elif (augmentationType == "shiftColors"):
 			frame = colorAugmenter.shiftColors(frame = frame)
