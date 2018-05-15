@@ -56,3 +56,8 @@ class AnnotationProcessing_test(unittest.TestCase):
 if __name__ == "__main__":
 	unittest.main()
 
+# from impy.ImageLocalizationDataset import *
+# imda = ImageLocalizationDataset(imagesDirectory = os.path.join(os.getcwd(), "images"),
+#                                   annotationsDirectory = os.path.join(os.getcwd(), "annotations"),
+#                                   databaseName = "SPID")
+# imda.computeBoundingBoxStats()
