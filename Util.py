@@ -1,8 +1,7 @@
 """
 Author: Rodrigo Loza
 Email: lozuwaucb@gmail.com
-Description: Implements common file, logic 
-operations.
+Description: Implements common file, logic operations.
 """
 import os
 import datetime
