@@ -1,0 +1,34 @@
+{	
+	"image_color_augmenters": {
+		"invertColor": {
+			"CSpace": [true, true, true],
+			"save": false
+		},
+		"histogramEqualization":{
+			"equalizationType": 1,
+			"save": false			
+		},
+		"changeBrightness": {
+			"coefficient": 1.5,
+			"save": false
+		},
+		"sharpening": {
+			"weight": 0.7,
+			"save": false
+		},
+		"addGaussianNoise": {
+			"coefficient": 0.8,
+			"save": false
+		},
+		"gaussianBlur": {
+			"sigma": 0.5,
+			"save": false
+		},
+		"shiftColors": {
+			"save": false
+		},
+		"fancyPCA": {
+			"save": false
+		}
+	}
+}

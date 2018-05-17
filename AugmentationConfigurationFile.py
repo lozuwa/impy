@@ -48,8 +48,9 @@ class AugmentationConfigurationFile(object):
 		self.colorMethods = [self.invertColor, self.histogramEqualization, self.changeBrightness, \
 													self.sharpening, self.addGaussianNoise, self.gaussianBlur, \
 													self.shiftColors, self.fancyPCA]
-		# Augmenter methods for space.
-		self.geometricMethods = [self.scale, self.crop, self.pad, self.jitterBoxes, self.horizontalFlip, \
+		# Geometric augmenters.
+		self.translate = "translate"
+		self.geometricMethods = [self.scale, self.crop, self.translate, self.jitterBoxes, self.horizontalFlip, \
 														self.verticalFlip, self.rotation, self.dropout]
 
 

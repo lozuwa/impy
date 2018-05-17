@@ -51,8 +51,6 @@ try:
 except:
 	from AssertDataTypes import *
 
-
-
 class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 	"""
 	GeometricAugmenters class. This class implements a set of data augmentation
@@ -70,8 +68,6 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		Scales an image to another size.
 		Args:
 			frame: A tensor that contains an image.
-			boundingBoxes: A list of lists that contains the coordinates of the bounding
-											boxes that are part of the image.
 			size: A tuple that contains the resizing values.
 			interpolationMethod: Set the type of interpolation method. 
 														(INTER_NEAREST -> 0,
@@ -90,6 +86,8 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 			pass
 		else:
 			raise ValueError("size has to be either a tuple or a list (width, height)")
+		if (type(size) == list):
+			size = tuple(size)
 		if (len(size) != 2):
 			raise ValueError("size must be a tuple of size 2 (width, height)")
 		else:
@@ -102,6 +100,7 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		height, width, depth = frame.shape
 		reduX = height / resizeHeight
 		reduY = width / resizeWidth
+		print(type(size))
 		# Scale image
 		frame = cv2.resize(frame.copy(), size, interpolationMethod)
 		# Return values
@@ -139,6 +138,66 @@ class GeometricAugmenters(implements(GeometricAugmentersMethods)):
 		M = np.float32([[1, 0, 100], [0, 1, 50]])
 		frame = cv2.warpAffine(frame, M, (width, height))
 		return frame
+
+	def crop(self, frame = None, size = None):
+		"""
+		Apply a cropping transformation to a list of bounding boxes.
+		Args:
+			frame: A tensor that contains an image.
+			size: A 2-length tuple that contains the size of the crops to be performed.
+		Returns:
+			A list of lists with the updated coordinates of the bounding boxes after 
+			being cropped.
+		Example:
+		- Corner cc has been picked. So:
+							Original
+							ca----------cb      Crop
+							|            |      -----------
+							|            |      |         |
+							|            |      |         |
+							|            |      |         |
+							cc----------cd      -----------
+		"""
+		# Assertions.
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (size == None):
+			size = [0, 0]
+		if ((type(size) == list) or (type(size) == tuple)):
+			pass
+		else:
+			raise TypeError("Size has to be either a list or a tuple.")
+		if (len(size) != 2):
+			raise Exception("Size must be of length 2.")
+		# Local variables.
+		height, width = frame.shape[0], frame.shape[1]
+		cropWidth, cropHeight = size
+		ix, iy, x, y = 0, 0, width, height
+		# Logic.
+		if ((cropWidth >= width) or (cropWidth == 0)):
+			print("WARNING: The specified cropping size for width is bigger than" + \
+						" the width of the tensor. Setting the cropping width " +\
+						" to 3/4 of the current tensor. This operation is done for" +\
+						" only this image.")
+			cropWidth = int(width*(3/4))
+		if ((cropHeight >= height) or (cropHeight == 0)):
+			print("WARNING: The specified cropping size for height is bigger than" + \
+						" the height of the tensor. Setting the cropping height " +\
+						" to 3/4 of the current tensor. This operation is done for" +\
+						" only this image.")
+			cropHeight = int(height*(3/4))
+		# Pick one corner randomly.
+		pickedCorner = int(np.random.rand()*4)
+		if (pickedCorner == 0):
+			return frame[iy:iy+cropHeight, ix:ix+cropWidth]
+		elif (pickedCorner == 1):
+			return frame[iy:iy+cropHeight, x-cropWidth:x]
+		elif (pickedCorner == 2):
+			return frame[y-cropHeight:y, ix:ix+cropWidth]
+		elif (pickedCorner == 3):
+			return frame[y-cropHeight:y, x-cropWidth:x]
+		else:
+			raise Exception("An unkwon error ocurred.")
 
 	def jitterBoxes(self, frame = None, size = None, quantity = None, color = None):
 		"""

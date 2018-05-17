@@ -1,0 +1,40 @@
+{
+	"bounding_box_augmenters": {
+		"scale": {
+			"size": [1.2, 1.2],
+			"zoom": true,
+			"interpolationMethod": 1,
+			"save": true
+		},
+		"crop": {
+			"size": [0, 0],
+			"save": true
+		},
+		"pad": {
+			"size": [50, 50],
+			"save": true
+		},
+		"jitterBoxes": {
+			"size": [10, 10],
+			"quantity": 5,
+			"color": [255, 255, 255],
+			"save": true
+		},
+		"horizontalFlip": {
+			"save": true
+		},
+		"verticalFlip": {
+			"save": true
+		},
+		"rotation": {
+			"theta": 0.4,
+			"save": true
+		},
+		"dropout": {
+			"size": [10, 10],
+			"threshold": 0.6,
+			"color": [0,0,0],
+			"save": true
+		}
+	}
+}

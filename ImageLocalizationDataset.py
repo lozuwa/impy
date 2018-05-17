@@ -881,7 +881,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 		elif (augmentationType == "crop"):
 			# Apply crop
 			if (not ("size" in parameters)):
-				raise Exception("ERROR: Crop requires parameter size.")
+				parameters["size"] = [0, 0]
 			bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
 										size = parameters["size"])
 		elif (augmentationType == "pad"):

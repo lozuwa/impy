@@ -52,6 +52,11 @@ except:
 	from BoundingBoxAugmentersMethods import *
 
 try:
+	from .GeometricAugmenters import *
+except:
+	from GeometricAugmenters import *
+
+try:
 	from .AssertDataTypes import *
 except:
 	from AssertDataTypes import *
@@ -67,6 +72,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 	def __init__(self):
 		super(BoundingBoxAugmenters, self).__init__()
 		# Create an object of ImagePreprocessing
+		self.geometricAugmenters = GeometricAugmenters()
 		self.prep = ImagePreprocess()
 		self.assertion = AssertDataTypes()
 
@@ -91,25 +97,25 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Local variable assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("ERROR: Frame has to be a numpy array.")
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) == list):
 			pass
 		else:
-			raise ValueError("ERROR: Bounding boxes has to be of type list.")
-		if (type(zoom) != bool):
-			raise TypeError("ERROR: Zoom parameter must be a boolean.")
+			raise ValueError("Bounding boxes has to be of type list.")
 		if (zoom == None):
 			zoom = False
+		if (type(zoom) != bool):
+			raise TypeError("Zoom parameter must be a boolean.")
 		if (size == None):
-			raise ValueError("ERROR: size cannot be empty.")
+			raise ValueError("size cannot be empty.")
 		if ((type(size) == tuple) or (type(size) == list)):
 			size = (size[0], size[1])
 		else:
-			raise ValueError("ERROR: size has to be either a tuple or a list (width, height).")
+			raise ValueError("size has to be either a tuple or a list (width, height).")
 		if (len(size) != 2):
-			raise ValueError("ERROR: size must be a tuple or list of size 2 (width, height).")
+			raise ValueError("size must be a tuple or list of size 2 (width, height).")
 		else:
 			resizeWidth, resizeHeight = size[0], size[1]
 			if (resizeWidth == 0 or resizeHeight == 0):
@@ -152,39 +158,65 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		Returns:
 			A list of lists with the updated coordinates of the bounding boxes after 
 			being cropped.
+		Example:
+		- Corner cc has been picked. So:
+							Original
+							ca----------cb      Crop
+							|            |      -----------
+							|            |      |         |
+							|            |      |         |
+							|            |      |         |
+							cc----------cd      -----------
 		"""
-		# Local variables.
+		# Assertions.		
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
-		if (type(boundingBoxes) != list):
-			raise TypeError("ERROR: Bounding boxes parameter has to be a list.")
-		if ((type(size) == tuple) or (type(size) == list)):
-			height, width = (size[0], size[1])
+			raise Exception("Bounding boxes parameter cannot be empty.")
+		if ((type(boundingBoxes) == list) or (type(boundingBoxes) == tuple)):
+			pass
 		else:
-			raise ValueError("ERROR: size has to be either a tuple or a list (width, height).")
-		if ((height > 1) or (width > 1)):
-			raise ValueError("ERROR: Size cannot be bigger than 1. ({}, {})".format(height, width))
-		# Logic
+			raise TypeError("Bounding boxes has to be either a list or a tuple.")
+		if (size == None):
+			size = [0, 0]
+		if ((type(size) == list) or (type(size) == tuple)):
+			pass
+		else:
+			raise TypeError("Size has to be either a list or a tuple.")
+		if (len(size) != 2):
+			raise Exception("Size must be of length 2.")
+		# Local variables.
 		newBoundingBoxes = []
+		cropWidth, cropHeight = size
+		# Iterate over bounding boxes.
 		for i in range(len(boundingBoxes)):
-			# Decode bndbox.
+			# Decode bounding box.
 			ix, iy, x, y = boundingBoxes[i]
-			# Compute width and height.
-			widthBndbox, heightBndbox = (x - ix), (y - iy)
-			# Generate random number for the x axis.
-			limitX = x - int(widthBndbox*width)
-			if (limitX < 0):
-				limitX = 0
-			rix = int(ix + (np.random.rand()*(limitX - ix + 1)))
-			# Generate random number for the y axis.
-			limitY = y - int(heightBndbox*height)
-			if (limitY < 0):
-				limitY = 0
-			riy = int(iy + (np.random.rand()*(limitY - iy + 1)))
-			# Compute crop.
-			# boundingBoxes[i] = [rix, riy, x, y]
-			newBoundingBoxes.append([rix, riy, x, y])
-		# Return values
+			height, width = (y-iy), (x-ix)
+			# Logic.
+			if ((cropWidth >= width) or (cropWidth == 0)):
+				print("WARNING: The specified cropping size for width is bigger than" + \
+							" the width of the tensor. Setting the cropping width " +\
+							" to 3/4 of the current tensor. This operation is done for" +\
+							" only this image. {}".format(width))
+				cropWidth = int(width*(3/4))
+			if ((cropHeight >= height) or (cropHeight == 0)):
+				print("WARNING: The specified cropping size for height is bigger than" + \
+							" the height of the tensor. Setting the cropping height " +\
+							" to 3/4 of the current tensor. This operation is done for" +\
+							" only this image. {}".format(height))
+				cropHeight = int(height*(3/4))
+			# Pick one corner randomly.
+			pickedCorner = int(np.random.rand()*4)
+			if (pickedCorner == 0):
+				newBoundingBoxes.append([ix, iy, ix+cropWidth, iy+cropHeight])
+			elif (pickedCorner == 1):
+				newBoundingBoxes.append([x-cropWidth, iy, x, iy+cropHeight])
+			elif (pickedCorner == 2):
+				newBoundingBoxes.append([ix, y-cropHeight, ix+cropWidth, y])
+			elif (pickedCorner == 3):
+				newBoundingBoxes.append([x-cropWidth, y-cropHeight, x, y])
+			else:
+				raise Exception("An unkwon error ocurred.")
+		# Return bounding boxes.
 		return newBoundingBoxes
 
 	def pad(self, frameHeight = None, frameWidth = None, boundingBoxes = None, size = None):
@@ -284,28 +316,31 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("ERROR: Frame has to be a numpy array.")
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) != list):
-			raise TypeError("ERROR: Bounding boxes parameter has to be of type list.")
+			raise TypeError("Bounding boxes parameter has to be of type list.")
 		if (quantity == None):
 			quantity = 3
 		if (type(quantity) != int):
-			raise TypeError("ERROR: Quantity has to be of type int.")
+			raise TypeError("Quantity has to be of type int.")
 		if (size == None):
-			raise ValueError("ERROR: Size cannot be empty.")
+			raise ValueError("Size cannot be empty.")
 		if ((type(size) != list) or (type(size) != tuple)):
-			raise TypeError("ERROR: Size parameter has to be of type tuple.")
+			pass
+		else:
+			raise TypeError("Size parameter has to be of type tuple.")
 		if (len(size) != 2):
-			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")
+			raise ValueError("Size has to be a 2-sized tuple or list.")
 		if (color == None):
 			color = (0, 0, 0)
-		if ((type(color) != list) or (type(color) != tuple)):
-			raise TypeError("ERROR: color parameter has to be of type list or tuple")
+		if ((type(color) == list) or (type(color) == tuple)):
+			pass
 		else:
-			if (len(color) != 3):
-				raise ValueError("ERROR: color parameter has to be of length 3. (B, R, G)")
+			raise TypeError("color parameter has to be of type list or tuple")
+		if (len(color) != 3):
+			raise ValueError("color parameter has to be of length 3. (B, R, G)")
 		# Local variables
 		if (len(frame.shape) == 2):
 			height, width = frame.shape
@@ -399,16 +434,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("ERROR: Frame has to be a numpy array.")
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) != list):
-			raise TypeError("ERROR: Bounding boxes parameter has to be of type list.")
+			raise TypeError("Bounding boxes parameter has to be of type list.")
 		if (theta == None):
 			theta = (random.random() * math.pi) + math.pi / 3
 		if (type(theta) != float):
-			raise TypeError("ERROR: Theta parameter has to be of type float.")
-		# Local variables
+			raise TypeError("Theta parameter has to be of type float.")
+		# Local variables.
 		thetaDegrees = theta * (180 / math.pi)
 		localFrame = frame[:, :, :]
 		# Iterate over bounding boxes

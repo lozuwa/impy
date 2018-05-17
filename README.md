@@ -152,7 +152,6 @@ if __mame__ == "__main__":
 						},
 						{
 							"crop": {
-								"size": [0.7, 0.9],
 								"save": true,
 								"restartFrame": true,
 								"randomEvent": false
@@ -406,18 +405,18 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 ```
 
 <h3>Random crop</h3>
-<p>Crops the bounding boxes of an image. Code example:</p>
+<p>Crops the bounding boxes of an image. Specify the size of the crop in the size parameter. Code example:</p>
 
 ```json
 {
 	"crop": {
-		"size": [0.8, 0.8]
+		"size": [50, 50]
 	}
 }
 ```
 
 <h3>Random pad</h3>
-<p>Pads the bounding boxes of an image. i.e adds pixels from outside the bounding box. Code example:</p>
+<p>Pads the bounding boxes of an image. i.e adds pixels from outside the bounding box. Specify the amount of pixels to be added in the size parameter. Code example:</p>
 
 ```json
 {

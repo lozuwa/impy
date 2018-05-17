@@ -34,7 +34,7 @@ class GeometricAugmenters_test(unittest.TestCase):
 																	size = (100, 100),
 																	interpolationMethod = 1)
 			cv2.namedWindow("__scale__", 0)
-			cv2.resizeWindow("__scale__", self.windowSize);
+			#cv2.resizeWindow("__scale__", self.windowSize)
 			cv2.imshow("__scale__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -44,10 +44,18 @@ class GeometricAugmenters_test(unittest.TestCase):
 			frame = self.augmenter.translate(frame = self.frame,
 																				offset = (100, 100))
 			cv2.namedWindow("__translate__", 0)
-			cv2.resizeWindow("__translate__", self.windowSize);
+			#cv2.resizeWindow("__translate__", self.windowSize)
 			cv2.imshow("__translate__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
+
+	def test_crop(self):
+		frame = self.augmenter.crop(frame = self.frame, size = None)
+		cv2.namedWindow("__crop__", 0)
+		#cv2.resizeWindow("__crop__", (800,800))
+		cv2.imshow("__crop__", frame)
+		cv2.waitKey(self.waitTime)
+		cv2.destroyAllWindows()
 
 	def test_jitter_boxes(self):
 		if (self.visualize):
@@ -55,7 +63,7 @@ class GeometricAugmenters_test(unittest.TestCase):
 																				size = (10,10),
 																				quantity = 30)
 			cv2.namedWindow("__jitterBoxes__", 0)
-			cv2.resizeWindow("__jitterBoxes__", self.windowSize);
+			#cv2.resizeWindow("__jitterBoxes__", self.windowSize)
 			cv2.imshow("__jitterBoxes__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -64,7 +72,7 @@ class GeometricAugmenters_test(unittest.TestCase):
 		if (self.visualize):
 			frame = self.augmenter.horizontalFlip(frame = self.frame)
 			cv2.namedWindow("__horizontalFlip__", 0)
-			cv2.resizeWindow("__horizontalFlip__", self.windowSize);
+			#cv2.resizeWindow("__horizontalFlip__", self.windowSize);
 			cv2.imshow("__horizontalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
@@ -73,14 +81,14 @@ class GeometricAugmenters_test(unittest.TestCase):
 		if (self.visualize):
 			frame = self.augmenter.verticalFlip(frame = self.frame)
 			cv2.namedWindow("__verticalFlip__", 0)
-			cv2.resizeWindow("__verticalFlip__", self.windowSize);
+			#cv2.resizeWindow("__verticalFlip__", self.windowSize)
 			cv2.imshow("__verticalFlip__", frame)
 			cv2.waitKey(self.waitTime)
 			cv2.destroyAllWindows()
 
 	def test_rotation(self):
 		if (self.visualize):
-			theta = 0
+			theta = 0.0
 			height, width = self.frame.shape[0], self.frame.shape[1]
 			for i in range(3):
 				frame, ps = self.augmenter.rotation(frame = self.frame,
@@ -88,7 +96,7 @@ class GeometricAugmenters_test(unittest.TestCase):
 																									theta = theta)
 				ix, iy, x, y = ps
 				cv2.namedWindow("__rotation__", 0)
-				cv2.resizeWindow("__rotation__", self.windowSize);
+				#cv2.resizeWindow("__rotation__", self.windowSize);
 				cv2.imshow("__rotation__", frame[iy:y, ix:x, :])
 				cv2.waitKey(2500)
 				cv2.destroyAllWindows()

@@ -22,7 +22,7 @@ class ColorAugmenters_test(unittest.TestCase):
 		self.augmenter = ColorAugmenters()
 		# Testing options
 		self.visualize = True
-		self.waitTime = 50000
+		self.waitTime = 500
 		self.windowSize = (800, 800)
 
 	def tearDown(self):

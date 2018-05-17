@@ -21,37 +21,39 @@ try:
 except:
 	from ColorAugmenters import *
 
+try:
+	from .AugmentationConfigurationFile import *
+except:
+	from AugmentationConfigurationFile import *
+
+try:
+	from .Util import *
+except:
+	from Util import *
+
 geometricAugmenter = GeometricAugmenters()
 colorAugmenter = ColorAugmenters()
 
 class ImageDataset(object):
-	def __init__(self, imagesDirectory = None, annotationsDirectory = None, dbName = None):
+	def __init__(self, imagesDirectory = None, dbName = None):
 		super(ImageDataset, self).__init__()
 		# Assertions.
 		if (imagesDirectory == None):
 			raise Exception("imagesDirectory cannot be empty.")
-		if (annotationsDirectory == None):
-			raise Exception("annotationsDirectory cannot be empty.")
 		if (type(imagesDirectory) != str):
 			raise TypeError("imagesDirectory should be of type str.")
-		if (type(annotationsDirectory) != str):
-			raise TypeError("annotationsDirectory should be of type str.")
-		if (os.path.isdir(imagesDirectory)):
+		if (not os.path.isdir(imagesDirectory)):
 			raise Exception("imagesDirectory's path does not exist: {}"\
 											.format(imagesDirectory))
-		if (os.path.isdir(annotationsDirectory)):
-			raise Exception("annotationsDirectory's path does not exist: {}"\
-											.format(annotationsDirectory))
 		if (dbName == None):
 			dbName = "Unspecified"
 		if (type(dbName) != str):
 			raise TypeError("dbName must be of type string.")
 		# Class variables.
 		self.imagesDirectory = imagesDirectory
-		self.annotationsDirectory = annotationsDirectory
 		self.dbName = dbName
 
-	def applyDataAugmentation(self, configurationFile = None, outputImageDirectory = None, outputAnnotationDirectory = None, threshold = None):
+	def applyDataAugmentation(self, configurationFile = None, outputImageDirectory = None, threshold = None):
 		"""
 		Applies one or multiple data augmentation methods to the dataset.
 		Args:
@@ -59,8 +61,6 @@ class ImageDataset(object):
 								configuration of the data augmentation methods.
 			outputImageDirectory: A string that contains the path to the directory where
 														images will be saved.
-			outputAnnotationDirectory: A string that contains the path the directory where
-																annotations will be saved.
 			threshold: A float that contains a number between 0 and 1.
 		Returns:
 			None
@@ -81,14 +81,6 @@ class ImageDataset(object):
 		if (not (os.path.isdir(outputImageDirectory))):
 			raise Exception("ERROR: Path to output directory does not exist. {}"\
 											.format(outputImageDirectory))
-		if (outputAnnotationDirectory == None):
-			outputAnnotationDirectory = os.getcwd()
-			Util.create_folder(os.path.join(outputAnnotationDirectory, "annotations"))
-			Util.create_folder(os.path.join(outputAnnotationDirectory, "annotations", "xmls"))
-			outputAnnotationDirectory = os.path.join(os.getcwd(), "annotations", "xmls")
-		if (not (os.path.isdir(outputAnnotationDirectory))):
-			raise Exception("ERROR: Path to output annotation directory does not exist. {}"\
-											.format(outputAnnotationDirectory))
 		if (threshold == None):
 			threshold = 0.5
 		if (type(threshold) != float):
@@ -253,12 +245,12 @@ class ImageDataset(object):
 			elif (typeAugmentation == 3):
 				# Assert sequential follows multiple_image_augmentations
 				if (not ("Sequential" in data["multiple_image_augmentations"])):
-					raise Exception("ERROR: Data after multiple_image_augmentations is not recognized.")
+					raise Exception("Data after multiple_image_augmentations is not recognized.")
 				# Multiple augmentation configurations, get a list of hash maps of all the confs.
 				list_of_augmenters_confs = data["multiple_image_augmentations"]["Sequential"]
 				# Assert list_of_augmenters_confs is a list
 				if (not (type(list_of_augmenters_confs) == list)):
-					raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential] must be a list.")
+					raise TypeError("Data inside [multiple_image_augmentations][Sequential] must be a list.")
 				# Prepare data for sequence.
 				frame = cv2.imread(imgFullPath)
 				# print("\n*", list_of_augmenters_confs, "\n")
@@ -268,13 +260,13 @@ class ImageDataset(object):
 					augmentationConf = list(list_of_augmenters_confs[k].keys())[0]
 					if (not (jsonConf.isGeometricConfFile(keys = [augmentationConf]) or
 							jsonConf.isColorConfFile(keys = [augmentationConf]))):
-						raise Exception("ERROR: {} is not a valid configuration.".format(augmentationConf))
+						raise Exception("{} is not a valid configuration.".format(augmentationConf))
 					# Get sequential information from there. This information is a list of 
 					# the types of augmenters that belong to augmentationConf.
 					list_of_augmenters_confs_types = list_of_augmenters_confs[k][augmentationConf]["Sequential"]
 					# Assert list_of_augmenters_confs is a list
 					if (not (type(list_of_augmenters_confs_types) == list)):
-						raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential][{}][Sequential] must be a list."\
+						raise TypeError("Data inside [multiple_image_augmentations][Sequential][{}][Sequential] must be a list."\
 														.format(augmentationConf))
 					# Iterate over augmenters inside sequential of type.
 					for l in range(len(list_of_augmenters_confs_types)):
@@ -302,13 +294,13 @@ class ImageDataset(object):
 						elif (augmentationConf == "image_geometric_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame, bndboxes = self.__applyGeometricAugmentation__(frame = frame,
-																					augmentationType = augmentationType, #j,
+								frame = self.__applyGeometricAugmentation__(frame = frame,
+																					augmentationType = augmentationType,
 																					parameters = parameters)
 						# Save?
 						if ((saveParameter == True) and (randomEvent == True)):
 							# Generate a new name.
-							newName = Util.create_random_name(name = self.databaseName, length = 4)
+							newName = Util.create_random_name(name = self.dbName, length = 4)
 							imgName = newName + extension
 							# Save image.
 							Util.save_img(frame = frame, 
@@ -317,7 +309,6 @@ class ImageDataset(object):
 						# Restart frame?
 						if (restartFrameParameter == True):
 							frame = cv2.imread(imgFullPath)
-							bndboxes = boundingBoxes
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
 
@@ -364,41 +355,39 @@ class ImageDataset(object):
 				raise Exception("ERROR: Scale requires parameter size.")
 			if (not ("interpolationMethod" in parameters)):
 				raise Exception("ERROR: Scale requires parameter interpolationMethod.")
-			frame, bndboxes = geometricAugmenter.scale(frame = frame,
+			frame = geometricAugmenter.scale(frame = frame,
 										size = parameters["size"],
 										interpolationMethod = parameters["interpolationMethod"])
 		elif (augmentationType == "crop"):
 			# Apply crop
 			if (not ("size" in parameters)):
-				raise Exception("ERROR: Crop requires parameter size.")
-			bndboxes = geometricAugmenter.crop(boundingBoxes = boundingBoxes,
-										size = parameters["size"])
-		elif (augmentationType == "pad"):
+				parameters["size"] = [0,0]
+			frame = geometricAugmenter.crop(frame = frame,
+																	size = parameters["size"])
+		elif (augmentationType == "translate"):
 			# Apply pad
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: Pad requires parameter size.")
-			bndboxes = geometricAugmenter.pad(boundingBoxes = boundingBoxes,
-																		frameHeight = frame.shape[0],
-																		frameWidth = frame.shape[1],
-																		size = parameters["size"])
+			if (not ("offset" in parameters)):
+				raise Exception("ERROR: Pad requires parameter offset.")
+			bndboxes = geometricAugmenter.translate(frame = frame,
+																		offset = parameters["offset"])
 		elif (augmentationType == "jitterBoxes"):
 			# Apply jitter boxes
 			if (not ("size" in parameters)):
 				raise Exception("ERROR: JitterBoxes requires parameter size.")
 			if (not ("quantity" in parameters)):
 				raise Exception("ERROR: JitterBoxes requires parameter quantity.")
+			if (not ("color" in parameters)):
+				parameters["color"] = [255,255,255]
 			frame = geometricAugmenter.jitterBoxes(frame = frame,
-																					boundingBoxes = boundingBoxes,
 																					size = parameters["size"],
-																					quantity = parameters["quantity"])
+																					quantity = parameters["quantity"],
+																					color = parameters["color"])
 		elif (augmentationType == "horizontalFlip"):
 			# Apply horizontal flip
-			frame = geometricAugmenter.horizontalFlip(frame = frame,
-																						boundingBoxes = boundingBoxes)
+			frame = geometricAugmenter.horizontalFlip(frame = frame)
 		elif (augmentationType == "verticalFlip"):
 			# Apply vertical flip
-			frame = geometricAugmenter.verticalFlip(frame = frame,
-																					boundingBoxes = boundingBoxes)
+			frame = geometricAugmenter.verticalFlip(frame = frame)
 		elif (augmentationType == "rotation"):
 			# Apply rotation
 			if (not ("theta" in parameters)):
@@ -407,7 +396,7 @@ class ImageDataset(object):
 			else:
 				theta = parameters["theta"]
 			frame = geometricAugmenter.rotation(frame = frame,
-																				boundingBoxes = boundingBoxes,
+																				bndbox = [0, 0, frame.shape[1], frame.shape[0]],
 																				theta = theta)
 		return frame
 		

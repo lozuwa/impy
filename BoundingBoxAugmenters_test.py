@@ -96,37 +96,32 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			cv2.destroyAllWindows()
 
 	def test_crop(self):
-		# Prepare data
+		# Prepare data.
 		boundingBoxes = [[100, 100, 150, 150]]
-		size = (0.1, 0.1)
-		# Apply transformation
-		boundingBoxes = self.augmenter.crop(boundingBoxes = boundingBoxes,
-																				size = size)
+		# Apply transformation.
+		newboundingBoxes = self.augmenter.crop(boundingBoxes = boundingBoxes,
+																				size = None)
 		# print(boundingBoxes)
 		# Assert values
-		for i in range(len(boundingBoxes)):
-			ix, iy, x, y = boundingBoxes[i]
-			# print(ix, iy, x, y)
-			# Assert coordinates' positions
-			self.assertGreaterEqual(ix, boundingBoxes[0][0])
-			self.assertGreaterEqual(iy, boundingBoxes[0][1])
-			self.assertLessEqual(x, boundingBoxes[0][2])
-			self.assertLessEqual(y, boundingBoxes[0][3])
+		for i in range(len(newboundingBoxes)):
+			ix, iy, x, y = newboundingBoxes[i]
+			ixo, iyo, xo, yo = boundingBoxes[i]
+			self.assertLess(x-ix, xo-ixo)
+			self.assertLess(y-iy, yo-iyo)
 		# Visual test
 		if (self.visualize):
 			localbnxboxes = self.bndboxes
-			for i in range(2):
-				frame = self.frame.copy()
-				bndboxes = self.augmenter.crop(boundingBoxes = localbnxboxes,
-																						size = (0.5,0.5))
-				for each in bndboxes:
-					ix, iy, x, y = each
-					frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 2)
-				cv2.namedWindow("__crop__", 0)
-				# cv2.resizeWindow("__crop__", self.windowSize);
-				cv2.imshow("__crop__", frame)
-				cv2.waitKey(self.waitTime)
-				cv2.destroyAllWindows()
+			frame = self.frame.copy()
+			bndboxes = self.augmenter.crop(boundingBoxes = localbnxboxes,
+																					size = (300,300))
+			for each in bndboxes:
+				ix, iy, x, y = each
+				frame = cv2.rectangle(frame, (ix, iy), (x, y), (0,0,255), 5)
+			cv2.namedWindow("__crop__", 0)
+			# cv2.resizeWindow("__crop__", self.windowSize);
+			cv2.imshow("__crop__", frame)
+			cv2.waitKey(self.waitTime)
+			cv2.destroyAllWindows()
 
 	def test_pad(self):
 		# Prepare data
@@ -196,7 +191,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 
 	def test_rotation(self):
 		if (self.visualize):
-			theta = 0
+			theta = 0.0
 			for i in range(10):
 				frame = self.augmenter.rotation(frame = self.frame, 
 																					boundingBoxes = self.bndboxes,

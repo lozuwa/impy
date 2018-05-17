@@ -1,0 +1,22 @@
+{	
+	"image_geometric_augmenters": {
+		"scale": {
+			"size": [100, 100]
+		},
+		"translate":{
+			"offset": [100, 100]
+		},
+		"jitterBoxes": {
+			"size": [10,10],
+			"quantity": 10,
+			"color": [255,255,125]
+		},
+		"horizontalFlip": {			
+		},
+		"verticalFlip": {
+		},
+		"rotation": {
+			"theta": 0.4
+		}
+	}
+}
