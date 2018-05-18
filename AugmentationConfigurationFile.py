@@ -1,3 +1,9 @@
+"""
+Author: Rodrigo Loza
+Email: lozuwaucb@gmail.com
+Description: This class implements methods to deal with the 
+configuration files.
+"""
 import os
 import json
 import numpy as np
@@ -23,7 +29,8 @@ class AugmentationConfigurationFile(object):
 		self.confAugGeometric = "image_geometric_augmenters"
 		self.confAugColor = "image_color_augmenters"
 		self.confAugMultiple = "multiple_image_augmentations"
-		self.supportedDataAugmentationTypes = [self.confAugMultiple, self.confAugBndbxs, self.confAugGeometric, self.confAugColor]
+		self.supportedDataAugmentationTypes = [self.confAugMultiple, self.confAugBndbxs, \
+																				self.confAugGeometric, self.confAugColor]
 		# Augmenter methods for bounding boxes.
 		self.scale = "scale"
 		self.crop = "crop"
@@ -43,15 +50,19 @@ class AugmentationConfigurationFile(object):
 		self.sharpening = "sharpening"
 		self.addGaussianNoise = "addGaussianNoise"
 		self.gaussianBlur = "gaussianBlur"
+		self.averageBlur = "averageBlur"
+		self.medianBlur = "medianBlur"
+		self.bilateralBlur = "bilateralBlur"
 		self.shiftColors = "shiftColors"
 		self.fancyPCA = "fancyPCA"
 		self.colorMethods = [self.invertColor, self.histogramEqualization, self.changeBrightness, \
 													self.sharpening, self.addGaussianNoise, self.gaussianBlur, \
+													self.averageBlur, self.medianBlur, self.bilateralBlur, \
 													self.shiftColors, self.fancyPCA]
 		# Geometric augmenters.
 		self.translate = "translate"
-		self.geometricMethods = [self.scale, self.crop, self.translate, self.jitterBoxes, self.horizontalFlip, \
-														self.verticalFlip, self.rotation, self.dropout]
+		self.geometricMethods = [self.scale, self.crop, self.translate, self.jitterBoxes, \
+														self.horizontalFlip, self.verticalFlip, self.rotation, self.dropout]
 
 
 	def isValidBoundingBoxAugmentation(self, augmentation = None):

@@ -12,27 +12,19 @@ from interface import implements
 from tqdm import tqdm
 
 try:
-	from .GeometricAugmenters import *
-except:
-	from GeometricAugmenters import *
-
-try:
-	from .ColorAugmenters import *
-except:
-	from ColorAugmenters import *
-
-try:
 	from .AugmentationConfigurationFile import *
 except:
 	from AugmentationConfigurationFile import *
 
 try:
+	from .ApplyAugmentation import *
+except:
+	from ApplyAugmentation import *
+
+try:
 	from .Util import *
 except:
 	from Util import *
-
-geometricAugmenter = GeometricAugmenters()
-colorAugmenter = ColorAugmenters()
 
 class ImageDataset(object):
 	def __init__(self, imagesDirectory = None, dbName = None):
@@ -124,7 +116,7 @@ class ImageDataset(object):
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
 							# Apply augmentation
-							frame = self.__applyColorAugmentation__(frame = frame,
+							frame = __applyColorAugmentation__(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
@@ -139,7 +131,7 @@ class ImageDataset(object):
 						parameters = data["image_geometric_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame = self.__applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+						frame = __applyColorAugmentation__(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -169,7 +161,7 @@ class ImageDataset(object):
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
 							# Apply augmentation
-							frame = self.__applyColorAugmentation__(frame = frame,
+							frame = __applyColorAugmentation__(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
@@ -185,7 +177,7 @@ class ImageDataset(object):
 						parameters = data["image_color_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame = self.__applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+						frame = __applyColorAugmentation__(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -240,17 +232,17 @@ class ImageDataset(object):
 						# Probability of augmentation happening.
 						randomEvent = jsonConf.randomEvent(parameters = parameters, threshold = threshold)
 						# print(augmentationType, parameters)
-						# Apply augmentation
+						# Apply augmentation.
 						if (augmentationConf == "image_color_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame = self.__applyColorAugmentation__(frame = frame,
+								frame = __applyColorAugmentation__(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
 						elif (augmentationConf == "image_geometric_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame = self.__applyGeometricAugmentation__(frame = frame,
+								frame = __applyGeometricAugmentation__(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
 						# Save?
@@ -268,91 +260,4 @@ class ImageDataset(object):
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
 
-	def __applyColorAugmentation__(self, frame = None, augmentationType = None, parameters = None):
-		# Logic
-		if (augmentationType == "invertColor"):
-			if (not ("CSpace" in parameters)):
-				parameters["CSpace"] = [True, True, True]
-			frame = colorAugmenter.invertColor(frame = frame, CSpace = parameters["CSpace"])
-		elif (augmentationType == "histogramEqualization"):
-			if (not ("equalizationType" in parameters)):
-				parameters["equalizationType"] = 0
-			frame = colorAugmenter.histogramEqualization(frame = frame, equalizationType = parameters["equalizationType"])
-		elif (augmentationType == "changeBrightness"):
-			if (not ("coefficient" in parameters)):
-				raise AttributeError("coefficient for changeBrightness must be specified.")
-			frame = colorAugmenter.changeBrightness(frame = frame, coefficient = parameters["coefficient"])
-		elif (augmentationType == "sharpening"):
-			if (not ("weight" in parameters)):
-				raise AttributeError("weight for sharpening must be specified.")
-			frame = colorAugmenter.sharpening(frame = frame, weight = parameters["weight"])
-		elif (augmentationType == "addGaussianNoise"):
-			if (not ("coefficient" in parameters)):
-				raise AttributeError("coefficient for addGaussianNoise must be specified.")
-			frame = colorAugmenter.addGaussianNoise(frame = frame, coefficient = parameters["coefficient"])
-		elif (augmentationType == "gaussianBlur"):
-			if (not ("sigma" in parameters)):
-				raise AttributeError("sigma for gaussianBlur must be specified.")
-			frame = colorAugmenter.gaussianBlur(frame = frame, sigma = parameters["sigma"])
-		elif (augmentationType == "shiftColors"):
-			frame = colorAugmenter.shiftColors(frame = frame)
-		elif (augmentationType == "fancyPCA"):
-			frame = colorAugmenter.fancyPCA(frame = frame)
-		else:
-			raise Exception("Color augmentation type not supported: {}".format(augmentationType))
-		# Return result
-		return frame
-
-	def __applyGeometricAugmentation__(self, frame = None, augmentationType = None, parameters = None):
-		# Logic
-		if (augmentationType == "scale"):
-			# Apply scaling
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: Scale requires parameter size.")
-			if (not ("interpolationMethod" in parameters)):
-				raise Exception("ERROR: Scale requires parameter interpolationMethod.")
-			frame = geometricAugmenter.scale(frame = frame,
-										size = parameters["size"],
-										interpolationMethod = parameters["interpolationMethod"])
-		elif (augmentationType == "crop"):
-			# Apply crop
-			if (not ("size" in parameters)):
-				parameters["size"] = [0,0]
-			frame = geometricAugmenter.crop(frame = frame,
-																	size = parameters["size"])
-		elif (augmentationType == "translate"):
-			# Apply pad
-			if (not ("offset" in parameters)):
-				raise Exception("ERROR: Pad requires parameter offset.")
-			bndboxes = geometricAugmenter.translate(frame = frame,
-																		offset = parameters["offset"])
-		elif (augmentationType == "jitterBoxes"):
-			# Apply jitter boxes
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: JitterBoxes requires parameter size.")
-			if (not ("quantity" in parameters)):
-				raise Exception("ERROR: JitterBoxes requires parameter quantity.")
-			if (not ("color" in parameters)):
-				parameters["color"] = [255,255,255]
-			frame = geometricAugmenter.jitterBoxes(frame = frame,
-																					size = parameters["size"],
-																					quantity = parameters["quantity"],
-																					color = parameters["color"])
-		elif (augmentationType == "horizontalFlip"):
-			# Apply horizontal flip
-			frame = geometricAugmenter.horizontalFlip(frame = frame)
-		elif (augmentationType == "verticalFlip"):
-			# Apply vertical flip
-			frame = geometricAugmenter.verticalFlip(frame = frame)
-		elif (augmentationType == "rotation"):
-			# Apply rotation
-			if (not ("theta" in parameters)):
-				theta = None
-				#raise Exception("ERROR: Rotation requires parameter theta.")
-			else:
-				theta = parameters["theta"]
-			frame = geometricAugmenter.rotation(frame = frame,
-																				bndbox = [0, 0, frame.shape[1], frame.shape[0]],
-																				theta = theta)
-		return frame
 		

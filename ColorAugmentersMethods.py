@@ -66,14 +66,53 @@ class ColorAugmentersMethods(Interface):
 		"""
 		pass
 
-	def gaussianBlur(self, frame = None, sigma = None):
+	def gaussianBlur(self, frame = None, kernelSize = None, sigma = None):
 		"""
 		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
-		Sigma might be between 1 and 3.
+		Sigma's default value is between 1 and 3.
 		Args:
 			frame: A tensor that contains an image.
+			kernelSize: A list or tuple that contains the size of the kernel
+									that will be convolved with the image.
+			sigma: A float that contains the value of the gaussian filter.
 		Returns:
 			A tensor with a rotation of the original image.
+		"""
+		pass
+
+	def averageBlur(self, frame = None, kernelSize = None):
+		"""
+		Convolves the image with an average filter.
+		Args:
+			frame: A tensor that contains an image.
+			kernelSize: A tuple or list that contains the size 
+									of the kernel that will be convolved with
+									the image.
+		Returns:
+			A tensor with a blurred image.
+		"""
+		pass
+
+	def medianBlur(self, frame = None, coefficient = None):
+		"""
+		Convolves an image with a median blur kernel.
+		Args:
+			frame: A tensor that contains an image.
+			coefficient: An odd integer.
+		Returns:
+			A median blurred frame.
+		"""
+		pass
+
+	def bilateralBlur(self, frame = None, d = None, sigmaColor = None, sigmaSpace = None):
+		"""
+		Convolves an image with a bilateral filter.
+		Args:
+			d: Diameter of each pixel neighborhood.
+			sigmaColor: Filter color space.
+			sigmaSpace: Filter the coordinate space.
+		Returns:
+			An image blurred by a bilateral filter.
 		"""
 		pass
 

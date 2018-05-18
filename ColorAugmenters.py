@@ -80,7 +80,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		Returns:
 			A tensor that has its color inverted.
 		"""
-		# Assertions
+		# Assertions.
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
 		if (CSpace == None):
@@ -88,9 +88,9 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		if ((type(CSpace) == tuple) or (type(CSpace) == list)):
 			pass
 		else:
-			raise TypeError("ERROR: CSpace parameter has to be either a tuple or a list: {}"\
-											.format(type(CSpace)))
-		# Check CSpace
+			raise TypeError("ERROR: CSpace parameter has to be either a tuple or "+\
+											"a list: {}".format(type(CSpace)))
+		# Check CSpace.
 		if (CSpace[0] == True):
 			frame[:, :, 0] = cv2.bitwise_not(frame[:, :, 0])
 		else:
@@ -106,7 +106,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		if (not (frame.dtype == np.uint8)):
 			print("WARNING: Image is not dtype uint8. Forcing type.")
 			frame = frame.astype(np.uint8)
-		# Return tensor
+		# Return tensor.
 		return frame
 
 	def histogramEqualization(self, frame = None, equalizationType = None):
@@ -260,12 +260,14 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			frame = frame.astype(np.uint8)
 		return frame
 
-	def gaussianBlur(self, frame = None, sigma = None):
+	def gaussianBlur(self, frame = None, kernelSize = None, sigma = None):
 		"""
 		Blur an image applying a gaussian filter with a random sigma(0, sigma_max)
 		Sigma's default value is between 1 and 3.
 		Args:
 			frame: A tensor that contains an image.
+			kernelSize: A list or tuple that contains the size of the kernel
+									that will be convolved with the image.
 			sigma: A float that contains the value of the gaussian filter.
 		Returns:
 			A tensor with a rotation of the original image.
@@ -273,16 +275,124 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
 			raise ValueError("Frame has to be a numpy array.")
+		if (kernelSize == None):
+			kernelSize = [5,5]
+		if ((type(kernelSize) == list) or (type(kernelSize) == tuple)):
+			pass
+		else:
+			raise TypeError("Kernel size must be of type list or tuple.")
+		if (type(kernelSize) == list):
+			kernelSize = tuple(kernelSize)
+		if (len(kernelSize) != 2):
+			raise ValueError("Kernel size must be of size 2.")
+		if ((kernelSize[0] > 8) or (kernelSize[1] > 8)):
+			raise ValueError("Kernel size is constrained to be of max size 8.")
 		if (sigma == None):
 			sigma = float(random.random()*3) + 1
 		if (type(sigma) != float):
 			raise TypeError("ERROR: Sigma parameter has to be of type float.")
-		# Apply gaussian filter
-		frame = cv2.GaussianBlur(frame, (5, 5), sigma)
-		if (not (frame.dtype == np.uint8)):
+		# Logic.
+		blurredFrame = cv2.GaussianBlur(frame, kernelSize, sigma)
+		if (not (blurredFrame.dtype == np.uint8)):
 			print("WARNING: Image is not dtype uint8. Forcing type.")
-			frame = frame.astype(np.uint8)
-		return frame
+			blurredFrame = blurredFrame.astype(np.uint8)
+		return blurredFrame
+
+	def averageBlur(self, frame = None, kernelSize = None):
+		"""
+		Convolves the image with an average filter.
+		Args:
+			frame: A tensor that contains an image.
+			kernelSize: A tuple or list that contains the size 
+									of the kernel that will be convolved with
+									the image.
+		Returns:
+			A tensor with a blurred image.
+		"""
+		# Assertions.
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (kernelSize == None):
+			kernelSize = [5,5]
+		if ((type(kernelSize) == list) or (type(kernelSize) == tuple)):
+			pass
+		else:
+			raise Exception("Kernel size must be a list or a tuple.")
+		if (type(kernelSize) == list):
+			kernelSize = tuple(kernelSize)
+		if (len(kernelSize) != 2):
+			raise ValueError("Kernel size must be a list or tuple of length 2.")
+		if ((kernelSize[0] > 8) or (kernelSize[1] > 8)):
+			raise ValueError("Kernel size is constrained to be of max size 8.")
+		# Local variables.
+		m = kernelSize[0]*kernelSize[1]
+		averageKernel = (1 / m) * np.ones(kernelSize, np.float32)
+		# Logic.
+		blurredFrame = cv2.filter2D(frame, -1, averageKernel)
+		if (not (blurredFrame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			blurredFrame = blurredFrame.astype(np.uint8)
+		# Return blurred image.
+		return blurredFrame
+
+	def medianBlur(self, frame = None, coefficient = None):
+		"""
+		Convolves an image with a median blur kernel.
+		Args:
+			frame: A tensor that contains an image.
+			coefficient: An odd integer.
+		Returns:
+			A median blurred frame.
+		"""
+		# Assertions.
+		if (self.assertion.assertNumpyType(frame) == False):
+			raise ValueError("Frame has to be a numpy array.")
+		if (coefficient == None):
+			coefficient = 5
+		if (type(coefficient) != int):
+			raise TypeError("Coefficient must be an integer.")
+		if (coefficient%2==0):
+			raise ValueError("Coefficient must be an odd number.")
+		if (coefficient > 9):
+			raise ValueError("Coefficient is constrained to be max 9.")
+		# Logic.
+		blurredFrame = cv2.medianBlur(frame, coefficient)
+		# Return blurred tensor.
+		return blurredFrame
+
+	def bilateralBlur(self, frame = None, d = None, sigmaColor = None, sigmaSpace = None):
+		"""
+		Convolves an image with a bilateral filter.
+		Args:
+			d: Diameter of each pixel neighborhood.
+			sigmaColor: Filter color space.
+			sigmaSpace: Filter the coordinate space.
+		Returns:
+			An image blurred by a bilateral filter.
+		"""
+		# Assertions.
+		if (d == None):
+			d = 5
+		if (type(d) != int):
+			raise ValueError("d has to be of type int.")
+		if (d > 9):
+			raise ValueError("d is allowed to be maximum 9.")
+		if (sigmaColor == None):
+			sigmaColor = 75
+		if (type(sigmaColor) != int):
+			raise ValueError("sigmaColor has to be of type int.")
+		if (sigmaColor > 250):
+			raise ValueError("Sigma color is allowed to be maximum 250.")
+		if (sigmaSpace == None):
+			sigmaSpace = 75
+		if (type(sigmaSpace) != int):
+			raise ValueError("sigmaSpace has to be of type int.")
+		if (sigmaSpace > 200):
+			raise ValueError("Sigma space is allowed to be maximum 200.")		
+		# Logic.
+		blurredFrame = cv2.bilateralFilter(frame, d, sigmaColor, sigmaSpace)
+		# Return blurred frame.
+		return blurredFrame
 
 	def shiftColors(self, frame = None):
 		"""

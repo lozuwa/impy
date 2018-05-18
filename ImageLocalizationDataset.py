@@ -27,16 +27,6 @@ except:
 	from ImagePreprocess import *
 
 try:
-	from .BoundingBoxAugmenters import *
-except:
-	from BoundingBoxAugmenters import *
-
-try:
-	from .ColorAugmenters import *
-except:
-	from ColorAugmenters import * 
-
-try:
 	from .ImageAnnotation import *
 except:
 	from ImageAnnotation import *
@@ -61,9 +51,12 @@ try:
 except:
 	from AugmentationConfigurationFile import *
 
+try:
+	from .ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+except:
+	from ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+
 prep = ImagePreprocess()
-bndboxAugmenter = BoundingBoxAugmenters()
-colorAugmenter = ColorAugmenters()
 dataAssertion = AssertDataTypes()
 
 class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMethods, \
@@ -620,7 +613,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 							parameters = data["bounding_box_augmenters"][i][k][augmentationType]
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-							frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
+							frame, bndboxes = applyBoundingBoxAugmentation(frame = frame,
 																						boundingBoxes = bndboxes,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
@@ -647,7 +640,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 						parameters = data["bounding_box_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = cv2.imread(imgFullPath),
+						frame, bndboxes = applyBoundingBoxAugmentation(frame = cv2.imread(imgFullPath),
 																						boundingBoxes = boundingBoxes,
 																						augmentationType = i,
 																						parameters = parameters)
@@ -693,7 +686,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
 							# Apply augmentation
-							frame = self.__applyColorAugmentation__(frame = frame,
+							frame = applyColorAugmentation(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
@@ -719,7 +712,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 						parameters = data["image_color_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame = self.__applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+						frame = applyColorAugmentation(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -789,13 +782,13 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 						if (augmentationConf == "image_color_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame = self.__applyColorAugmentation__(frame = frame,
+								frame = applyColorAugmentation(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
 						elif (augmentationConf == "bounding_box_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
+								frame, bndboxes = applyBoundingBoxAugmentation(frame = frame,
 																					boundingBoxes = bndboxes,
 																					augmentationType = augmentationType, #j,
 																					parameters = parameters)
@@ -811,126 +804,20 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 														output_image_directory = outputImageDirectory)
 							# Save annotation.
 							Util.save_annotation(filename = imgName,
-																					path = os.path.join(outputImageDirectory, imgName),
-																					database_name = self.databaseName,
-																					frame_size = frame.shape,
-																					data_augmentation_type = augmentationType,
-																					bounding_boxes = bndboxes,
-																					names = names,
-																					origin = imgFullPath,
-																					output_directory = os.path.join(outputAnnotationDirectory, xmlName))
+																	path = os.path.join(outputImageDirectory, imgName),
+																	database_name = self.databaseName,
+																	frame_size = frame.shape,
+																	data_augmentation_type = augmentationType,
+																	bounding_boxes = bndboxes,
+																	names = names,
+																	origin = imgFullPath,
+																	output_directory = os.path.join(outputAnnotationDirectory, xmlName))
 						# Restart frame?
 						if (restartFrameParameter == True):
 							frame = cv2.imread(imgFullPath)
 							bndboxes = boundingBoxes
 			else:
 				raise Exception("Type augmentation {} not valid.".format(typeAugmentation))
-
-	def __applyColorAugmentation__(self, frame = None, augmentationType = None, parameters = None):
-		# Logic
-		if (augmentationType == "invertColor"):
-			if (not ("CSpace" in parameters)):
-				parameters["CSpace"] = [True, True, True]
-			frame = colorAugmenter.invertColor(frame = frame, CSpace = parameters["CSpace"])
-		elif (augmentationType == "histogramEqualization"):
-			if (not ("equalizationType" in parameters)):
-				parameters["equalizationType"] = 0
-			frame = colorAugmenter.histogramEqualization(frame = frame, equalizationType = parameters["equalizationType"])
-		elif (augmentationType == "changeBrightness"):
-			if (not ("coefficient" in parameters)):
-				raise AttributeError("coefficient for changeBrightness must be specified.")
-			frame = colorAugmenter.changeBrightness(frame = frame, coefficient = parameters["coefficient"])
-		elif (augmentationType == "sharpening"):
-			if (not ("weight" in parameters)):
-				raise AttributeError("weight for sharpening must be specified.")
-			frame = colorAugmenter.sharpening(frame = frame, weight = parameters["weight"])
-		elif (augmentationType == "addGaussianNoise"):
-			if (not ("coefficient" in parameters)):
-				raise AttributeError("coefficient for addGaussianNoise must be specified.")
-			frame = colorAugmenter.addGaussianNoise(frame = frame, coefficient = parameters["coefficient"])
-		elif (augmentationType == "gaussianBlur"):
-			if (not ("sigma" in parameters)):
-				raise AttributeError("sigma for gaussianBlur must be specified.")
-			frame = colorAugmenter.gaussianBlur(frame = frame, sigma = parameters["sigma"])
-		elif (augmentationType == "shiftColors"):
-			frame = colorAugmenter.shiftColors(frame = frame)
-		elif (augmentationType == "fancyPCA"):
-			frame = colorAugmenter.fancyPCA(frame = frame)
-		else:
-			raise Exception("Color augmentation type not supported: {}".format(augmentationType))
-		# Return result
-		return frame
-
-	def __applyBoundingBoxAugmentation__(self, frame = None, boundingBoxes = None, augmentationType = None, parameters = None):
-		# Local variables
-		bndboxes = boundingBoxes
-		# Logic
-		if (augmentationType == "scale"):
-			# Apply scaling
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: Scale requires parameter size.")
-			if (not ("zoom" in parameters)):
-				raise Exception("ERROR: Scale requires parameter zoom.")
-			if (not ("interpolationMethod" in parameters)):
-				raise Exception("ERROR: Scale requires parameter interpolationMethod.")
-			frame, bndboxes = bndboxAugmenter.scale(frame = frame,
-										boundingBoxes = boundingBoxes,
-										size = parameters["size"],
-										zoom = parameters["zoom"],
-										interpolationMethod = parameters["interpolationMethod"])
-		elif (augmentationType == "crop"):
-			# Apply crop
-			if (not ("size" in parameters)):
-				parameters["size"] = [0, 0]
-			bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
-										size = parameters["size"])
-		elif (augmentationType == "pad"):
-			# Apply pad
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: Pad requires parameter size.")
-			bndboxes = bndboxAugmenter.pad(boundingBoxes = boundingBoxes,
-																		frameHeight = frame.shape[0],
-																		frameWidth = frame.shape[1],
-																		size = parameters["size"])
-		elif (augmentationType == "jitterBoxes"):
-			# Apply jitter boxes
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: JitterBoxes requires parameter size.")
-			if (not ("quantity" in parameters)):
-				raise Exception("ERROR: JitterBoxes requires parameter quantity.")
-			frame = bndboxAugmenter.jitterBoxes(frame = frame,
-																					boundingBoxes = boundingBoxes,
-																					size = parameters["size"],
-																					quantity = parameters["quantity"])
-		elif (augmentationType == "horizontalFlip"):
-			# Apply horizontal flip
-			frame = bndboxAugmenter.horizontalFlip(frame = frame,
-																						boundingBoxes = boundingBoxes)
-		elif (augmentationType == "verticalFlip"):
-			# Apply vertical flip
-			frame = bndboxAugmenter.verticalFlip(frame = frame,
-																					boundingBoxes = boundingBoxes)
-		elif (augmentationType == "rotation"):
-			# Apply rotation
-			if (not ("theta" in parameters)):
-				theta = None
-				#raise Exception("ERROR: Rotation requires parameter theta.")
-			else:
-				theta = parameters["theta"]
-			frame = bndboxAugmenter.rotation(frame = frame,
-																				boundingBoxes = boundingBoxes,
-																				theta = theta)
-		elif (augmentationType == "dropout"):
-			# Apply dropout
-			if (not ("size" in parameters)):
-				raise Exception("ERROR: Dropout requires parameter size.")
-			if (not ("threshold" in parameters)):
-				raise Exception("ERROR: Dropout requires parameter threshold.")
-			frame = bndboxAugmenter.dropout(frame = frame,
-																		boundingBoxes = boundingBoxes,
-																		size = parameters["size"],
-																		threshold = parameters["threshold"])
-		return frame, bndboxes
 
 class Annotation(object):
 	def __init__(self, name = None, bndbox = None, module = None, corePoint = None):

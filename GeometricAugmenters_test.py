@@ -16,11 +16,11 @@ class GeometricAugmenters_test(unittest.TestCase):
 	def setUp(self):
 		img_path = os.path.join(os.getcwd(), "tests/cars_dataset/images/cars0.png")
 		assert os.path.isfile(img_path)
-		# Image
+		# Image.
 		self.frame = cv2.imread(img_path)
-		# Augmenters
+		# Augmenters.
 		self.augmenter = GeometricAugmenters()
-		# Testing options
+		# Testing options.
 		self.visualize = True
 		self.waitTime = 2000
 		self.windowSize = (800, 800)

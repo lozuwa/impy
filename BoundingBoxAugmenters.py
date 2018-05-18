@@ -72,7 +72,6 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 	def __init__(self):
 		super(BoundingBoxAugmenters, self).__init__()
 		# Create an object of ImagePreprocessing
-		self.geometricAugmenters = GeometricAugmenters()
 		self.prep = ImagePreprocess()
 		self.assertion = AssertDataTypes()
 

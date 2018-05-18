@@ -38,12 +38,27 @@
 				}
 			},
 			{
-				"shiftColors": {
+				"averageBlur": {
+					"kernelSize": [5,5],
 					"save": false
 				}
 			},
 			{
-				"fancyPCA": {
+				"medianBlur": {
+					"coefficient": 5,
+					"save": false
+				}
+			},
+			{
+				"bilateralBlur": {
+					"d": 5,
+					"sigmaColor": 75,
+					"sigmaSpace": 75,
+					"save": false			
+				}
+			},
+			{
+				"shiftColors": {
 					"save": false
 				}
 			}
