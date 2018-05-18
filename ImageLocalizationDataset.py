@@ -532,7 +532,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 				Util.save_annotation(filename = imgName,
 													path = os.path.join(outputImageDirectory, imgName),
 													database_name = self.databaseName,
-													frame_size = frame.shape,
+													frame_size = frame[RoiYMin:RoiYMax, RoiXMin:RoiXMax, :].shape,
 													data_augmentation_type = "Unspecified",
 													bounding_boxes = newBoundingBoxes,
 													names = newNames,
@@ -807,8 +807,8 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 							xmlName = newName + ".xml"
 							# Save image.
 							Util.save_img(frame = frame, 
-																								img_name = imgName, 
-																								output_image_directory = outputImageDirectory)
+														img_name = imgName, 
+														output_image_directory = outputImageDirectory)
 							# Save annotation.
 							Util.save_annotation(filename = imgName,
 																					path = os.path.join(outputImageDirectory, imgName),

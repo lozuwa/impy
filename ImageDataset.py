@@ -105,50 +105,41 @@ class ImageDataset(object):
 			imgFullPath = os.path.join(self.imagesDirectory, filename + extension)
 			# Apply augmentation.
 			if (typeAugmentation == 0):
-				for i in data["color_augmenters"]:
+				raise Exception("Bounding box augmenters cannot be applied to an image dataset." +\
+												" Use geometric augmenters instead.")
+			elif (typeAugmentation == 1):
+				# Geometric data augmentations
+				for i in data["image_geometric_augmenters"]:
 					if (i == "Sequential"):
 						# Prepare data for sequence
 						frame = cv2.imread(imgFullPath)
-						bndboxes = boundingBoxes
 						# Read elements of vector
-						assert type(data["bounding_box_augmenters"][i]) == list, "Not list"
-						for k in range(len(data["bounding_box_augmenters"][i])):
+						assert type(data["image_geometric_augmenters"][i]) == list, "Not list"
+						for k in range(len(data["image_geometric_augmenters"][i])):
 							# Extract information
-							augmentationType = list(data["bounding_box_augmenters"][i][k].keys())[0]
-							if (not jsonConf.isValidBoundingBoxAugmentation(augmentation = augmentationType)):
+							augmentationType = list(data["image_geometric_augmenters"][i][k].keys())[0]
+							if (not jsonConf.isValidGeometricAugmentation(augmentation = augmentationType)):
 								raise Exception("ERROR: {} is not valid.".format(augmentationType))
-							parameters = data["bounding_box_augmenters"][i][k][augmentationType]
+							parameters = data["image_geometric_augmenters"][i][k][augmentationType]
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-							frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = frame,
-																						boundingBoxes = bndboxes,
+							# Apply augmentation
+							frame = self.__applyColorAugmentation__(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
 								# Generate a new name.
-								newName = Util.create_random_name(name = self.databaseName, length = 4)
+								newName = Util.create_random_name(name = self.dbName, length = 4)
 								imgName = newName + extension
-								xmlName = newName + ".xml"
 								# Save image.
 								Util.save_img(frame = frame, 
-																									img_name = imgName, 
-																									output_image_directory = outputImageDirectory)
-								# Save annotation.
-								Util.save_annotation(filename = imgName,
-																						path = os.path.join(outputImageDirectory, imgName),
-																						database_name = self.databaseName,
-																						frame_size = frame.shape,
-																						data_augmentation_type = augmentationType,
-																						bounding_boxes = bndboxes,
-																						names = names,
-																						origin = imgFullPath,
-																						output_directory = os.path.join(outputAnnotationDirectory, xmlName))
+															img_name = imgName, 
+															output_image_directory = outputImageDirectory)
 					else:
-						parameters = data["bounding_box_augmenters"][i]
+						parameters = data["image_geometric_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame, bndboxes = self.__applyBoundingBoxAugmentation__(frame = cv2.imread(imgFullPath),
-																						boundingBoxes = boundingBoxes,
+						frame = self.__applyColorAugmentation__(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -159,23 +150,8 @@ class ImageDataset(object):
 							xmlName = newName + ".xml"
 							# Save image.
 							Util.save_img(frame = frame, 
-																								img_name = imgName, 
-																								output_image_directory = outputImageDirectory)
-							# Save annotation.
-							Util.save_annotation(filename = imgName,
-																					path = os.path.join(outputImageDirectory, imgName),
-																					database_name = self.databaseName,
-																					frame_size = frame.shape,
-																					data_augmentation_type = augmentationType,
-																					bounding_boxes = bndboxes,
-																					names = names,
-																					origin = imgFullPath,
-																					output_directory = os.path.join(outputAnnotationDirectory, xmlName))
-			elif (typeAugmentation == 1):
-				# Geometric data augmentations
-				raise ValueError("Image geometric data augmentations are not " +\
-													"supported for bounding boxes. Use bounding box " +\
-													"augmentation types.")
+															img_name = imgName, 
+															output_image_directory = outputImageDirectory)
 			elif (typeAugmentation == 2):
 				# Color data augmentations
 				for i in data["image_color_augmenters"]:
@@ -203,18 +179,8 @@ class ImageDataset(object):
 								xmlName = newName + ".xml"
 								# Save image.
 								Util.save_img(frame = frame, 
-																									img_name = imgName, 
-																									output_image_directory = outputImageDirectory)
-								# Save annotation.
-								Util.save_annotation(filename = imgName,
-																						path = os.path.join(outputImageDirectory, imgName),
-																						database_name = self.databaseName,
-																						frame_size = frame.shape,
-																						data_augmentation_type = augmentationType,
-																						bounding_boxes = bndboxes,
-																						names = names,
-																						origin = imgFullPath,
-																						output_directory = os.path.join(outputAnnotationDirectory, xmlName))
+																img_name = imgName, 
+																output_image_directory = outputImageDirectory)
 					else:
 						parameters = data["image_color_augmenters"][i]
 						# Save?
@@ -230,18 +196,8 @@ class ImageDataset(object):
 							xmlName = newName + ".xml"
 							# Save image.
 							Util.save_img(frame = frame, 
-																								img_name = imgName, 
-																								output_image_directory = outputImageDirectory)
-							# Save annotation.
-							Util.save_annotation(filename = imgName,
-																					path = os.path.join(outputImageDirectory, imgName),
-																					database_name = self.databaseName,
-																					frame_size = frame.shape,
-																					data_augmentation_type = augmentationType,
-																					bounding_boxes = bndboxes,
-																					names = names,
-																					origin = imgFullPath,
-																					output_directory = os.path.join(outputAnnotationDirectory, xmlName))
+														img_name = imgName, 
+														output_image_directory = outputImageDirectory)
 			elif (typeAugmentation == 3):
 				# Assert sequential follows multiple_image_augmentations
 				if (not ("Sequential" in data["multiple_image_augmentations"])):

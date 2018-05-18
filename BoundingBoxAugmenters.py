@@ -144,7 +144,7 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			# Check variables are not the same as the right and bottom boundaries
 			x, y = BoundingBoxAugmenters.checkBoundaries(x, y, width, height)
 			# Update list
-			newBoundingBoxes.append([ix, iy, x, y])
+			newBoundingBoxes.append([int(ix), int(iy), int(x), int(y)])
 		# Return values
 		return frame, newBoundingBoxes
 
@@ -207,13 +207,13 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			# Pick one corner randomly.
 			pickedCorner = int(np.random.rand()*4)
 			if (pickedCorner == 0):
-				newBoundingBoxes.append([ix, iy, ix+cropWidth, iy+cropHeight])
+				newBoundingBoxes.append([int(ix), int(iy), int(ix+cropWidth), int(iy+cropHeight)])
 			elif (pickedCorner == 1):
-				newBoundingBoxes.append([x-cropWidth, iy, x, iy+cropHeight])
+				newBoundingBoxes.append([int(x-cropWidth), int(iy), int(x), int(iy+cropHeight)])
 			elif (pickedCorner == 2):
-				newBoundingBoxes.append([ix, y-cropHeight, ix+cropWidth, y])
+				newBoundingBoxes.append([int(ix), int(y-cropHeight), int(ix+cropWidth), int(y)])
 			elif (pickedCorner == 3):
-				newBoundingBoxes.append([x-cropWidth, y-cropHeight, x, y])
+				newBoundingBoxes.append([int(x-cropWidth), int(y-cropHeight), int(x), int(y)])
 			else:
 				raise Exception("An unkwon error ocurred.")
 		# Return bounding boxes.
@@ -287,16 +287,16 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			else:
 				iy -= paddingTop
 			if ((x + paddingRight) >= frameWidth):
-				x = frameWidth
+				x = frameWidth - 1
 			else:
 				x += paddingRight
 			if ((y + paddingBottom) >= frameHeight):
-				y = frameHeight
+				y = frameHeight - 1
 			else:
 				y += paddingBottom
 			# Update bounding box.
 			# boundingBoxes[i] = [ix, iy, x, y]
-			newBoundingBoxes.append([ix, iy, x, y])
+			newBoundingBoxes.append([int(ix), int(iy), int(x), int(y)])
 		# Return bouding boxes.
 		return boundingBoxes
 
