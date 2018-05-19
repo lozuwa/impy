@@ -17,9 +17,9 @@ except:
 	from AugmentationConfigurationFile import *
 
 try:
-	from .ApplyAugmentation import *
+	from .ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
 except:
-	from ApplyAugmentation import *
+	from ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
 
 try:
 	from .Util import *
@@ -116,7 +116,7 @@ class ImageDataset(object):
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
 							# Apply augmentation
-							frame = __applyColorAugmentation__(frame = frame,
+							frame = applyColorAugmentation(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
@@ -131,7 +131,7 @@ class ImageDataset(object):
 						parameters = data["image_geometric_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame = __applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+						frame = applyColorAugmentation(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -161,7 +161,7 @@ class ImageDataset(object):
 							# Save?
 							saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
 							# Apply augmentation
-							frame = __applyColorAugmentation__(frame = frame,
+							frame = applyColorAugmentation(frame = frame,
 																						augmentationType = augmentationType, #j,
 																						parameters = parameters)
 							if (saveParameter == True):
@@ -177,7 +177,7 @@ class ImageDataset(object):
 						parameters = data["image_color_augmenters"][i]
 						# Save?
 						saveParameter = jsonConf.extractSavingParameter(parameters = parameters)
-						frame = __applyColorAugmentation__(frame = cv2.imread(imgFullPath),
+						frame = applyColorAugmentation(frame = cv2.imread(imgFullPath),
 																						augmentationType = i,
 																						parameters = parameters)
 						# Save frame
@@ -236,13 +236,13 @@ class ImageDataset(object):
 						if (augmentationConf == "image_color_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame = __applyColorAugmentation__(frame = frame,
+								frame = applyColorAugmentation(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
 						elif (augmentationConf == "image_geometric_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):
-								frame = __applyGeometricAugmentation__(frame = frame,
+								frame = applyGeometricAugmentation(frame = frame,
 																					augmentationType = augmentationType,
 																					parameters = parameters)
 						# Save?

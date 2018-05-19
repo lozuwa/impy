@@ -289,13 +289,16 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Kernel size is constrained to be of max size 8.")
 		if (sigma == None):
 			sigma = float(random.random()*3) + 1
+		if (type(sigma) == int):
+			sigma = float(sigma)
 		if (type(sigma) != float):
-			raise TypeError("ERROR: Sigma parameter has to be of type float.")
+			raise TypeError("Sigma parameter has to be either a float or an int.")
 		# Logic.
 		blurredFrame = cv2.GaussianBlur(frame, kernelSize, sigma)
 		if (not (blurredFrame.dtype == np.uint8)):
 			print("WARNING: Image is not dtype uint8. Forcing type.")
 			blurredFrame = blurredFrame.astype(np.uint8)
+		# Return blurred frame.
 		return blurredFrame
 
 	def averageBlur(self, frame = None, kernelSize = None):
@@ -357,6 +360,9 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Coefficient is constrained to be max 9.")
 		# Logic.
 		blurredFrame = cv2.medianBlur(frame, coefficient)
+		if (not (blurredFrame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			blurredFrame = blurredFrame.astype(np.uint8)		
 		# Return blurred tensor.
 		return blurredFrame
 
@@ -391,6 +397,9 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 			raise ValueError("Sigma space is allowed to be maximum 200.")		
 		# Logic.
 		blurredFrame = cv2.bilateralFilter(frame, d, sigmaColor, sigmaSpace)
+		if (not (blurredFrame.dtype == np.uint8)):
+			print("WARNING: Image is not dtype uint8. Forcing type.")
+			blurredFrame = blurredFrame.astype(np.uint8)
 		# Return blurred frame.
 		return blurredFrame
 

@@ -25,7 +25,7 @@ bndboxAugmenter = BoundingBoxAugmenters()
 colorAugmenter = ColorAugmenters()
 geometricAugmenter = GeometricAugmenters()
 
-def __applyGeometricAugmentation__(frame = None, augmentationType = None, parameters = None):
+def applyGeometricAugmentation(frame = None, augmentationType = None, parameters = None):
 	"""
 	Applies a geometric augmentation making sure all the parameters exist or are 
 	correct.

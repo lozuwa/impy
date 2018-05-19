@@ -17,7 +17,6 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 																				annotationsDirectory = self.annts,
 																				databaseName = "unit_test")
 
-
 	def tearDown(self):
 		pass
 
@@ -43,7 +42,7 @@ class ImageLocalizationDataset_test(unittest.TestCase):
 		offset = 300
 		for i in range(1):
 			for each in os.listdir(self.imgs):
-				if True:#each.endswith(".png"):
+				if True:
 					# Get extension
 					extension = Util.detect_file_extension(each)
 					if (extension == None):
