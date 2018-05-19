@@ -191,13 +191,13 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 			ix, iy, x, y = boundingBoxes[i]
 			height, width = (y-iy), (x-ix)
 			# Logic.
-			if ((cropWidth >= width) or (cropWidth == 0)):
+			if ((cropWidth >= width) or (size[0] == 0)):
 				print("WARNING: The specified cropping size for width is bigger than" + \
 							" the width of the tensor. Setting the cropping width " +\
 							" to 3/4 of the current tensor. This operation is done for" +\
 							" only this image. {}".format(width))
 				cropWidth = int(width*(3/4))
-			if ((cropHeight >= height) or (cropHeight == 0)):
+			if ((cropHeight >= height) or (size[1] == 0)):
 				print("WARNING: The specified cropping size for height is bigger than" + \
 							" the height of the tensor. Setting the cropping height " +\
 							" to 3/4 of the current tensor. This operation is done for" +\

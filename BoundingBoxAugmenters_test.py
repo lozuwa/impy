@@ -20,15 +20,15 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		annotation_path = os.path.join(os.getcwd(), "tests/cars_dataset/annotations/xmls/cars0.xml")
 		assert os.path.isfile(img_path)
 		assert os.path.isfile(annotation_path)
-		# Image
+		# Image.
 		self.frame = cv2.imread(img_path)
 		self.annotation = annotation_path
 		imgAnt = ImageAnnotation(path = self.annotation)
 		self.bndboxes = imgAnt.propertyBoundingBoxes
 		self.names = imgAnt.propertyNames
-		# Augmenters
+		# Augmenters.
 		self.augmenter = BoundingBoxAugmenters()
-		# Testing options
+		# Testing options.
 		self.visualize = True
 		self.waitTime = 1000
 		self.windowSize = (800, 800)
@@ -37,10 +37,10 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		pass
 
 	def test_scale(self):
-		# Prepare data
+		# Prepare data.
 		frame = np.zeros([200, 200, 3])
 		boundingBoxes = [[100, 100, 150, 150]]
-		# Reduce test
+		# Reduce test.
 		size = (100, 100)
 		scaled_frame, bndboxes = self.augmenter.scale(frame = frame,
 																									boundingBoxes = boundingBoxes,
