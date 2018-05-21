@@ -232,21 +232,23 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (frameHeight == None):
-			raise ValueError("ERROR: Frame height cannot be empty.")
+			raise ValueError("Frame height cannot be empty.")
 		if (frameWidth == None):
-			raise ValueError("ERROR: Frame width cannot be empty.")
+			raise ValueError("Frame width cannot be empty.")
 		if ((type(frameHeight) != int) or (type(frameWidth) != int)):
-			raise TypeError("ERROR: Both frameHeight and frameWidth have to be of type int.")
+			raise TypeError("Both frameHeight and frameWidth have to be of type int.")
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) != list):
-			raise TypeError("ERROR: Bounding box parameter has to be of type list.")
+			raise TypeError("Bounding box parameter has to be of type list.")
+		if (size == None):
+			raise ValueError("Size cannot be empty.")
 		if ((type(size) == list) or (type(size) == tuple)):
 			pass
 		else:
-			raise TypeError("ERROR: Size parameter has to be of type tuple or list.")
+			raise TypeError("Size parameter has to be of type tuple or list.")
 		if (len(size) != 2):
-			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")
+			raise ValueError("Size has to be a 2-sized tuple or list.")
 		else:
 			padWidth, padHeight = size[0], size[1]
 		# Start padding
@@ -477,30 +479,30 @@ class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 		"""
 		# Assertions
 		if (self.assertion.assertNumpyType(frame) == False):
-			raise ValueError("ERROR: Frame has to be a numpy array.")
+			raise ValueError("Frame has to be a numpy array.")
 		if (boundingBoxes == None):
-			raise ValueError("ERROR: Bounding boxes parameter cannot be empty.")
+			raise ValueError("Bounding boxes parameter cannot be empty.")
 		if (type(boundingBoxes) != list):
-			raise TypeError("ERROR: Bounding boxes parameter has to be of type list.")
+			raise TypeError("Bounding boxes parameter has to be of type list.")
 		if (size == None):
-			raise ValueError("ERROR: Size parameter cannot be empty.")
+			raise ValueError("Size parameter cannot be empty.")
 		if ((type(size) != list) or (type(size) != tuple)):
 			pass
 		else:
-			raise TypeError("ERROR: Size parameter has to be of type tuple.")
+			raise TypeError("Size parameter has to be of type tuple.")
 		if (len(size) != 2):
-			raise ValueError("ERROR: Size has to be a 2-sized tuple or list.")
+			raise ValueError("Size has to be a 2-sized tuple or list.")
 		if (threshold == None):
 			threshold = 0.5
 		else:
 			if (threshold > 0.99):
 				threshold = 0.99
 		if (type(threshold) != float):
-			raise TypeError("ERROR: threshold parameter has to be of type float.")
+			raise TypeError("Threshold parameter has to be of type float.")
 		if (color == None):
 			color = (0,0,0)
 		if (type(color) != tuple):
-			raise TypeError("ERROR: color parameter has to be of type tuple.")
+			raise TypeError("Color parameter has to be of type tuple.")
 		# Local variables
 		localFrame = frame[:, :]
 		# Iterate over bounding boxes

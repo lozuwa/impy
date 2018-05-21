@@ -143,13 +143,62 @@ class AugmentationConfigurationFile(object):
 		elif (rColor):
 			return 2
 		elif (rMultiple):
+			self.isMultipleConfFileValid()
 			return 3
 		else:
 			raise Exception("The configuration is not valid: {}.".format(keys) +\
 							"bndbx: {} geometric: {} color: {}".format(rBndbx, rGeometric, rColor))
 
+	def isMultipleConfFileValid(self):
+		# Assert sequential follows multiple_image_augmentations.
+		if (not ("Sequential" in self.data["multiple_image_augmentations"])):
+			raise ValueError("Data after multiple_image_augmentations is not recognized." +\
+											" You should place Sequential.")
+		# Multiple augmentation configurations, get a list of hash maps of all the confs.
+		listAugmentersConfs = data["multiple_image_augmentations"]["Sequential"]
+		# Assert listAugmentersConfs is of type list.
+		if (not (type(listAugmentersConfs) == list)):
+			raise TyperError("The data inside multiple_image_augmentations/Sequential" +\
+												" should be a list.")
+		for i in range(len(listAugmentersConfs)):
+			augmentationConf = list(listAugmentersConfs[k].keys())[0]
+			# Assert the configuration is valid.
+			if (not (self.isBndBxAugConfFile(keys = [augmentationConf]) or
+					self.isColorConfFile(keys = [augmentationConf]))):
+				raise Exception("{} is not a valid configuration for multiple_image_augmentations."\
+													.format(augmentationConf))
+			# Assert the data inside the configuration is a list.
+			if (not ("Sequential" in listAugmentersConfs[i][augmentationConf])):
+				raise ValueError("Data after multiple_image_augmentations/Sequential/{}"\
+												.format(augmentationConf) + " should be Sequential.")
+			listAugmentersConfsTypes = listAugmentersConfs[i][augmentationConf]["Sequential"]
+			# Assert listAugmentersConfs is of type list.
+			if (not (type(listAugmentersConfsTypes) == list)):
+				raise TyperError("The data inside multiple_image_augmentations/Sequential" +\
+													"/{}/Sequential should be a list.".format(augmentationConf))
+			for j in range(len(listAugmentersConfsTypes)):
+				# Get augmentation type and its parameters.
+				augmentationInConfType = list(listAugmentersConfsTypes[j].keys())[0]
+				parameters = listAugmentersConfsTypes[j][augmentationInConfType]
+				if (augmentationConf == "bounding_box_augmenters"):
+					# Validate the type of augmentation.
+					if (not self.isValidBoundingBoxAugmentation(augmentation = augmentationInConfType)):
+						raise ValueError("Type of configuration for {}/{} not valid. Use a corresponding augmenter."\
+														.format(augmentationConf, augmentationInConfType))
+					# Validate the content of the augmentation.
+					self.validateBoundingBoxAugmentation(augmentationType = augmentationInConfType, \
+																									parameters = parameters)
+				elif (augmentationConf == "image_color_augmenters"):
+					# Validate the type of augmentation.
+					if (self.isValidBoundingBoxAugmentation(augmentation = augmentationInConfType)):
+						raise ValueError("Type of configuration for {}/{} not valid. Use a corresponding augmenter."\
+														.format(augmentationConf, augmentationInConfType))
+					# Validate the content of the augmentation.
+					self.validateColorAugmentation(augmentationType = None,\
+																					parameters = None)
+
 	def isValidConfFile(self, keys = None):
-		# Check len of keys
+		# Check len of keys.
 		self.lenOfKeys(keys = keys)
 		# Check key's values are supported.
 		self.isKeyValid(keys = keys)
@@ -330,3 +379,157 @@ class AugmentationConfigurationFile(object):
 		else:
 			return True
 
+	def validateBoundingBoxAugmentation(self, augmentationType = None, parameters = None):
+		"""
+		Applies a bounding box augmentation making sure all the parameters exist or are 
+		correct.
+		Args:
+			augmentationType: A string that contains a type of augmentation.
+			parameters: A hashmap that contains parameters for the respective type 
+								of augmentation.
+		Returns:
+			A tensor that contains a frame with the respective transformation.
+		"""
+		# Local variables.
+		bndboxes = boundingBoxes
+		# Logic.
+		if (augmentationType == "scale"):
+			# Apply scaling.
+			if (not ("size" in parameters)):
+				raise Exception("Scale requires parameter size.")
+			if (not ("zoom" in parameters)):
+				parameters["zoom"] = None
+			if (not ("interpolationMethod" in parameters)):
+				parameters["interpolationMethod"] = None
+		elif (augmentationType == "crop"):
+			# Apply crop.
+			if (not ("size" in parameters)):
+				parameters["size"] = None
+		elif (augmentationType == "pad"):
+			# Apply pad.
+			if (not ("size" in parameters)):
+				raise Exception("Pad requires parameter size.")
+		elif (augmentationType == "jitterBoxes"):
+			# Apply jitter boxes.
+			if (not ("size" in parameters)):
+				raise Exception("JitterBoxes requires parameter size.")
+			if (not ("quantity" in parameters)):
+				parameters["quantity"] = None
+		elif (augmentationType == "horizontalFlip"):
+			pass
+		elif (augmentationType == "verticalFlip"):
+			pass
+		elif (augmentationType == "rotation"):
+			# Apply rotation.
+			if (not ("theta" in parameters)):
+				theta = None
+				#raise Exception("ERROR: Rotation requires parameter theta.")
+			else:
+				theta = parameters["theta"]
+		elif (augmentationType == "dropout"):
+			# Apply dropout.
+			if (not ("size" in parameters)):
+				raise Exception("Dropout requires parameter size.")
+			if (not ("threshold" in parameters)):
+				parameters["threshold"] = None
+
+	def validateColorAugmentation(self, augmentationType = None, parameters = None):
+		"""
+		Applies a color augmentation making sure all the parameters exist or are 
+		correct.
+		Args:
+			augmentationType: A string that contains a type of augmentation.
+			parameters: A hashmap that contains parameters for the respective type 
+								of augmentation.
+		Returns:
+			A tensor that contains a frame with the respective transformation.
+		"""
+		# Logic.
+		if (augmentationType == "invertColor"):
+			if (not ("CSpace" in parameters)):
+				parameters["CSpace"] = None
+		elif (augmentationType == "histogramEqualization"):
+			if (not ("equalizationType" in parameters)):
+				parameters["equalizationType"] = None
+		elif (augmentationType == "changeBrightness"):
+			if (not ("coefficient" in parameters)):
+				raise AttributeError("coefficient for changeBrightness must be specified.")
+		elif (augmentationType == "sharpening"):
+			if (not ("weight" in parameters)):
+				parameters["weight"] = None
+		elif (augmentationType == "addGaussianNoise"):
+			if (not ("coefficient" in parameters)):
+				parameters["coefficient"] = None
+		elif (augmentationType == "gaussianBlur"):
+			if (not ("sigma" in parameters)):
+				parameters["sigma"] = None
+			if (not ("kernelSize" in parameters)):
+				parameters["kernelSize"] = None
+		elif (augmentationType == "averageBlur"):
+			if (not ("kernelSize" in parameters)):
+				parameters["kernelSize"] = None
+		elif (augmentationType == "medianBlur"):
+			if (not ("coefficient" in parameters)):
+				parameters["coefficient"] = None
+		elif (augmentationType == "bilateralBlur"):
+			if (not ("d" in parameters)):
+				parameters["d"] = None
+			if (not ("sigmaColor" in parameters)):
+				parameters["sigmaColor"] = None
+			if (not ("sigmaSpace" in parameters)):
+				parameters["sigmaSpace"] = None
+		elif (augmentationType == "shiftColors"):
+			pass
+		elif (augmentationType == "fancyPCA"):
+			pass
+		else:
+			raise Exception("Color augmentation type not supported: {}."\
+											.format(augmentationType))
+		# Return result.
+		return frame
+
+	def validateGeometricAugmentation(self, augmentationType = None, parameters = None):
+		"""
+		Applies a geometric augmentation making sure all the parameters exist or are 
+		correct.
+		Args:
+			augmentationType: A string that contains a type of augmentation.
+			parameters: A hashmap that contains parameters for the respective type 
+								of augmentation.
+		Returns:
+			A tensor that contains a frame with the respective transformation.
+		"""
+		# Logic
+		if (augmentationType == "scale"):
+			# Apply scaling
+			if (not ("size" in parameters)):
+				raise Exception("ERROR: Scale requires parameter size.")
+			if (not ("interpolationMethod" in parameters)):
+				print("WARNING: Interpolation method for scale will be set to default value.")
+		elif (augmentationType == "crop"):
+			# Apply crop
+			if (not ("size" in parameters)):
+				parameters["size"] = None
+				print("WARNING: Size for crop will be set to default value.")
+		elif (augmentationType == "translate"):
+			# Apply pad
+			if (not ("offset" in parameters)):
+				raise Exception("Pad requires parameter offset.")
+		elif (augmentationType == "jitterBoxes"):
+			# Apply jitter boxes
+			if (not ("size" in parameters)):
+				raise Exception("JitterBoxes requires parameter size.")
+			if (not ("quantity" in parameters)):
+				parameters["quantity"] = 10
+				print("WARNING: Quantity for jitter boxes will be set to its default value.")
+			if (not ("color" in parameters)):
+				parameters["color"] = [255,255,255]
+				print("WARNING: Color for jitter boxes will be set to its default value.")
+		elif (augmentationType == "horizontalFlip"):
+			pass
+		elif (augmentationType == "verticalFlip"):
+			pass
+		elif (augmentationType == "rotation"):
+			# Apply rotation
+			if (not ("theta" in parameters)):
+				pass

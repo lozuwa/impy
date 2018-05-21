@@ -202,7 +202,7 @@ class ColorAugmenters(implements(ColorAugmentersMethods)):
 		elif (len(frame.shape) == 2):
 			channels = 1
 		else:
-			raise Exception("ERROR: Frame not understood.")
+			raise ValueError("Frame not understood.")
 		if (weight == None):
 			weight = 2.0
 		if (type(weight) != float):

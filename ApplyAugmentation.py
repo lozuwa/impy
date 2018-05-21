@@ -42,30 +42,33 @@ def applyGeometricAugmentation(frame = None, augmentationType = None, parameters
 		if (not ("size" in parameters)):
 			raise Exception("ERROR: Scale requires parameter size.")
 		if (not ("interpolationMethod" in parameters)):
-			raise Exception("ERROR: Scale requires parameter interpolationMethod.")
+			print("WARNING: Interpolation method for scale will be set to default value.")
 		frame = geometricAugmenter.scale(frame = frame,
 									size = parameters["size"],
 									interpolationMethod = parameters["interpolationMethod"])
 	elif (augmentationType == "crop"):
 		# Apply crop
 		if (not ("size" in parameters)):
-			parameters["size"] = [0,0]
+			parameters["size"] = None
+			print("WARNING: Size for crop will be set to default value.")
 		frame = geometricAugmenter.crop(frame = frame,
 																size = parameters["size"])
 	elif (augmentationType == "translate"):
 		# Apply pad
 		if (not ("offset" in parameters)):
-			raise Exception("ERROR: Pad requires parameter offset.")
+			raise Exception("Pad requires parameter offset.")
 		bndboxes = geometricAugmenter.translate(frame = frame,
 																	offset = parameters["offset"])
 	elif (augmentationType == "jitterBoxes"):
 		# Apply jitter boxes
 		if (not ("size" in parameters)):
-			raise Exception("ERROR: JitterBoxes requires parameter size.")
+			raise Exception("JitterBoxes requires parameter size.")
 		if (not ("quantity" in parameters)):
-			raise Exception("ERROR: JitterBoxes requires parameter quantity.")
+			parameters["quantity"] = 10
+			print("WARNING: Quantity for jitter boxes will be set to its default value.")
 		if (not ("color" in parameters)):
 			parameters["color"] = [255,255,255]
+			print("WARNING: Color for jitter boxes will be set to its default value.")
 		frame = geometricAugmenter.jitterBoxes(frame = frame,
 																				size = parameters["size"],
 																				quantity = parameters["quantity"],
@@ -107,7 +110,7 @@ def applyColorAugmentation(frame = None, augmentationType = None, parameters = N
 																				CSpace = parameters["CSpace"])
 	elif (augmentationType == "histogramEqualization"):
 		if (not ("equalizationType" in parameters)):
-			parameters["equalizationType"] = 0
+			parameters["equalizationType"] = None
 		frame = colorAugmenter.histogramEqualization(frame = frame, \
 															equalizationType = parameters["equalizationType"])
 	elif (augmentationType == "changeBrightness"):
@@ -117,11 +120,11 @@ def applyColorAugmentation(frame = None, augmentationType = None, parameters = N
 																				coefficient = parameters["coefficient"])
 	elif (augmentationType == "sharpening"):
 		if (not ("weight" in parameters)):
-			raise AttributeError("weight for sharpening must be specified.")
+			parameters["weight"] = None
 		frame = colorAugmenter.sharpening(frame = frame, weight = parameters["weight"])
 	elif (augmentationType == "addGaussianNoise"):
 		if (not ("coefficient" in parameters)):
-			raise AttributeError("coefficient for addGaussianNoise must be specified.")
+			parameters["coefficient"] = None
 		frame = colorAugmenter.addGaussianNoise(frame = frame, \
 																				coefficient = parameters["coefficient"])
 	elif (augmentationType == "gaussianBlur"):
@@ -178,11 +181,11 @@ def applyBoundingBoxAugmentation(frame = None, boundingBoxes = None, augmentatio
 	if (augmentationType == "scale"):
 		# Apply scaling.
 		if (not ("size" in parameters)):
-			raise Exception("ERROR: Scale requires parameter size.")
+			raise Exception("Scale requires parameter size.")
 		if (not ("zoom" in parameters)):
-			raise Exception("ERROR: Scale requires parameter zoom.")
+			parameters["zoom"] = None
 		if (not ("interpolationMethod" in parameters)):
-			raise Exception("ERROR: Scale requires parameter interpolationMethod.")
+			parameters["interpolationMethod"] = None
 		frame, bndboxes = bndboxAugmenter.scale(frame = frame,
 									boundingBoxes = boundingBoxes,
 									size = parameters["size"],
@@ -191,13 +194,13 @@ def applyBoundingBoxAugmentation(frame = None, boundingBoxes = None, augmentatio
 	elif (augmentationType == "crop"):
 		# Apply crop.
 		if (not ("size" in parameters)):
-			parameters["size"] = [0, 0]
+			parameters["size"] = None
 		bndboxes = bndboxAugmenter.crop(boundingBoxes = boundingBoxes,
 									size = parameters["size"])
 	elif (augmentationType == "pad"):
 		# Apply pad.
 		if (not ("size" in parameters)):
-			raise Exception("ERROR: Pad requires parameter size.")
+			raise Exception("Pad requires parameter size.")
 		bndboxes = bndboxAugmenter.pad(boundingBoxes = boundingBoxes,
 																	frameHeight = frame.shape[0],
 																	frameWidth = frame.shape[1],
@@ -205,9 +208,9 @@ def applyBoundingBoxAugmentation(frame = None, boundingBoxes = None, augmentatio
 	elif (augmentationType == "jitterBoxes"):
 		# Apply jitter boxes.
 		if (not ("size" in parameters)):
-			raise Exception("ERROR: JitterBoxes requires parameter size.")
+			raise Exception("JitterBoxes requires parameter size.")
 		if (not ("quantity" in parameters)):
-			raise Exception("ERROR: JitterBoxes requires parameter quantity.")
+			parameters["quantity"] = None
 		frame = bndboxAugmenter.jitterBoxes(frame = frame,
 																				boundingBoxes = boundingBoxes,
 																				size = parameters["size"],
@@ -233,9 +236,9 @@ def applyBoundingBoxAugmentation(frame = None, boundingBoxes = None, augmentatio
 	elif (augmentationType == "dropout"):
 		# Apply dropout.
 		if (not ("size" in parameters)):
-			raise Exception("ERROR: Dropout requires parameter size.")
+			raise Exception("Dropout requires parameter size.")
 		if (not ("threshold" in parameters)):
-			raise Exception("ERROR: Dropout requires parameter threshold.")
+			parameters["threshold"] = None
 		frame = bndboxAugmenter.dropout(frame = frame,
 																	boundingBoxes = boundingBoxes,
 																	size = parameters["size"],

@@ -736,12 +736,12 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 																					origin = imgFullPath,
 																					output_directory = os.path.join(outputAnnotationDirectory, xmlName))
 			elif (typeAugmentation == 3):
-				# Assert sequential follows multiple_image_augmentations
+				# Assert sequential follows multiple_image_augmentations.
 				if (not ("Sequential" in data["multiple_image_augmentations"])):
 					raise Exception("ERROR: Data after multiple_image_augmentations is not recognized.")
 				# Multiple augmentation configurations, get a list of hash maps of all the confs.
 				list_of_augmenters_confs = data["multiple_image_augmentations"]["Sequential"]
-				# Assert list_of_augmenters_confs is a list
+				# Assert list_of_augmenters_confs is a list.
 				if (not (type(list_of_augmenters_confs) == list)):
 					raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential] must be a list.")
 				# Prepare data for sequence.
@@ -754,13 +754,13 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 					augmentationConf = list(list_of_augmenters_confs[k].keys())[0]
 					if (not (jsonConf.isBndBxAugConfFile(keys = [augmentationConf]) or
 							jsonConf.isColorConfFile(keys = [augmentationConf]))):
-						raise Exception("ERROR: {} is not a valid configuration.".format(augmentationConf))
+						raise Exception("{} is not a valid configuration.".format(augmentationConf))
 					# Get sequential information from there. This information is a list of 
 					# the types of augmenters that belong to augmentationConf.
 					list_of_augmenters_confs_types = list_of_augmenters_confs[k][augmentationConf]["Sequential"]
 					# Assert list_of_augmenters_confs is a list
 					if (not (type(list_of_augmenters_confs_types) == list)):
-						raise TypeError("ERROR: Data inside [multiple_image_augmentations][Sequential][{}][Sequential] must be a list."\
+						raise TypeError("Data inside [multiple_image_augmentations][Sequential][{}][Sequential] must be a list."\
 														.format(augmentationConf))
 					# Iterate over augmenters inside sequential of type.
 					for l in range(len(list_of_augmenters_confs_types)):
@@ -778,7 +778,7 @@ class ImageLocalizationDataset(implements(ImageLocalizationDatasetPreprocessMeth
 						# Probability of augmentation happening.
 						randomEvent = jsonConf.randomEvent(parameters = parameters, threshold = threshold)
 						# print(augmentationType, parameters)
-						# Apply augmentation
+						# Apply augmentation.
 						if (augmentationConf == "image_color_augmenters"):
 							# print(augmentationConf, augmentationType, parameters)
 							if (randomEvent == True):

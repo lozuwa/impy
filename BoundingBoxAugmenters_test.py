@@ -108,7 +108,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 			ixo, iyo, xo, yo = boundingBoxes[i]
 			self.assertLess(x-ix, xo-ixo)
 			self.assertLess(y-iy, yo-iyo)
-		# Visual test
+		# Visual test.
 		if (self.visualize):
 			localbnxboxes = self.bndboxes
 			frame = self.frame.copy()
