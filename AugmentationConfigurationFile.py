@@ -151,17 +151,17 @@ class AugmentationConfigurationFile(object):
 
 	def isMultipleConfFileValid(self):
 		# Assert sequential follows multiple_image_augmentations.
-		if (not ("Sequential" in self.data["multiple_image_augmentations"])):
+		if (not ("Sequential" in self.file["multiple_image_augmentations"])):
 			raise ValueError("Data after multiple_image_augmentations is not recognized." +\
 											" You should place Sequential.")
 		# Multiple augmentation configurations, get a list of hash maps of all the confs.
-		listAugmentersConfs = data["multiple_image_augmentations"]["Sequential"]
+		listAugmentersConfs = self.file["multiple_image_augmentations"]["Sequential"]
 		# Assert listAugmentersConfs is of type list.
 		if (not (type(listAugmentersConfs) == list)):
 			raise TyperError("The data inside multiple_image_augmentations/Sequential" +\
 												" should be a list.")
 		for i in range(len(listAugmentersConfs)):
-			augmentationConf = list(listAugmentersConfs[k].keys())[0]
+			augmentationConf = list(listAugmentersConfs[i].keys())[0]
 			# Assert the configuration is valid.
 			if (not (self.isBndBxAugConfFile(keys = [augmentationConf]) or
 					self.isColorConfFile(keys = [augmentationConf]))):
@@ -194,8 +194,8 @@ class AugmentationConfigurationFile(object):
 						raise ValueError("Type of configuration for {}/{} not valid. Use a corresponding augmenter."\
 														.format(augmentationConf, augmentationInConfType))
 					# Validate the content of the augmentation.
-					self.validateColorAugmentation(augmentationType = None,\
-																					parameters = None)
+					self.validateColorAugmentation(augmentationType = augmentationInConfType,\
+																					parameters = parameters)
 
 	def isValidConfFile(self, keys = None):
 		# Check len of keys.
@@ -390,8 +390,6 @@ class AugmentationConfigurationFile(object):
 		Returns:
 			A tensor that contains a frame with the respective transformation.
 		"""
-		# Local variables.
-		bndboxes = boundingBoxes
 		# Logic.
 		if (augmentationType == "scale"):
 			# Apply scaling.
@@ -432,6 +430,9 @@ class AugmentationConfigurationFile(object):
 				raise Exception("Dropout requires parameter size.")
 			if (not ("threshold" in parameters)):
 				parameters["threshold"] = None
+		else:
+			raise Exception("Bounding box augmentation type not supported: {}."\
+											.format(augmentationType))
 
 	def validateColorAugmentation(self, augmentationType = None, parameters = None):
 		"""
@@ -485,8 +486,6 @@ class AugmentationConfigurationFile(object):
 		else:
 			raise Exception("Color augmentation type not supported: {}."\
 											.format(augmentationType))
-		# Return result.
-		return frame
 
 	def validateGeometricAugmentation(self, augmentationType = None, parameters = None):
 		"""
