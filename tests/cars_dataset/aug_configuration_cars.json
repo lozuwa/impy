@@ -1,0 +1,78 @@
+{
+	"multiple_image_augmentations": {
+		"Sequential": [
+			{
+				"image_color_augmenters": {
+					"Sequential": [
+						{
+							"sharpening": {
+								"weight": 2.0,
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
+							}
+						}
+					]
+				}
+			},
+			{
+				"bounding_box_augmenters": {
+					"Sequential": [
+						{
+							"scale": {
+								"size": [1.2, 1.2],
+								"zoom": true,
+								"interpolationMethod": 1,
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
+							}
+						},
+						{
+							"verticalFlip": {
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"image_color_augmenters": {
+					"Sequential": [
+						{
+							"histogramEqualization":{
+								"equalizationType": 1,
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
+							}
+						}
+					]
+				}
+			},
+			{
+				"bounding_box_augmenters": {
+					"Sequential": [
+						{
+							"horizontalFlip": {
+								"save": true,
+								"restartFrame": false,
+								"randomEvent": false
+							}
+						},
+						{
+							"crop": {
+								"save": true,
+								"restartFrame": true,
+								"randomEvent": false
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+}
+
