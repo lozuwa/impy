@@ -64,7 +64,6 @@ class AugmentationConfigurationFile(object):
 		self.geometricMethods = [self.scale, self.crop, self.translate, self.jitterBoxes, \
 														self.horizontalFlip, self.verticalFlip, self.rotation, self.dropout]
 
-
 	def isValidBoundingBoxAugmentation(self, augmentation = None):
 		"""
 		Asserts that augmentation is a valid bounding box augmentation supported by the library.
