@@ -1,128 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/ObjectDetectionDataset.py" line="65" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/AugmentationConfigurationFile.py" afterPath="$PROJECT_DIR$/AugmentationConfigurationFile.py" />
-      <change beforePath="$PROJECT_DIR$/ImageDataset.py" afterPath="$PROJECT_DIR$/ImageDataset.py" />
-      <change beforePath="$PROJECT_DIR$/ImageLocalizationDataset.py" afterPath="$PROJECT_DIR$/ObjectDetectionDataset.py" />
-      <change beforePath="$PROJECT_DIR$/ImageLocalizationDatasetPreprocessMethods.py" afterPath="$PROJECT_DIR$/ObjectDetectionDatasetPreprocessMethods.py" />
-      <change beforePath="$PROJECT_DIR$/ImageLocalizationDatasetStatisticsMethods.py" afterPath="$PROJECT_DIR$/ObjectDetectionDatasetStatisticsMethods.py" />
-      <change beforePath="$PROJECT_DIR$/ImageLocalizationDataset_test.py" afterPath="$PROJECT_DIR$/ObjectDetectionDataset_test.py" />
-      <change beforePath="$PROJECT_DIR$/ImagePreprocess_test.py" afterPath="$PROJECT_DIR$/ImagePreprocess_test.py" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_143472_iogu.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_192882_aogg.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_239995_jhjb.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_293926_mlrn.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_331105_afyu.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_348303_ffjk.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_372526_awff.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_379073_qebo.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_410572_joow.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_425001_qofv.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_441568_loba.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_450147_ngdb.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_459217_hvdn.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_463734_srtp.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_468102_pwue.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_494051_rbku.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_530181_obrc.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_552069_lkql.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_553032_xvvy.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_554014_aeuq.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_555134_rlvc.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_556396_wxhy.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_557854_tepw.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_557902_xtuq.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_558976_eemv.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_560180_mqlo.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_561386_aaxw.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_562196_ixkj.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_563081_hgvw.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_564052_oquh.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_564954_snxi.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_566177_yiqm.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_567059_kdfo.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_568725_bdmc.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_571019_wkmi.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_573030_ysyx.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_573820_hkdb.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_576639_aiey.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_578743_bfaw.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_579710_usds.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_580387_imcu.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_584276_devk.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_586962_uhxx.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_588327_abpp.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_588745_aifc.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_589120_aflj.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_589595_bcud.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590002_oaig.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590362_pmkc.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590741_doje.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591066_wyki.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591389_jhuu.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591668_uuvo.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592101_fdsv.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592437_olrt.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592736_yaay.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_593179_rxlt.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_593711_gnec.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_594290_ixtd.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_594658_xqsh.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_595244_tjqa.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_595718_cekd.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_596323_wrno.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_596858_iyeg.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_597303_lrrs.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_597971_xksl.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_598483_qxrv.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_598821_xbog.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_599083_jklm.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_599858_ttvq.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_600561_sfvh.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_632804_rbhr.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_660558_ofmc.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_681626_yqvn.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_701899_qnro.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_738605_vphf.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_792601_pnwe.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_819501_ouso.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_834706_nkog.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_840936_rgru.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_846372_cjss.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_850711_pbls.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_856555_llab.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_859096_hyqi.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_920926_msgu.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_923712_shxr.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_926637_mxut.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_928190_lvnv.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_929073_gdqh.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_929718_oolu.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_930280_uwso.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_930856_sklp.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_931293_pjmb.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_932369_uwps.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_941076_ongs.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_946335_mtnb.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_949986_rrel.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_954079_hxuh.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_957058_bjxn.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_958218_pgmo.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_959460_hqei.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_960603_laqe.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_961724_mhdv.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_962306_pejn.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_962900_ruph.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_963792_qjrd.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_964512_isrq.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_965063_txiy.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_965723_aqnw.jpg" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_966390_iskg.jpg" afterPath="" />
-    </list>
+    <list default="true" id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -134,16 +13,6 @@
     <splitter split-orientation="horizontal" split-proportion="0.14426634">
       <split-first>
         <leaf>
-          <file leaf-file-name="ObjectDetectionDataset.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-8">
-                  <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="ImageDataset.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ImageDataset.py">
               <provider selected="true" editor-type-id="text-editor">
@@ -162,7 +31,10 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="264">
                   <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
-                  <folding />
+                  <folding>
+                    <marker date="1528311836358" expanded="true" signature="5126:5660" ph="..." />
+                    <marker date="1528311836358" expanded="true" signature="5646:5660" ph="..." />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -171,7 +43,7 @@
             <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="192">
-                  <caret line="79" column="44" lean-forward="true" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+                  <caret line="79" column="44" lean-forward="false" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
                   <folding />
                 </state>
               </provider>
@@ -184,8 +56,8 @@
           <file leaf-file-name="ImagePreprocess_test.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="544">
-                  <caret line="73" column="55" lean-forward="false" selection-start-line="73" selection-start-column="55" selection-end-line="73" selection-end-column="55" />
+                <state relative-caret-position="520">
+                  <caret line="75" column="26" lean-forward="true" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -414,12 +286,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ObjectDetectionDataset_test.py</url>
-          <line>5</line>
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
@@ -496,7 +362,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
           <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
-          <folding />
+          <folding>
+            <marker date="1528311836358" expanded="true" signature="5126:5660" ph="..." />
+            <marker date="1528311836358" expanded="true" signature="5646:5660" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -513,7 +382,7 @@
         <state relative-caret-position="-8">
           <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding>
-            <element signature="e#113#122#0" expanded="true" />
+            <element signature="e#113#122#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -521,15 +390,15 @@
     <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
-          <caret line="79" column="44" lean-forward="true" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+          <caret line="79" column="44" lean-forward="false" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="73" column="55" lean-forward="false" selection-start-line="73" selection-start-column="55" selection-end-line="73" selection-end-column="55" />
+        <state relative-caret-position="520">
+          <caret line="75" column="26" lean-forward="true" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
