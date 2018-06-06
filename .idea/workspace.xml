@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/ObjectDetectionDataset.py" line="65" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/AugmentationConfigurationFile.py" afterPath="$PROJECT_DIR$/AugmentationConfigurationFile.py" />
+      <change beforePath="$PROJECT_DIR$/ImageDataset.py" afterPath="$PROJECT_DIR$/ImageDataset.py" />
+      <change beforePath="$PROJECT_DIR$/ImageLocalizationDataset.py" afterPath="$PROJECT_DIR$/ObjectDetectionDataset.py" />
+      <change beforePath="$PROJECT_DIR$/ImageLocalizationDatasetPreprocessMethods.py" afterPath="$PROJECT_DIR$/ObjectDetectionDatasetPreprocessMethods.py" />
+      <change beforePath="$PROJECT_DIR$/ImageLocalizationDatasetStatisticsMethods.py" afterPath="$PROJECT_DIR$/ObjectDetectionDatasetStatisticsMethods.py" />
+      <change beforePath="$PROJECT_DIR$/ImageLocalizationDataset_test.py" afterPath="$PROJECT_DIR$/ObjectDetectionDataset_test.py" />
+      <change beforePath="$PROJECT_DIR$/ImagePreprocess_test.py" afterPath="$PROJECT_DIR$/ImagePreprocess_test.py" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_143472_iogu.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_192882_aogg.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_239995_jhjb.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_293926_mlrn.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_331105_afyu.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_348303_ffjk.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_372526_awff.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_379073_qebo.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_410572_joow.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_425001_qofv.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_441568_loba.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_450147_ngdb.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_459217_hvdn.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_463734_srtp.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_468102_pwue.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_494051_rbku.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_530181_obrc.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_552069_lkql.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_553032_xvvy.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_554014_aeuq.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_555134_rlvc.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_556396_wxhy.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_557854_tepw.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_557902_xtuq.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_558976_eemv.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_560180_mqlo.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_561386_aaxw.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_562196_ixkj.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_563081_hgvw.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_564052_oquh.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_564954_snxi.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_566177_yiqm.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_567059_kdfo.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_568725_bdmc.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_571019_wkmi.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_573030_ysyx.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_573820_hkdb.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_576639_aiey.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_578743_bfaw.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_579710_usds.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_580387_imcu.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_584276_devk.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_586962_uhxx.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_588327_abpp.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_588745_aifc.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_589120_aflj.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_589595_bcud.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590002_oaig.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590362_pmkc.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_590741_doje.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591066_wyki.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591389_jhuu.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_591668_uuvo.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592101_fdsv.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592437_olrt.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_592736_yaay.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_593179_rxlt.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_593711_gnec.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_594290_ixtd.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_594658_xqsh.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_595244_tjqa.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_595718_cekd.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_596323_wrno.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_596858_iyeg.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_597303_lrrs.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_597971_xksl.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_598483_qxrv.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_598821_xbog.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_599083_jklm.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_599858_ttvq.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_600561_sfvh.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_632804_rbhr.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_660558_ofmc.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_681626_yqvn.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_701899_qnro.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_738605_vphf.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_792601_pnwe.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_819501_ouso.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_834706_nkog.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_840936_rgru.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_846372_cjss.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_850711_pbls.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_856555_llab.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_859096_hyqi.png" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_920926_msgu.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_923712_shxr.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_926637_mxut.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_928190_lvnv.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_929073_gdqh.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_929718_oolu.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_930280_uwso.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_930856_sklp.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_931293_pjmb.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_932369_uwps.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_941076_ongs.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_946335_mtnb.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_949986_rrel.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_954079_hxuh.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_957058_bjxn.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_958218_pgmo.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_959460_hqei.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_960603_laqe.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_961724_mhdv.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_962306_pejn.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_962900_ruph.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_963792_qjrd.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_964512_isrq.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_965063_txiy.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_965723_aqnw.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/tests/cars_dataset/bounding_boxes/unit_test_2018_5_16_966390_iskg.jpg" afterPath="" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <splitter split-orientation="horizontal" split-proportion="0.14426634">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="ObjectDetectionDataset.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-8">
+                  <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ImageDataset.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ImageDataset.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-8">
+                  <caret line="95" column="32" lean-forward="false" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
+                  <folding>
+                    <element signature="e#3796#5013#0" expanded="false" />
+                    <element signature="e#5762#7814#0" expanded="false" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="AugmentationConfigurationFile.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="264">
+                  <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ImagePreprocess.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="192">
+                  <caret line="79" column="44" lean-forward="true" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="ImagePreprocess_test.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="544">
+                  <caret line="73" column="55" lean-forward="false" selection-start-line="73" selection-start-column="55" selection-end-line="73" selection-end-column="55" />
+                  <folding>
+                    <element signature="e#0#15#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>ImageLocalizationDataset</find>
+      <find>applyGeome</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>ObjectDetectionDataset</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/ObjectDetectionDataset_test.py" />
+        <option value="$PROJECT_DIR$/ObjectDetectionDataset.py" />
+        <option value="$PROJECT_DIR$/ImageLocalizationDatasetPreprocessMethods.py" />
+        <option value="$PROJECT_DIR$/ObjectDetectionDatasetStatisticsMethods.py" />
+        <option value="$PROJECT_DIR$/ImageDataset.py" />
+        <option value="$PROJECT_DIR$/AugmentationConfigurationFile.py" />
+        <option value="$PROJECT_DIR$/confs_examples/aug_multiple_geometric_color_sequential.json" />
+        <option value="$PROJECT_DIR$/ImagePreprocess_test.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1985" />
+    <option name="y" value="-4" />
+    <option name="width" value="1855" />
+    <option name="height" value="1084" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Python</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="impy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="impy" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="impy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="impy" type="462c0819:PsiDirectoryNode" />
+              <item name="confs_examples" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="impy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="impy" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="impy" type="b2602c69:ProjectViewProjectNode" />
+              <item name="impy" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="cars_dataset" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="full.screen.before.presentation.mode" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="impy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="" />
+      <created>1528308979661</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1528308979661</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1985" y="-4" width="1855" height="1084" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3075269" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10337203" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1381979" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1509121" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" x="0" y="0" width="413" height="884" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1509121" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" x="0" y="0" width="413" height="884" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32903227" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15478165" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ObjectDetectionDataset_test.py</url>
+          <line>5</line>
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/ObjectDetectionDatasetPreprocessMethods.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="27" column="7" lean-forward="true" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ObjectDetectionDatasetStatisticsMethods.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="20" column="10" lean-forward="true" selection-start-line="20" selection-start-column="10" selection-end-line="20" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/cars_dataset/aug_configuration_cars.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-258">
+          <caret line="11" column="24" lean-forward="false" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/confs_examples/aug_multiple_bndbx_color_sequential.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="79">
+          <caret line="9" column="36" lean-forward="true" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ApplyAugmentation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="96" column="10" lean-forward="true" selection-start-line="96" selection-start-column="10" selection-end-line="96" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ImageDataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8">
+          <caret line="95" column="32" lean-forward="false" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
+          <folding>
+            <element signature="e#3796#5013#0" expanded="false" />
+            <element signature="e#5762#7814#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/confs_examples/aug_multiple_geometric_color_sequential.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="17" column="13" lean-forward="true" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ImageDataset_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="18" column="58" lean-forward="true" selection-start-line="18" selection-start-column="58" selection-end-line="18" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8">
+          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <element signature="e#113#122#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="79" column="44" lean-forward="true" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="73" column="55" lean-forward="false" selection-start-line="73" selection-start-column="55" selection-end-line="73" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

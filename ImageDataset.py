@@ -17,9 +17,9 @@ except:
 	from AugmentationConfigurationFile import *
 
 try:
-	from .ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+	from .ApplyAugmentation import applyGeometricAugmentation, applyColorAugmentation
 except:
-	from ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+	from ApplyAugmentation import applyGeometricAugmentation, applyColorAugmentation
 
 try:
 	from .Util import *
@@ -76,7 +76,7 @@ class ImageDataset(object):
 		if (threshold == None):
 			threshold = 0.5
 		if (type(threshold) != float):
-			raise TyperError("ERROR: threshold parameter must be of type float.")
+			raise TypeError("ERROR: threshold parameter must be of type float.")
 		if ((threshold > 1) or (threshold < 0)):
 			raise ValueError("ERROR: threshold paramater should be a number between" +\
 												" 0-1.")

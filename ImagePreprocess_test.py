@@ -54,7 +54,7 @@ class ImageProcess_test(unittest.TestCase):
 		# Local variables
 		frameHeight = 3096
 		frameWidth = 4128
-		offset = 1032
+		offset = [1032, 1032]
 		# Testing bounding boxes
 		# bndboxes = [[1487, 1728, 1602, 1832], [2406, 1814, 2521, 1943], \
 		bndboxes = [[3723, 1461, 3832, 1547]]
@@ -69,9 +69,9 @@ class ImageProcess_test(unittest.TestCase):
 		# print("Size after cropping: ", (RoiXMax-RoiXMin), (RoiYMax-RoiYMin))
 		# print("Bounding boxes after: ", bndboxes)
 		# Assertions
-		self.assertGreaterEqual((RoiXMax-RoiXMin), offset-100, "Cropping frame is " + \
+		self.assertGreaterEqual((RoiXMax-RoiXMin), offset[0]-100, "Cropping frame is " + \
 																														"much smaller than offset.")
-		self.assertGreaterEqual((RoiYMax-RoiYMin), offset-100, "Cropping frame is " + \
+		self.assertGreaterEqual((RoiYMax-RoiYMin), offset[0]-100, "Cropping frame is " + \
 																														"much smaller than offset.")
 		# for bdx in bndboxes:
 		#   self.assertGreaterEqual(bdx[0], 0, "Xmin is negative")

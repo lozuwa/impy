@@ -157,13 +157,14 @@ class AugmentationConfigurationFile(object):
 		listAugmentersConfs = self.file["multiple_image_augmentations"]["Sequential"]
 		# Assert listAugmentersConfs is of type list.
 		if (not (type(listAugmentersConfs) == list)):
-			raise TyperError("The data inside multiple_image_augmentations/Sequential" +\
+			raise TypeError("The data inside multiple_image_augmentations/Sequential" +\
 												" should be a list.")
 		for i in range(len(listAugmentersConfs)):
 			augmentationConf = list(listAugmentersConfs[i].keys())[0]
 			# Assert the configuration is valid.
 			if (not (self.isBndBxAugConfFile(keys = [augmentationConf]) or
-					self.isColorConfFile(keys = [augmentationConf]))):
+					self.isColorConfFile(keys = [augmentationConf]) or
+					self.isGeometricConfFile(keys = [augmentationConf]))):
 				raise Exception("{} is not a valid configuration for multiple_image_augmentations."\
 													.format(augmentationConf))
 			# Assert the data inside the configuration is a list.
@@ -173,7 +174,7 @@ class AugmentationConfigurationFile(object):
 			listAugmentersConfsTypes = listAugmentersConfs[i][augmentationConf]["Sequential"]
 			# Assert listAugmentersConfs is of type list.
 			if (not (type(listAugmentersConfsTypes) == list)):
-				raise TyperError("The data inside multiple_image_augmentations/Sequential" +\
+				raise TypeError("The data inside multiple_image_augmentations/Sequential" +\
 													"/{}/Sequential should be a list.".format(augmentationConf))
 			for j in range(len(listAugmentersConfsTypes)):
 				# Get augmentation type and its parameters.
@@ -189,12 +190,19 @@ class AugmentationConfigurationFile(object):
 																									parameters = parameters)
 				elif (augmentationConf == "image_color_augmenters"):
 					# Validate the type of augmentation.
-					if (self.isValidBoundingBoxAugmentation(augmentation = augmentationInConfType)):
+					if (not (self.isValidColorAugmentation(augmentation = augmentationInConfType))):
 						raise ValueError("Type of configuration for {}/{} not valid. Use a corresponding augmenter."\
 														.format(augmentationConf, augmentationInConfType))
 					# Validate the content of the augmentation.
 					self.validateColorAugmentation(augmentationType = augmentationInConfType,\
 																					parameters = parameters)
+				elif (augmentationConf == "image_geometric_augmenters"):
+					# Validate type of augmentation.
+					if (not (self.isValidGeometricAugmentation(augmentation = augmentationInConfType))):
+						raise ValueError("Type of configuration for {}/{} not valid. Use corresponding augmenter"\
+														 	.format(augmentationConf, augmentationInConfType))
+					self.validateGeometricAugmentation(augmentationType = augmentationInConfType,
+																						 parameters = parameters)
 
 	def isValidConfFile(self, keys = None):
 		# Check len of keys.
@@ -335,7 +343,7 @@ class AugmentationConfigurationFile(object):
 		"""
 		if ("save" in parameters):
 			if (type(parameters["save"]) != bool):
-				raise TyperError("ERROR: Save parameter must be of type bool.")
+				raise TypeError("ERROR: Save parameter must be of type bool.")
 			return parameters["save"]
 		else:
 			return False
@@ -350,7 +358,7 @@ class AugmentationConfigurationFile(object):
 		"""
 		if ("restartFrame" in parameters):
 			if (type(parameters["restartFrame"]) != bool):
-				raise TyperError("ERROR: Restart frame must be of type bool.")
+				raise TypeError("ERROR: Restart frame must be of type bool.")
 			return parameters["restartFrame"]
 		else:
 			return False
@@ -367,7 +375,7 @@ class AugmentationConfigurationFile(object):
 		if ("randomEvent" in parameters):
 			# Assert type.
 			if (type(parameters["randomEvent"]) != bool):
-				raise TyperError("ERROR: Random event must be of type bool.")
+				raise TypeError("ERROR: Random event must be of type bool.")
 			# Check the value of randomEvent.
 			if (parameters["randomEvent"] == True):
 				activate = np.random.rand() > threshold
