@@ -165,7 +165,7 @@ if __mame__ == "__main__":
 }
 ```
 
-<p>Let's analize the configuration file step by step. Currently, this is the most complex type of data augmentation you can achieve with the library.</p>
+<p>Let's analyze the configuration file step by step. Currently, this is the most complex type of data augmentation you can achieve with the library.</p>
 <p>Note the file starts with "multiple_image_augmentations", then a "Sequential" key follows. Inside "Sequential" we define an array. This is important, each element of the array is a type of augmenter.</p>
 <p>The first augmenter we are going to define is a "image_color_agumenters" which is going to execute a sequence of color augmentations. In this case, we have defined only one type of color augmentation which is sharpening with a weight of 2.0.</p>
 <p>After the color augmentation, we have defined a "bounding_box_augmenters" which is going to execute a "scale" augmentation with zoom  followed by a "verticalFlip".</p>
