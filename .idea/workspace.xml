@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="" />
+    <list default="true" id="769c4f8a-9640-460b-bd5e-1675b450dc66" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/ImagePreprocess.py" afterPath="$PROJECT_DIR$/ImagePreprocess.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -10,14 +12,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.14426634">
+    <splitter split-orientation="horizontal" split-proportion="0.55856967">
       <split-first>
         <leaf>
           <file leaf-file-name="ImageDataset.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ImageDataset.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-8">
-                  <caret line="95" column="32" lean-forward="false" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
+                <state relative-caret-position="136">
+                  <caret line="101" column="30" lean-forward="true" selection-start-line="101" selection-start-column="30" selection-end-line="101" selection-end-column="30" />
                   <folding>
                     <element signature="e#3796#5013#0" expanded="false" />
                     <element signature="e#5762#7814#0" expanded="false" />
@@ -26,25 +28,34 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="AugmentationConfigurationFile.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
+          <file leaf-file-name="ObjectDetectionDataset.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="264">
-                  <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
-                  <folding>
-                    <marker date="1528311836358" expanded="true" signature="5126:5660" ph="..." />
-                    <marker date="1528311836358" expanded="true" signature="5646:5660" ph="..." />
-                  </folding>
+                <state relative-caret-position="384">
+                  <caret line="72" column="10" lean-forward="true" selection-start-line="72" selection-start-column="10" selection-end-line="72" selection-end-column="10" />
+                  <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ImagePreprocess.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="AugmentationConfigurationFile.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="648">
+                  <caret line="162" column="26" lean-forward="false" selection-start-line="162" selection-start-column="26" selection-end-line="162" selection-end-column="26" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ImagePreprocess.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="192">
-                  <caret line="79" column="44" lean-forward="false" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
-                  <folding />
+                <state relative-caret-position="88">
+                  <caret line="617" column="18" lean-forward="true" selection-start-line="617" selection-start-column="18" selection-end-line="617" selection-end-column="18" />
+                  <folding>
+                    <element signature="e#527#545#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -56,8 +67,8 @@
           <file leaf-file-name="ImagePreprocess_test.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="520">
-                  <caret line="75" column="26" lean-forward="true" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
+                <state relative-caret-position="184">
+                  <caret line="72" column="46" lean-forward="true" selection-start-line="72" selection-start-column="46" selection-end-line="72" selection-end-column="46" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -73,6 +84,7 @@
     <findStrings>
       <find>ImageLocalizationDataset</find>
       <find>applyGeome</find>
+      <find>c_</find>
     </findStrings>
     <replaceStrings>
       <replace>ObjectDetectionDataset</replace>
@@ -92,6 +104,7 @@
         <option value="$PROJECT_DIR$/AugmentationConfigurationFile.py" />
         <option value="$PROJECT_DIR$/confs_examples/aug_multiple_geometric_color_sequential.json" />
         <option value="$PROJECT_DIR$/ImagePreprocess_test.py" />
+        <option value="$PROJECT_DIR$/ImagePreprocess.py" />
       </list>
     </option>
   </component>
@@ -230,7 +243,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1985" y="-4" width="1855" height="1084" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -307,14 +319,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/cars_dataset/aug_configuration_cars.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-258">
@@ -339,33 +343,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ImageDataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="95" column="32" lean-forward="false" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
-          <folding>
-            <element signature="e#3796#5013#0" expanded="false" />
-            <element signature="e#5762#7814#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/confs_examples/aug_multiple_geometric_color_sequential.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="17" column="13" lean-forward="true" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="13" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="167" column="31" lean-forward="false" selection-start-line="167" selection-start-column="31" selection-end-line="167" selection-end-column="31" />
-          <folding>
-            <marker date="1528311836358" expanded="true" signature="5126:5660" ph="..." />
-            <marker date="1528311836358" expanded="true" signature="5646:5660" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -387,21 +369,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="72" column="46" lean-forward="true" selection-start-line="72" selection-start-column="46" selection-end-line="72" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ImagePreprocess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="79" column="44" lean-forward="false" selection-start-line="79" selection-start-column="44" selection-end-line="79" selection-end-column="44" />
+        <state relative-caret-position="88">
+          <caret line="617" column="18" lean-forward="true" selection-start-line="617" selection-start-column="18" selection-end-line="617" selection-end-column="18" />
+          <folding>
+            <element signature="e#527#545#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AugmentationConfigurationFile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="162" column="26" lean-forward="false" selection-start-line="162" selection-start-column="26" selection-end-line="162" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ImagePreprocess_test.py">
+    <entry file="file://$PROJECT_DIR$/ImageDataset.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="75" column="26" lean-forward="true" selection-start-line="75" selection-start-column="26" selection-end-line="75" selection-end-column="26" />
+        <state relative-caret-position="136">
+          <caret line="101" column="30" lean-forward="true" selection-start-line="101" selection-start-column="30" selection-end-line="101" selection-end-column="30" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#3796#5013#0" expanded="false" />
+            <element signature="e#5762#7814#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ObjectDetectionDataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="72" column="10" lean-forward="true" selection-start-line="72" selection-start-column="10" selection-end-line="72" selection-end-column="10" />
+          <folding />
         </state>
       </provider>
     </entry>

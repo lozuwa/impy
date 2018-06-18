@@ -13,6 +13,8 @@ Log:
 """
 # Utils
 import numpy as np
+from numpy import r_
+from numpy import c_
 import cv2
 import math
 
