@@ -33,6 +33,7 @@
 
 <h2>Object localization</h2>
 <p>In this section we are going to solve problems related with object localization.</p>
+
 <h3>Images are too big</h3>
 <p>One common problem in Computer Vision and CNNs is dealing with big images. Let's sample one of the images from our mini-dataset: </p>
 
@@ -43,23 +44,25 @@
 <p>Instead of hacking a solution, we are going to solve the problem efficiently and correctly. The best solution is to sample crops of a specific size that contain the maximum amount of bounding boxes possible. Crops of 1032x1032 pixels are usually small enough. Let's see how to do this with impy. </p>
 
 ```python
-from impy.ImageLocalizationDataset import *
+import os
+from impy.ObjectDetectionDataset import *
 
 def main():
- # Define the path to images and annotations
- images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
- annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
- # Define the name of the dataset
- dbName = "CarsDataset"
- # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(imagesDirectory = images_path, annotationsDirectory = annotations_path, databaseName = dbName)
- # Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
- images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
- annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
- imda.reduceDatasetByRois(offset = [1032, 1032], outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
+	# Define the path to images and annotations
+	images_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
+	annotations_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+	# Define the name of the dataset
+	dbName:str = "CarsDataset"
+	# Create an object of ObjectDetectionDataset
+	obda:any = ObjectDetectionDataset(imagesDirectory=images_path, annotationsDirectory=annotations_path, databaseName=dbName)
+	# Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
+	offset:list=[1032, 1032]
+	images_output_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
+	annotations_output_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
+	obda.reduceDatasetByRois(offset = offset, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
 
 if __mame__ == "__main__":
- main()
+	main()
 ```
 
 <p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
@@ -184,21 +187,21 @@ if __mame__ == "__main__":
 <p>Once the configuration file is created, we can apply the data augmentation pipeline with the following code.</p>
 
 ```python
-from impy.ImageLocalizationDataset import *
+from impy.ObjectDetectionDataset import *
 
 def main():
- # Define the path to images and annotations
- images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
- annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
- # Define the name of the dataset
- dbName = "CarsDataset"
- # Create an object of ImageLocalizationDataset
- imda = ImageLocalizationDataset(imagesDirectory = images_path, annotationsDirectory = annotations_path, databaseName = dbName)
- # Apply data augmentation by using the following method of the ImageLocalizationDataset class.
- configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
- images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
- annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
- imda.applyDataAugmentation(configurationFile = configuration_file, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
+	# Define the path to images and annotations
+	images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
+	annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+	# Define the name of the dataset
+	dbName = "CarsDataset"
+	# Create an ObjectDetectionDataset object
+	imda = ObjectDetectionDataset(imagesDirectory=images_path, annotationsDirectory=annotations_path, databaseName=dbName)
+	# Apply data augmentation by using the following method of the ObjectDetectionDataset class.
+	configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
+	images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
+	annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
+	imda.applyDataAugmentation(configurationFile=configuration_file, outputImageDirectory=images_output_path, outputAnnotationDirectory=annotations_output_path)
 
 if __mame__ == "__main__":
  main()
@@ -225,8 +228,8 @@ if __mame__ == "__main__":
 <img src="static//carsCrop.png" alt="Crop" height="300" width="500"></img>
 
 <h1 id="#documentation">Documentation</h1>
-<h2>Image localization dataset</h2>
-<h3>ImageLocalizationDataset class</h3>
+<h2>Object detection dataset</h2>
+<h3>ObjectDetectionDataset class</h3>
 <p>A class that holds a detection dataset. Parameters: </p>
 <ol>
 	<li><strong>imagesDirectory:</strong> A string that contains a path to a directory of images.</li>
