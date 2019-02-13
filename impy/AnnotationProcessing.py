@@ -1,7 +1,7 @@
 """
 Author: Rodrigo Loza
 Email: lozuwaucb@gmail.com
-Description: A class that performs processing operations with image annotations.
+Description: A class that performs processing operations for image annotations.
 """
 # General purpose
 import os 

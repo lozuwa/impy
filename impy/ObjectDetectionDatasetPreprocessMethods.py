@@ -6,10 +6,11 @@ Description: Preprocess methods for the ImageLocalization
 class.
 """
 # Libraries
-from interface import Interface
+# from interface import Interface
 
-class ObjectDetectionDatasetPreprocessMethods(Interface):
+# class ObjectDetectionDatasetPreprocessMethods(Interface):
 	
+class ObjectDetectionDatasetPreprocessMethods(object):
 	def dataConsistency(self):
 		"""
 		Checks whether data is consistent. It starts analyzing if there is the same amount of 

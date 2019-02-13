@@ -10,14 +10,14 @@ import math
 import numpy as np
 import cv2
 from BoundingBoxAugmenters import *
-from ImageAnnotation import * 
+from ImageAnnotation import *
 from VectorOperations import *
 
 class BoundingBoxAugmenters_test(unittest.TestCase):
 	
 	def setUp(self):
-		img_path = os.path.join(os.getcwd(), "tests/cars_dataset/images/cars0.png")
-		annotation_path = os.path.join(os.getcwd(), "tests/cars_dataset/annotations/xmls/cars0.xml")
+		img_path = os.path.join(os.getcwd(), "../../cars_dataset/images/cars0.png")
+		annotation_path = os.path.join(os.getcwd(), "../../cars_dataset/annotations/xmls/cars0.xml")
 		assert os.path.isfile(img_path)
 		assert os.path.isfile(annotation_path)
 		# Image.
@@ -30,7 +30,7 @@ class BoundingBoxAugmenters_test(unittest.TestCase):
 		self.augmenter = BoundingBoxAugmenters()
 		# Testing options.
 		self.visualize = True
-		self.waitTime = 1000
+		self.waitTime = 100
 		self.windowSize = (800, 800)
 
 	def tearDown(self):

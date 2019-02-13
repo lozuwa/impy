@@ -7,7 +7,7 @@ configuration files.
 import os
 import json
 import numpy as np
-from interface import implements
+# from interface import implements
 
 class AugmentationConfigurationFile(object):
 	def __init__(self, file = None):

@@ -14,7 +14,7 @@ from ColorAugmenters import *
 class ColorAugmenters_test(unittest.TestCase):
 
 	def setUp(self):
-		img_path = os.path.join(os.getcwd(), "tests/cars_dataset/images/cars0.png")
+		img_path = os.path.join(os.getcwd(), "../../cars_dataset/images/cars0.png")
 		assert os.path.isfile(img_path)
 		# Image
 		self.frame = cv2.imread(img_path)
@@ -22,7 +22,7 @@ class ColorAugmenters_test(unittest.TestCase):
 		self.augmenter = ColorAugmenters()
 		# Testing options
 		self.visualize = True
-		self.waitTime = 500
+		self.waitTime = 50
 		self.windowSize = (800, 800)
 
 	def tearDown(self):

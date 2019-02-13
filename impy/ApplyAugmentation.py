@@ -5,21 +5,9 @@ Description: Methods that apply a type of data augmentation.
 """
 
 import numpy as np
-
-try:
-	from .BoundingBoxAugmenters import *
-except:
-	from BoundingBoxAugmenters import *
-
-try:
-	from .ColorAugmenters import *
-except:
-	from ColorAugmenters import * 
-
-try:
-	from .GeometricAugmenters import *
-except:
-	from GeometricAugmenters import *
+from BoundingBoxAugmenters import *
+from ColorAugmenters import *
+from GeometricAugmenters import *
 
 bndboxAugmenter = BoundingBoxAugmenters()
 colorAugmenter = ColorAugmenters()

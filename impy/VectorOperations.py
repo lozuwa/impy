@@ -9,7 +9,7 @@ import math
 class VectorOperations(object):
 	def __init__(self):
 		super(VectorOperations, self).__init__()
-		
+
 	@staticmethod
 	def compute_module(vector = None):
 		"""

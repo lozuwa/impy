@@ -36,28 +36,18 @@ Log:
 		of color's space PCA.
 """
 # Libraries
-from interface import implements
+# from interface import implements
 import math
 import random
 import cv2
 import numpy as np
 
-try:
-	from .ColorAugmentersMethods import *
-except:
-	from ColorAugmentersMethods import *
+from ColorAugmentersMethods import *
+from VectorOperations import *
+from AssertDataTypes import *
 
-try:
-	from .VectorOperations import *
-except:
-	from VectorOperations import *
-
-try:
-	from .AssertDataTypes import *
-except:
-	from AssertDataTypes import *
-
-class ColorAugmenters(implements(ColorAugmentersMethods)):
+# class ColorAugmenters(implements(ColorAugmentersMethods)):
+class ColorAugmenters(object):
 	"""
 	ImageAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.

@@ -6,10 +6,12 @@ Description: Preprocess methods for the ImageLocalization
 class.
 """
 # Libraries
-from interface import Interface
+# from interface import Interface
 
-class ObjectDetectionDatasetStatisticsMethods(Interface):
-	
+# class ObjectDetectionDatasetStatisticsMethods(Interface):
+
+class ObjectDetectionDatasetStatisticsMethods(object):
+
 	def computeBoundingBoxStats(self, saveDataFrame = None, outputDirDataFrame = None):
 		"""
 		Compute basic stats for the dataset's bounding boxes.

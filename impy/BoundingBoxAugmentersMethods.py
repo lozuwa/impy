@@ -6,9 +6,10 @@ Description: Data augmentation methods used for bounding box
 labels.
 """
 # Libraries
-from interface import Interface
+# from interface import Interface
 
-class BoundingBoxAugmentersMethods(Interface):
+# class BoundingBoxAugmentersMethods(Interface):
+class BoundingBoxAugmentersMethods(object):
 	
 	def scale(self, frame = None, boundingBoxes = None, size = None, zoom = None, interpolationMethod = None):
 		"""

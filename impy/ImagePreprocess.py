@@ -3,13 +3,6 @@ package: impy
 class: ImagePreprocess
 Author: Rodrigo Loza
 Description: Common pre-processing operations for images.
-Log:
-	August, 2017 -> Created class and added most relevant functions.
-	September, 2017 -> Created more features for the DivideIntoPatches method.
-	November, 2017 -> Refactored all the code to Google style and a more OOP paradigm approach.
-	December, 2017 -> Tested refactor to avoid breaking external code.
-	March, 2018 -> Refactored methods.
-	April, 2018 -> AdjustImage method added to class.
 """
 # Utils
 import numpy as np

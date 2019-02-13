@@ -4,9 +4,10 @@ class: ImageAugmenters
 Author: Rodrigo Loza
 Description: Common data augmentation methods for images.
 """
-from interface import Interface
+# from interface import Interface
 
-class ColorAugmentersMethods(Interface):
+# class ColorAugmentersMethods(Interface):
+class ColorAugmentersMethods(object):
 
 	def invertColor(self, frame = None, CSpace = None):
 		"""

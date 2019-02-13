@@ -30,28 +30,18 @@ Log:
 		Randomly rotates the bounding boxes.
 """
 # Libraries
-from interface import implements
+# from interface import implements
 import math
 import random
 import cv2
 import numpy as np
 
-try:
-	from .GeometricAugmentersMethods import *
-except:
-	from GeometricAugmentersMethods import *
+from GeometricAugmentersMethods import *
+from VectorOperations import *
+from AssertDataTypes import *
 
-try:
-	from .VectorOperations import *
-except:
-	from VectorOperations import *
-
-try:
-	from .AssertDataTypes import *
-except:
-	from AssertDataTypes import *
-
-class GeometricAugmenters(implements(GeometricAugmentersMethods)):
+# class GeometricAugmenters(implements(GeometricAugmentersMethods)):
+class GeometricAugmenters(object):
 	"""
 	GeometricAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.

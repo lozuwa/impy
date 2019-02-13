@@ -4,9 +4,10 @@ class: ImageAugmenters
 Author: Rodrigo Loza
 Description: Common data augmentation methods for images.
 """
-from interface import Interface
+# from interface import Interface
 
-class GeometricAugmentersMethods(Interface):
+# class GeometricAugmentersMethods(Interface):
+class GeometricAugmentersMethods(object):
 
 	def scale(self, frame = None, size = None, interpolationMethod = None):
 		"""

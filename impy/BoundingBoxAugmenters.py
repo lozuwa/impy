@@ -35,33 +35,20 @@ Log:
 		Sets pixels to zero with probability P.
 """
 # Libraries
-from interface import implements
+# from interface import implements
 import math
 import random
 import cv2
 import numpy as np
 # Other libraries
-try:
-	from .ImagePreprocess import *
-except:
-	from ImagePreprocess import *
+from ImagePreprocess import *
 # Interface
-try:
-	from .BoundingBoxAugmentersMethods import *
-except:
-	from BoundingBoxAugmentersMethods import *
+from BoundingBoxAugmentersMethods import *
+from GeometricAugmenters import *
+from AssertDataTypes import *
 
-try:
-	from .GeometricAugmenters import *
-except:
-	from GeometricAugmenters import *
-
-try:
-	from .AssertDataTypes import *
-except:
-	from AssertDataTypes import *
-
-class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
+# class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
+class BoundingBoxAugmenters(object):
 	"""
 	BoundingBoxAugmenters class. This class implements a set of data augmentation
 	tools for bouding boxes.
