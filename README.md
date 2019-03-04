@@ -31,7 +31,7 @@
 </ul>
 
 ```bash
-pip install impy.whl
+pip install impy-0.1-py3-none-any.whl
 ```
 
 <h1 id="#tutorial">Tutorial</h1>
