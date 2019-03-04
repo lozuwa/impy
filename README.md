@@ -562,3 +562,52 @@ Examines all the annotations in the dataset and detects if any is empty or wrong
 	}
 }
 ```
+
+<h1 id="#contribute">Contribute</h1>
+<p>If you want to contribute to this library. Please follow the next steps so you can have a development environment.</p>
+
+<ul>
+	<li>Install anaconda with python 3.7< (tested with python 3.5 3.6 3.7). Then create an empty environment.</li>
+</ul>
+
+```bash
+conda create --name=impy python3.7
+```
+
+<ul>
+	<li>Activate the conda environment</li>
+</ul>
+
+```bash
+source activate impy
+```
+
+<ul>
+	<li>Clone the repository</li>
+</ul>
+
+```bash
+git clone https://github.com/lozuwa/impy
+```
+
+<ul>
+	<li>Install the dependencies that are in setup.py</li>
+</ul>
+
+<ul>
+	<li>You are good to go. Note there are unit tests for each script inside the impy folder.</li>
+</ul>
+
+<h2>Build the project</h2>
+
+<ul>
+	<li>Go to impy's parent directory and run the following code:</li>
+</ul>
+
+```bash
+python setup.py sdist bdist_wheel
+```
+
+<ul>
+	<li>A folder named dist will appear. It contains the .whl and .tar.gz</li>
+</ul>
