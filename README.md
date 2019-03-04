@@ -23,7 +23,7 @@
 <p>Follow the next steps:</p>
 
 <ul>
-	<li>Download the impy.whl from <a href="">here</a></li>
+	<li>Download the impy.whl from <a href="https://github.com/lozuwa/impy/releases/download/impy-0.1/impy-0.1-py3-none-any.whl">here</a></li>
 </ul>
 
 <ul>
