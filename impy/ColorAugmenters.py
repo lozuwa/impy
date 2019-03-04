@@ -42,9 +42,20 @@ import random
 import cv2
 import numpy as np
 
-from ColorAugmentersMethods import *
-from VectorOperations import *
-from AssertDataTypes import *
+try:
+	from .ColorAugmentersMethods import *
+except:
+	from ColorAugmentersMethods import *
+
+try:
+	from .VectorOperations import *
+except:
+	from VectorOperations import *
+
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
 
 # class ColorAugmenters(implements(ColorAugmentersMethods)):
 class ColorAugmenters(object):

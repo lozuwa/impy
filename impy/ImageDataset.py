@@ -11,9 +11,20 @@ import numpy as np
 from interface import implements
 from tqdm import tqdm
 
-from AugmentationConfigurationFile import *
-from ApplyAugmentation import applyGeometricAugmentation, applyColorAugmentation
-from Util import *
+try:
+	from .AugmentationConfigurationFile import *
+except:
+	from AugmentationConfigurationFile import *
+
+try:
+	from .ApplyAugmentation import applyGeometricAugmentation, applyColorAugmentation
+except:
+	from ApplyAugmentation import applyGeometricAugmentation, applyColorAugmentation
+
+try:
+	from .Util import *
+except:
+	from Util import *
 
 class ImageDataset(object):
 	def __init__(self, imagesDirectory = None, dbName = None):

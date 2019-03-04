@@ -17,7 +17,14 @@
 </ol>
 
 <h1 id="#installation">Installation</h1>
-<p>For now the installation requires you to clone the repository. Follow the next steps:</p>
+<h2>Install with pip</h2>
+<p>For now I am having trouble uploading my wheel to the impy repository. I will fix this shortly.</p>
+
+<h2>Build a wheel and install with pip</h2>
+<p></p>
+
+<h2 id="Clone the repository"></h2>
+<p>Follow the next steps:</p>
 <ol>
   <li>Go to your package path. E.g: for anaconda go to ../Anaconda3/envs/YOUR_ENVIRONMENT/lib/pythonVERSION_OF_YOUR_PYTHON/site-packages/</li>
   <li>Clone the library with the following command git clone  https://github.com/lozuwa/impy.git</li>

@@ -17,7 +17,7 @@ Examples of how to import this module are shown below.
   >>> from impy.Images2Dataset import Images2Dataset
 
 """
-# Import libraries 
+# Import libraries
 # from AnnotationProcessing import *
 # from ApplyAugmentation import *
 # from AssertDataTypes import *

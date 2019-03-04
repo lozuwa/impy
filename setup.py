@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="impy",
-    version="0.1",
+    version="1.0",
     author="Rodrigo Alejandro Loza Lucero",
     author_email="lozuwaucb@gmail.com",
     description="A library to apply data augmentation to your image datasets",

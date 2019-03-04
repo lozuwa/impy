@@ -41,11 +41,25 @@ import random
 import cv2
 import numpy as np
 # Other libraries
-from ImagePreprocess import *
-# Interface
-from BoundingBoxAugmentersMethods import *
-from GeometricAugmenters import *
-from AssertDataTypes import *
+try:
+	from .ImagePreprocess import *
+except:
+	from ImagePreprocess import *
+
+try:
+	from .BoundingBoxAugmentersMethods import *
+except:
+	from BoundingBoxAugmentersMethods import *
+
+try:
+	from .GeometricAugmenters import *
+except:
+	from GeometricAugmenters import *
+
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
 
 # class BoundingBoxAugmenters(implements(BoundingBoxAugmentersMethods)):
 class BoundingBoxAugmenters(object):

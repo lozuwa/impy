@@ -11,15 +11,50 @@ import numpy as np
 # from interface import implements
 from tqdm import tqdm
 
-from ObjectDetectionDatasetPreprocessMethods import *
-from ObjectDetectionDatasetStatisticsMethods import *
-from ImagePreprocess import *
-from ImageAnnotation import *
-from VectorOperations import *
-from Util import *
-from AssertDataTypes import *
-from AugmentationConfigurationFile import *
-from ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+try:
+	from .ObjectDetectionDatasetPreprocessMethods import *
+except:
+	from ObjectDetectionDatasetPreprocessMethods import *
+
+try:
+	from .ObjectDetectionDatasetStatisticsMethods import *
+except:
+	from ObjectDetectionDatasetStatisticsMethods import *
+
+try:
+	from .ImagePreprocess import *
+except:
+	from ImagePreprocess import *
+
+try:
+	from .ImageAnnotation import *
+except:
+	from ImageAnnotation import *
+
+try:
+	from .VectorOperations import *
+except:
+	from VectorOperations import *
+
+try:
+	from .Util import *
+except:
+	from Util import *
+
+try:
+	from .AssertDataTypes import *
+except:
+	from AssertDataTypes import *
+
+try:
+	from .AugmentationConfigurationFile import *
+except:
+	from AugmentationConfigurationFile import *
+
+try:
+	from .ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
+except:
+	from ApplyAugmentation import applyBoundingBoxAugmentation, applyColorAugmentation
 
 prep = ImagePreprocess()
 dataAssertion = AssertDataTypes()

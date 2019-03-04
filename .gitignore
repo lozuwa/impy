@@ -1,3 +1,8 @@
+# Builds
+build/
+dist/
+impy.egg-info/
+
 # IDE foldres
 .idea
 .vscode
