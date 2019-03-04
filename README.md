@@ -14,26 +14,29 @@
 	<li><a href="installation">Installation</a></li>
 	<li><a href="tutorial">Tutorial</a></li>
 	<li><a href="documentation">Documentation</a></li>
+	<li><a href="contribute">Contribute</a></li>
 </ol>
 
 <h1 id="#installation">Installation</h1>
-<h2>Install with pip</h2>
-<p>For now I am having trouble uploading my wheel to the impy repository. I will fix this shortly.</p>
 
-<h2>Build a wheel and install with pip</h2>
-<p></p>
-
-<h2 id="Clone the repository"></h2>
+<h2>Download the impy.whl and use pip to install it.</h2>
 <p>Follow the next steps:</p>
-<ol>
-  <li>Go to your package path. E.g: for anaconda go to ../Anaconda3/envs/YOUR_ENVIRONMENT/lib/pythonVERSION_OF_YOUR_PYTHON/site-packages/</li>
-  <li>Clone the library with the following command git clone  https://github.com/lozuwa/impy.git</li>
-  <li>Test the library by working on one of the tutorials.</li>
-</ol>
+
+<ul>
+	<li>Download the impy.whl from <a href="">here</a></li>
+</ul>
+
+<ul>
+	<li>Use pip to install the wheel</li>
+</ul>
+
+```bash
+pip install impy.whl
+```
 
 <h1 id="#tutorial">Tutorial</h1>
 <p>Impy has multiple features that allow you to solve several different problems with a few lines of code. In order to showcase the features of impy we are going to solve common problems that involve both Computer Vision and Deep Learning. </p>
-<p>We are going to work with a mini-dataset of cars and pedestrians (available at tests/cars_dataset/). This dataset has object annotations that make it suitable to solve a localization problem. </p>
+<p>We are going to work with a mini-dataset of cars and pedestrians (available <a href="https://github.com/lozuwa/cars_dataset">here</a>). This dataset has object annotations that make it suitable to solve a localization problem. </p>
 
 <!-- ![Alt text](static/cars0.png?raw=true "Car's mini dataset") -->
 <!-- <img src="static//cars3.png" alt="cars" height="600" width="800"></img> -->
@@ -48,31 +51,71 @@
 <img src="static//cars1.png" alt="cars" height="600" width="800"></img>
 
 <p>The size of this image is 3840x2160. It is too big for training. Most likely, your computer will run out of memory. In order to try to solve the big image problem, we could reduce the size of the mini-batch hyperparameter. But if the image is too big it would still not work. We could also try to reduce the size of the image. But that means the image losses quality and you would need to label the smaller image again. </p>
-<p>Instead of hacking a solution, we are going to solve the problem efficiently and correctly. The best solution is to sample crops of a specific size that contain the maximum amount of bounding boxes possible. Crops of 1032x1032 pixels are usually small enough. Let's see how to do this with impy. </p>
+<p>Instead of hacking a solution, we are going to solve the problem efficiently. The best solution is to sample crops of a specific size that contain the maximum amount of bounding boxes possible. Crops of 1032x1032 pixels are usually small enough.</p>
+
+<p>Let's see how to do this with impy:</p>
+
+<ul>
+	<li>Create a folder named <b>testing_cars</b>. Then enter the folder.</li>
+</ul>
+
+```bash
+	mkdir -p $PWD/testing_cars
+	cd testing_cars
+```
+
+<ul>
+	<li>Download the cars dataset from <a href="https://github.com/lozuwa/cars_dataset">here</a></li>
+</ul>
+
+```bash
+git clone https://github.com/lozuwa/cars_dataset
+```
+
+<ul>
+	<li>Create a file named reducing_big_images.py and put the next code:</li>
+</ul>
 
 ```python
 import os
-from impy.ObjectDetectionDataset import *
+from impy.ObjectDetectionDataset import ObjectDetectionDataset
 
 def main():
 	# Define the path to images and annotations
-	images_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
-	annotations_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+	images_path:str = os.path.join(os.getcwd(), "cars_dataset", "images")
+	annotations_path:str = os.path.join(os.getcwd(), "cars_dataset", "annotations", "xmls")
 	# Define the name of the dataset
 	dbName:str = "CarsDataset"
 	# Create an object of ObjectDetectionDataset
 	obda:any = ObjectDetectionDataset(imagesDirectory=images_path, annotationsDirectory=annotations_path, databaseName=dbName)
 	# Reduce the dataset to smaller Rois of smaller ROIs of shape 1032x1032.
 	offset:list=[1032, 1032]
-	images_output_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_reduced")
-	annotations_output_path:str = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_reduced", "xmls")
+	images_output_path:str = os.path.join(os.getcwd(), "cars_dataset", "images_reduced")
+	annotations_output_path:str = os.path.join(os.getcwd(), "cars_dataset", "annotations_reduced", "xmls")
 	obda.reduceDatasetByRois(offset = offset, outputImageDirectory = images_output_path, outputAnnotationDirectory = annotations_output_path)
 
-if __mame__ == "__main__":
+if __name__ == "__main__":
 	main()
 ```
 
-<p>The previous script will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
+<ul>
+	<li><b>Note</b> the paths where we are going to store the reduced images don't exist. Let's create them.</li>
+</ul>
+
+```bash
+mkdir -p $PWD/cars_dataset/images_reduced/
+mkdir -p $PWD/cars_dataset/annotations_reduced/xmls/
+```
+
+<ul>
+	<li>Now we can run the script and reduce the images to smaller crops.</li>
+</ul>
+
+```bash
+python reducing_big_images.py
+```
+
+<p>Impy will create a new set of images and annotations with the size specified by offset and will include the maximum number of annotations possible so you will end up with an optimal number of data points. Let's see the results of the example: </p>
 
 <img src="static//cars11.png" alt="cars" height="300" width="300"></img>
 <img src="static//cars12.png" alt="cars" height="300" width="300"></img>
@@ -91,9 +134,19 @@ if __mame__ == "__main__":
 <p><strong>Note</strong> that in some cases you are going to end up with an inefficient amount of crops due to overlapping crops in the clustering algorithm. I am working on this and a better solution will be released soon. Nonetheless, these results are still way more efficient than what is usually done which is crop each bounding box one by one (This leads to inefficient memory usage, repeated data points, lose of context and simpler representation.).</p>
 
 <h3>Data augmentation for bounding boxes</h3>
-<p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make a custom script. But with impy we can make it easier.</p>
+<p>Another common problem in Computer Vision and CNNs for object localization is data augmentation. Specifically space augmentations (e.g: scaling, cropping, rotation, etc.). For this you would usually make a custom script. But with impy we can make this easier.</p>
 
-<p>First, let's create a configuration file. You can use one of the templates available in the confs folder.</p>
+<ul>
+	<li>Create a json file named <b>augmentation_configuration.json</b></li>
+</ul>
+
+```bash
+touch augmentation_configuration.json
+```
+
+<ul>
+	<li>Insert the following code in the <b>augmentation_configuration.json</b> file</li>
+</ul>
 
 ```json
 {
@@ -193,25 +246,42 @@ if __mame__ == "__main__":
 
 <p>Once the configuration file is created, we can apply the data augmentation pipeline with the following code.</p>
 
+<ul>
+	<li>After defining the augmentation file, let's create the code to apply the augmentations. Create a file named: <b>apply_bounding_box_augmentations.py</b></li>
+</ul>
+
+<ul>
+	<li>Insert the following code to <b>apply_bounding_box_augmentations.py</b></li>
+</ul>
+
 ```python
-from impy.ObjectDetectionDataset import *
+import os
+from impy.ObjectDetectionDataset import ObjectDetectionDataset
 
 def main():
 	# Define the path to images and annotations
-	images_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images")
-	annotations_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations", "xmls")
+	images_path:str=os.path.join(os.getcwd(), "cars_dataset", "images")
+	annotations_path:str=os.path.join(os.getcwd(), "cars_dataset", "annotations", "xmls")
 	# Define the name of the dataset
-	dbName = "CarsDataset"
+	dbName:str="CarsDataset"
 	# Create an ObjectDetectionDataset object
-	imda = ObjectDetectionDataset(imagesDirectory=images_path, annotationsDirectory=annotations_path, databaseName=dbName)
+	obda:any=ObjectDetectionDataset(imagesDirectory=images_path, annotationsDirectory=annotations_path, databaseName=dbName)
 	# Apply data augmentation by using the following method of the ObjectDetectionDataset class.
-	configuration_file = os.path.join(os.getcwd(), "tests", "cars_dataset", "augmentation_configuration.json")
-	images_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "images_augmented")
-	annotations_output_path = os.path.join(os.getcwd(), "tests", "cars_dataset", "annotations_augmented", "xmls")
-	imda.applyDataAugmentation(configurationFile=configuration_file, outputImageDirectory=images_output_path, outputAnnotationDirectory=annotations_output_path)
+	configuration_file:str=os.path.join(os.getcwd(), "augmentation_configuration.json")
+	images_output_path:str=os.path.join(os.getcwd(), "cars_dataset", "images_augmented")
+	annotations_output_path:str=os.path.join(os.getcwd(), "cars_dataset", "annotations_augmented", "xmls")
+	obda.applyDataAugmentation(configurationFile=configuration_file, outputImageDirectory=images_output_path, outputAnnotationDirectory=annotations_output_path)
 
-if __mame__ == "__main__":
- main()
+if __name__ == "__main__":
+	main()
+```
+
+<ul>
+	<li>Now execute the scrip running:</li>
+</ul>
+
+```bash
+python apply_bounding_box_augmentations.py
 ```
 
 <p>Next I present the results of the augmentations. Note the transformation does not alter the bounding boxes of the image which saves you a lot of time in case you want to increase the representational complexity of your data.</p>
